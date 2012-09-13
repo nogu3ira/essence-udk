@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,9 +11,14 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
     internal class MulContainer : IDataContainer
     {
         internal readonly uint EntrySize;
-        internal readonly uint _EntryLength;
+        internal readonly uint _EntryLength, _EntryOff;
         internal readonly string FNameIdx, FNameMul;
         internal readonly FileStream StreamIdx, StreamMul;
+
+        //private bool IsVirtual { get { return (_Parent != null || _ChieldCount > 0); } }
+        private  readonly bool IsVirtual = false;
+        private  readonly MulContainer _Parent = null;
+        private  byte _ChieldCount = 0;
 
         internal MulContainer(uint entrySize, string mulFile, bool realTime)
         {
@@ -32,6 +37,47 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             EntrySize = 0;
             _EntryLength = (uint)IdxTable.Length;
         }
+
+        internal MulContainer(MulContainer container, uint entryoff, uint entries = 0, uint entrySize = 0)
+        {
+            _Parent   = container;
+            ++container._ChieldCount;
+            FNameMul  = container.FNameMul; 
+            StreamMul = container.StreamMul;
+            EntrySize = entrySize;
+            _EntryOff = entryoff;
+
+            if (container.StreamIdx != null && entrySize == 0) {
+                FNameIdx = container.FNameIdx;
+                StreamIdx = container.StreamIdx;
+                StreamIdx.Position = 12 * entryoff;
+                _EntryLength = entries == 0 ? (uint)StreamIdx.Length / 12 - entryoff : entries;
+                IdxTable = Utils.ArrayRead<IndexEntry>(StreamIdx, (int)_EntryLength);
+            } else if (container.StreamIdx == null && entrySize != 0) {
+                FNameIdx  = null;
+                StreamIdx = null;
+                IdxTable  = null;
+                _EntryLength = entries == 0 ? ((uint)StreamMul.Length - entryoff) / EntrySize : entries;
+            }
+        }
+
+        internal static MulContainer GetVirtual(string idxFile, string mulFile, bool realTime)
+        {
+            var container = new MulContainer(realTime, idxFile, mulFile);
+            return container;
+            //TODO: we need to remember opend streams for virtual containers
+        }
+
+        private MulContainer(bool realTime, string idxFile, string mulFile)
+        {
+            IsVirtual = true;
+            StreamMul = new FileStream(FNameMul = mulFile, FileMode.Open, realTime ? FileAccess.ReadWrite : FileAccess.Read, FileShare.Read, 0x10000, false);
+            if (!String.IsNullOrEmpty(idxFile))
+                StreamIdx = new FileStream(FNameIdx = idxFile, FileMode.Open, realTime ? FileAccess.ReadWrite : FileAccess.Read, FileShare.Read, 192, false);
+            else { StreamIdx = null; }
+        }
+
+        // TODO: Dispose object
 
         private IndexEntry[] IdxTable;
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -67,16 +113,33 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             set { Write(id, value); }
         }
 
+        public T Read<T>(uint id, uint offset) where T : struct
+        {
+            return Read<T>(id, offset, 1)[0];
+        }
+
+        public T[] Read<T>(uint fromId, uint offset, uint count) where T : struct
+        {
+            if (IdxTable != null)
+                throw new Exception();
+            StreamMul.Seek(_EntryOff + fromId*EntrySize + offset, SeekOrigin.Begin);
+            var arr = Utils.ArrayRead<T>(StreamMul, (int)count);
+            return arr;
+        }
+
         private byte[] Read(uint id)
         {
             if (id >= _EntryLength)
-                throw new ArgumentOutOfRangeException();
+                return null;
+                //throw new ArgumentOutOfRangeException();
             if (IdxTable == null) {
-                StreamMul.Seek(id * EntrySize, SeekOrigin.Begin);
+                StreamMul.Seek(_EntryOff + id*EntrySize, SeekOrigin.Begin);
                 return Utils.ArrayRead<byte>(StreamMul, (int)EntrySize);             
             } else {
-                StreamMul.Seek(IdxTable[id].Offset, SeekOrigin.Begin);
-                return Utils.ArrayRead<byte>(StreamMul, (int)IdxTable[id].Length);
+                if (IdxTable[_EntryOff+id].Offset == 0xFFFFFFFF || IdxTable[_EntryOff+id].Length == 0xFFFFFFFF)
+                    return null;
+                StreamMul.Seek(IdxTable[_EntryOff+id].Offset, SeekOrigin.Begin);
+                return Utils.ArrayRead<byte>(StreamMul, (int)IdxTable[_EntryOff+id].Length);
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +11,7 @@ using EssenceUDK.Platform.DataTypes;
 
 namespace EssenceUDK.Platform
 {
-    public sealed class ModelItemData : UOBaseViewModel, IItemTile
+    public sealed class ModelItemData : UOBaseViewModel, IItemTile, IItemData
     {
         #region Declarations
         private readonly IItemTile _data;
@@ -41,6 +41,36 @@ namespace EssenceUDK.Platform
 
         #region Ctor
         public ModelItemData(IItemTile data)
+        {
+            _data = data;
+        }
+        #endregion
+    }
+
+    public sealed class ModelLandData : UOBaseViewModel, ILandTile, ILandData
+    {
+        #region Declarations
+        private readonly ILandTile _data;
+        #endregion
+
+        #region Properties
+
+        public uint TileId { get { return _data.TileId; } set { _data.TileId = value; RaisePropertyChanged(() => TileId); } }
+
+        public ISurface Surface { get { return _data.Surface; } set { _data.Surface = value; RaisePropertyChanged(() => Surface); } }
+
+        public ISurface Texture { get { return _data.Texture; } set { _data.Texture = value; RaisePropertyChanged(() => Texture); } }
+
+        public string Name { get { return _data.Name; } set { _data.Name = value; RaisePropertyChanged(() => Name); } }
+
+        public TileFlag Flags { get { return _data.Flags; } set { _data.Flags = value; RaisePropertyChanged(() => Flags); } }
+
+        public ushort TexID { get { return _data.TexID; } set { _data.TexID = value; RaisePropertyChanged(() => TexID); } }
+        
+        #endregion
+
+        #region Ctor
+        public ModelLandData(ILandTile data)
         {
             _data = data;
         }

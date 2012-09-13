@@ -52,6 +52,8 @@
     <Compile Include="Common\TileBaseView.cs" />
     <Compile Include="Common\GDIAdapter.cs" />
     <Compile Include="Ultima\TileItemView.cs" />
+    <Compile Include="Ultima\TileLandView.cs" />
+    <Compile Include="Ultima\TileTexmView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

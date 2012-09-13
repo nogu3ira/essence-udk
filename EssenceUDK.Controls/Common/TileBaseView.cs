@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -62,11 +62,27 @@ namespace EssenceUDK.Controls.Common
                         "MultiSelect", typeof(bool), typeof(TileBaseView), new UIPropertyMetadata());
 
 
-        //[Description("Source Collection<Image> of tiles."), Category("EssenceUDK.Controls")]
-        //public new IEnumerable<ISurface> ItemsSource {
-        //    get { return (IEnumerable<ISurface>)GetValue(ItemsSourceProperty); }
-        //    set { SetValue(ItemsSourceProperty, value); }
-        //}
+        [Description("Source Collection<Image> of tiles."), Category("EssenceUDK.Controls")]
+        public new IEnumerable<ISurface> ItemsSource {
+            get { return (IEnumerable<ISurface>)GetValue(ItemsSourceProperty); }
+            set { SetValue(ItemsSourceProperty, value); }
+        }
+
+        [Description("Set width size of items in list view."), Category("EssenceUDK.Controls")]
+        public new ushort ItemWidth {
+            get { return (ushort)GetValue(ItemWidthProperty); }
+            set { SetValue(ItemWidthProperty, value); }
+        }
+        private static readonly DependencyProperty ItemWidthProperty = DependencyProperty.Register(
+                        "ItemWidth", typeof(ushort), typeof(TileBaseView), new UIPropertyMetadata());
+
+        [Description("Set width size of items in list view."), Category("EssenceUDK.Controls")]
+        public new ushort ItemHeight {
+            get { return (ushort)GetValue(ItemHeightProperty); }
+            set { SetValue(ItemHeightProperty, value); }
+        }
+        private static readonly DependencyProperty ItemHeightProperty = DependencyProperty.Register(
+                        "ItemHeight", typeof(ushort), typeof(TileBaseView), new UIPropertyMetadata());
 
         #endregion
 
@@ -74,10 +90,13 @@ namespace EssenceUDK.Controls.Common
 
         static TileBaseView()
         {
-            /*
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(TileBaseView), new FrameworkPropertyMetadata(typeof(TileBaseView)));
+            //DefaultStyleKeyProperty.OverrideMetadata(typeof(TileBaseView), new FrameworkPropertyMetadata(typeof(TileBaseView)));
 
-            Setter setter = new Setter();
+            var setterWidth  = new Setter(ItemWidthProperty, 88);
+            var setterHeight = new Setter(ItemHeightProperty, 88);
+            
+
+            /*
             setter.Property = TileBaseView.TemplateProperty;
             ControlTemplate template = new ControlTemplate(typeof(TileBaseView));
             var grid = new FrameworkElementFactory(typeof(Grid));
@@ -98,17 +117,12 @@ namespace EssenceUDK.Controls.Common
         { 
         }
 
-        protected override void OnInitialized(EventArgs e)
+        private void ApllyTemplate()
         {
-            base.OnInitialized(e);
-                   
             //SetValue(BackgroundProperty, Brushes.Chartreuse);
             SetValue(BackgroundProperty, Brushes.Transparent);
             SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, ScrollBarVisibility.Disabled);
             SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, ScrollBarVisibility.Visible);
-
-
-            
 
 
             var ip = new ItemsPanelTemplate();
@@ -149,18 +163,27 @@ namespace EssenceUDK.Controls.Common
 
             imgsrs.Path = new PropertyPath(_SourcePath);
             image.SetValue(Image.SourceProperty, imgsrs);
-            image.SetValue(Image.WidthProperty, 44.0);
-            image.SetValue(Image.HeightProperty, 44.0);
+            image.SetValue(Image.WidthProperty, (double)ItemWidth);
+            image.SetValue(Image.HeightProperty, (double)ItemHeight);
             border.AppendChild(image);
             
             datatemplate.VisualTree = grid;
             SetValue(ItemTemplateProperty, datatemplate);
+        }
 
-            if (!DesignerProperties.GetIsInDesignMode(this))
+        protected override void OnInitialized(EventArgs e)
             {
+            // TODO: default values to 44,44. Realy don't know how how how.........
+            //SetValue(ItemWidthProperty,  (ushort)44);
+            //SetValue(ItemHeightProperty, (ushort)44);
+
+            base.OnInitialized(e);      
+
+            ApllyTemplate();
+
+            if (!DesignerProperties.GetIsInDesignMode(this)) {
                 //var uomanager = new UODataManager(new Uri(@"C:\UltimaOnline\client"), UODataType.ClassicAdventuresOnHighSeas, false);
                 //SetValue(ItemsSourceProperty, uomanager.GetItemTile());
-
             }
         }
 

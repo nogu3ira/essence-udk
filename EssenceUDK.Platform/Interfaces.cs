@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -58,5 +58,7 @@ namespace EssenceUDK.Platform
     {
         uint EntryLength { get; }
         byte[] this[uint id] { get; set; }
+        T   Read<T>(uint id, uint offset) where T : struct;
+        T[] Read<T>(uint fromId, uint offset, uint count) where T : struct;
     }
 }

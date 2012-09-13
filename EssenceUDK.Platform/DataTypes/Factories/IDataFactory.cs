@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +10,7 @@ namespace EssenceUDK.Platform.Factories
     {
         ILandTile[] GetLandTiles();
         ISurface GetLandSurface(uint id);
+        ISurface GetTexmSurface(uint id);
 
         IItemTile[] GetItemTiles();
         ISurface GetItemSurface(uint id);

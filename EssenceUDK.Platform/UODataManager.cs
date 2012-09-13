@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,6 +12,8 @@ namespace EssenceUDK.Platform
     [Flags]
     public enum UODataType : ushort
     {
+        Inavalide   = 0x0000,
+
         /// <summary>
         /// Use separated files from HDD as DataSource.
         /// </summary>
@@ -175,12 +177,6 @@ namespace EssenceUDK.Platform
             StorageItem = dataFactory.GetItemTiles();
         }
 
-        public UODataManager()
-            : this(new Uri(@"C:\Ultima\Clients\ML"), UODataType.ClassicAdventuresOnHighSeas, false)
-        {
-            
-        }
-
         // Cached storages (always using caching)
         private ILandTile[] StorageLand;
         private IItemTile[] StorageItem;
@@ -221,10 +217,49 @@ namespace EssenceUDK.Platform
             //return new ObservableCollection<ModelItemData>(StorageItem.Select(t => new ModelItemData(t)));
         }
 
-        //public IEnumerable<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None)
-        //{
-        //    return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
-        //}
+        public IEnumerable<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None)
+        {
+            return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
+        }
+
+        public ILandTile GetLandTile(int id)
+        {
+            return StorageLand[id];
+        }
+
+        public ILandTile GetLandTile(uint id)
+        {
+            return StorageLand[id];
+        }
+
+        public ILandTile GetLandTile(short id)
+        {
+            return StorageLand[id];
+        }
+
+        public ILandTile GetLandTile(ushort id)
+        {
+            return StorageLand[id];
+        }
+
+        public IEnumerable<ModelLandData> GetLandTile()
+        {
+
+            //var arr = new LandTile[5000];
+            //var arr = new LandTile[25000];
+            var arr = new LandTile[1000];
+            Array.Copy(StorageLand, arr, arr.Length);
+            //Array.Copy(StorageLand, 5000, arr, 0, arr.Length);
+            //Array.Copy(StorageLand, 0xE000, arr, 0, arr.Length);
+            return new ObservableCollection<ModelLandData>(arr.Select(t => new ModelLandData(t)));
+            //return new ObservableCollection<ModelLandData>(StorageLand.Select(t => new ModelLandData(t)));
+        }
+
+        public IEnumerable<ModelLandData> GetLandTile(TileFlag flags = TileFlag.None)
+        {
+            return new ObservableCollection<ModelLandData>(StorageLand.Where(t => t.Flags.HasFlag(flags)).Select(t => new ModelLandData(t)));
+        }
+
 
         #endregion
 

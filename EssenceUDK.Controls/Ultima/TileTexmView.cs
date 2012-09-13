@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -20,18 +20,18 @@ using EssenceUDK.Platform.DataTypes;
 
 namespace EssenceUDK.Controls.Ultima
 {
-    public class TileItemView : TileBaseView
+    public class TileTexmView : TileBaseView
     {
         #region Control Properties
 
-        [Description("Source IEnumerable<IItemTile> of tiles."), Category("EssenceUDK.Controls")]
-        public new IEnumerable<IItemTile> ItemsSource {
-            get { return (IEnumerable<IItemTile>)GetValue(ItemsSourceProperty); }
+        [Description("Source IEnumerable<ILandTile> of tiles."), Category("EssenceUDK.Controls")]
+        public new IEnumerable<ILandTile> ItemsSource {
+            get { return (IEnumerable<ILandTile>)GetValue(ItemsSourceProperty); }
             set { if (!DesignerProperties.GetIsInDesignMode(this)) SetValue(ItemsSourceProperty, value); }
         }
 
         #endregion
 
-        protected override string _SourcePath { get { return "Surface.Image"; } }     
+        protected override string _SourcePath { get { return "Texture.Image"; } }     
     }
 }

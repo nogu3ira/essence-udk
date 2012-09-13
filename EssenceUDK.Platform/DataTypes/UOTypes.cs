@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -17,10 +17,11 @@ namespace EssenceUDK.Platform.DataTypes
         //protected Color   RadarColor;
 
         protected IDataFactory dataFactory;
-        internal  EntryTile(uint id, IDataFactory factory)
+        internal  EntryTile(uint id, IDataFactory factory, ITileData tiledata)
         {
             _TileId = id;
             dataFactory = factory;
+            _TileData = tiledata;
         }
 
         public uint TileId { get { return _TileId; } set { _TileId = value; } }
@@ -42,7 +43,7 @@ namespace EssenceUDK.Platform.DataTypes
         ushort   IItemData.Animation    { get { return ((IItemData)_TileData).Animation; }      set { ((IItemData)_TileData).Animation = value; } }
         byte     IItemData.StackingOff  { get { return ((IItemData)_TileData).StackingOff; }    set { ((IItemData)_TileData).StackingOff = value; } }
 
-        internal  ItemTile(uint id, IDataFactory factory) : base(id, factory)
+        internal  ItemTile(uint id, IDataFactory factory, IItemData tiledata) : base(id, factory, tiledata)
         {          
         }
     }
@@ -54,11 +55,17 @@ namespace EssenceUDK.Platform.DataTypes
             set { ; }
         }
 
+        public          ISurface     Texture {
+            get { return _Texture ?? (_Texture = dataFactory.GetTexmSurface(((ILandData)_TileData).TexID)); }
+            set { ; }
+        }
+        protected ISurface _Texture;
+
         string   ILandData.Name         { get { return ((ILandData)_TileData).Name; }           set { ((ILandData)_TileData).Name = value; } }
         TileFlag ILandData.Flags        { get { return ((ILandData)_TileData).Flags; }          set { ((ILandData)_TileData).Flags = value; } }
         ushort   ILandData.TexID        { get { return ((ILandData)_TileData).TexID; }          set { ((ILandData)_TileData).TexID = value; } }
 
-        internal LandTile(uint id, IDataFactory factory) : base(id, factory)
+        internal LandTile(uint id, IDataFactory factory, ILandData tiledata) : base(id, factory, tiledata)
         {
         }
     }
@@ -285,100 +292,11 @@ namespace EssenceUDK.Platform.DataTypes
 
     public interface ILandTile : IEntryTile, ILandData
     {
+        ISurface   Texture      { get; set; }
     }
 
     public interface IItemTile : IEntryTile, IItemData
     { 
     }
-
-
-
-    // TODO: Move to Factory (this is Factory reaslistaion)
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 26, Pack = 1)]
-    internal struct OldLandData : ILandData
-    {
-        [MarshalAs(UnmanagedType.U4)]
-        private TileFlag   _Flags;
-        private ushort     _TexID;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-        private string     _Name;
-
-        string     ILandData.Name         { get { return _Name; }         set { _Name = value; } }
-        TileFlag   ILandData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-        ushort     ILandData.TexID        { get { return _TexID; }        set { _TexID = value; } }
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 30, Pack = 1)]
-    internal struct NewLandData : ILandData
-    {
-        [MarshalAs(UnmanagedType.U8)]
-        private TileFlag   _Flags;
-        private ushort     _TexID;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-        private string     _Name;
-
-        string     ILandData.Name         { get { return _Name; }         set { _Name = value; } }
-        TileFlag   ILandData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-        ushort     ILandData.TexID        { get { return _TexID; }        set { _TexID = value; } }
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 37, Pack = 1)]
-    internal struct OldItemData : IItemData
-    {
-        [MarshalAs(UnmanagedType.U4)]
-        private TileFlag   _Flags;
-        private byte       _Weight;
-        private byte       _Quality;
-        private ushort     _Miscdata;
-        private byte       _Unk1;
-        private byte       _Quantity;
-        private ushort     _Animation;
-        private byte       _Unk2;
-        private byte       _Hue;
-        private byte       _StackingOff;
-        private byte       _Value;
-        private byte       _Height;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-        private string     _Name;
-
-        string     IItemData.Name         { get { return _Name; }         set { _Name = value; } }
-        TileFlag   IItemData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-        byte       IItemData.Height       { get { return _Height; }       set { _Height = value; } }
-        byte       IItemData.Quality      { get { return _Quality; }      set { _Quality = value; } }
-        byte       IItemData.Quantity     { get { return _Quantity; }     set { _Quantity = value; } }
-        ushort     IItemData.Animation    { get { return _Animation; }    set { _Animation = value; } }
-        byte       IItemData.StackingOff  { get { return _StackingOff; }  set { _StackingOff = value; } }
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 41, Pack = 1)]
-    internal struct NewItemData : IItemData
-    {
-        [MarshalAs(UnmanagedType.U8)]
-        private TileFlag   _Flags;
-        private byte       _Weight;
-        private byte       _Quality;
-        private ushort     _Miscdata;
-        private byte       _Unk1;
-        private byte       _Quantity;
-        private ushort     _Animation;
-        private byte       _Unk2;
-        private byte       _Hue;
-        private byte       _StackingOff;
-        private byte       _Value;
-        private byte       _Height;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-        private string     _Name;
-
-        string     IItemData.Name         { get { return _Name; }         set { _Name = value; } }
-        TileFlag   IItemData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-        byte       IItemData.Height       { get { return _Height; }       set { _Height = value; } }
-        byte       IItemData.Quality      { get { return _Quality; }      set { _Quality = value; } }
-        byte       IItemData.Quantity     { get { return _Quantity; }     set { _Quantity = value; } }
-        ushort     IItemData.Animation    { get { return _Animation; }    set { _Animation = value; } }
-        byte       IItemData.StackingOff  { get { return _StackingOff; }  set { _StackingOff = value; } }
-    }
-
-   
 
 }

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 
 using System.Drawing;
@@ -42,9 +42,9 @@ namespace EssenceUDK.Platform.DataTypes
         #endregion
 
 
-        protected WriteableBitmap Bitmap;
+        protected BitmapSource Bitmap;
 
-        internal BitmapSurface(WriteableBitmap bitmap)
+        internal BitmapSurface(BitmapSource bitmap)
         {
             Bitmap = bitmap;
         }
