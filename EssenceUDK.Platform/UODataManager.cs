@@ -175,6 +175,12 @@ namespace EssenceUDK.Platform
             StorageItem = dataFactory.GetItemTiles();
         }
 
+        public UODataManager()
+            : this(new Uri(@"C:\Ultima\Clients\ML"), UODataType.ClassicAdventuresOnHighSeas, false)
+        {
+            
+        }
+
         // Cached storages (always using caching)
         private ILandTile[] StorageLand;
         private IItemTile[] StorageItem;
@@ -215,12 +221,10 @@ namespace EssenceUDK.Platform
             //return new ObservableCollection<ModelItemData>(StorageItem.Select(t => new ModelItemData(t)));
         }
 
-        public IEnumerable<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None)
-        {
-            return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
-        }
-
-        
+        //public IEnumerable<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None)
+        //{
+        //    return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
+        //}
 
         #endregion
 

@@ -24,11 +24,12 @@ namespace EssenceUDK.Controls.Ultima
     {
         #region Control Properties
 
-        [Description("Source IEnumerable<IItemTile> of tiles."), Category("EssenceUDK.Controls")]
-        public new IEnumerable<IItemTile> ItemsSource {
-            get { return (IEnumerable<IItemTile>)GetValue(ItemsSourceProperty); }
-            set { if (!DesignerProperties.GetIsInDesignMode(this)) SetValue(ItemsSourceProperty, value); }
-        }
+        //[Description("Source IEnumerable<IItemTile> of tiles."), Category("EssenceUDK.Controls")]
+        //public new IEnumerable<IItemTile> ItemsSource
+        //{
+        //    get { return (IEnumerable<IItemTile>)GetValue(ItemsSourceProperty); }
+        //    set { if (!DesignerProperties.GetIsInDesignMode(this)) SetValue(ItemsSourceProperty, value); }
+        //}
 
         #endregion
 

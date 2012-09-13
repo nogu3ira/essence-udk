@@ -62,11 +62,11 @@ namespace EssenceUDK.Controls.Common
                         "MultiSelect", typeof(bool), typeof(TileBaseView), new UIPropertyMetadata());
 
 
-        [Description("Source Collection<Image> of tiles."), Category("EssenceUDK.Controls")]
-        public new IEnumerable<ISurface> ItemsSource {
-            get { return (IEnumerable<ISurface>)GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
-        }
+        //[Description("Source Collection<Image> of tiles."), Category("EssenceUDK.Controls")]
+        //public new IEnumerable<ISurface> ItemsSource {
+        //    get { return (IEnumerable<ISurface>)GetValue(ItemsSourceProperty); }
+        //    set { SetValue(ItemsSourceProperty, value); }
+        //}
 
         #endregion
 

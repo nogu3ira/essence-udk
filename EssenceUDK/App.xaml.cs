@@ -12,5 +12,15 @@ namespace EssenceUDK
     /// </summary>
     public partial class App : Application
     {
+        
+        private ApplicationController _applicationController;
+        public App()
+        {
+            _applicationController = new ApplicationController();
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            MainWindow = _applicationController.MainWindow;
+            
+        }
+        
     }
 }

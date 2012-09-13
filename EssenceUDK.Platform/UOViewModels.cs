@@ -11,7 +11,7 @@ using EssenceUDK.Platform.DataTypes;
 
 namespace EssenceUDK.Platform
 {
-    public sealed class ModelItemData : UOBaseViewModel, IItemTile, IItemData
+    public sealed class ModelItemData : UOBaseViewModel, IItemTile
     {
         #region Declarations
         private readonly IItemTile _data;
@@ -55,34 +55,90 @@ namespace EssenceUDK.Platform
 
     public abstract class DelegateUOCommand : ICommand
     {
-        private readonly Action _command;
-        private readonly Func<bool> _canExecute;
-        public event EventHandler CanExecuteChanged;
+        #region Declarations
+        private readonly Action<object> _command;
+        private readonly Func<object, bool> _canExecute;
+        private InputBindingCollection _inputBinding;
+        #endregion
 
-        public DelegateUOCommand(Action command, Func<bool> canExecute = null)
+        #region Ctor
+        /// <summary>
+        /// Constructor. Initializes delegate command with Execute delegate and CanExecute delegate
+        /// </summary>
+        /// <param name="command">Delegate to execute when Execute is called on the command.  This can be null to just hook up a CanExecute delegate.</param>
+        /// <param name="canExecute">Delegate to execute when CanExecute is called on the command.  This can be null.</param>
+        public DelegateUOCommand(Action<object> command, Func<object, bool> canExecute = null)
         {
             if (command == null)
                 throw new ArgumentNullException();
             _canExecute = canExecute;
             _command = command;
         }
+        #endregion
 
+        #region Props
+        /// <summary>
+        /// Command's associated input bindings
+        /// </summary>
+        public InputBindingCollection InputBindings
+        {
+            get
+            {
+                return _inputBinding;
+            }
+        }
+        #endregion 
+
+
+        #region Methods
+        /// <summary>
+        /// Adds a new gesture to associate inputbindings
+        /// </summary>
+        public void AddGesture(InputGesture gesture)
+        {
+            if (_inputBinding == null) _inputBinding = new InputBindingCollection();
+            _inputBinding.Add(new InputBinding(this, gesture));
+        }
+
+        ///<summary>
+        ///Defines the method to be called when the command is invoked.
+        ///</summary>
+        ///<param name="parameter">Data used by the command.  If the command does not require data to be passed, this object can be set to null.</param>
         public void Execute(object parameter)
         {
-            _command();
+            if (_command == null) return;
+            _command(parameter);
         }
 
+        ///<summary>
+        ///Defines the method that determines whether the command can execute in its current state.
+        ///</summary>
+        ///<param name="parameter">Data used by the command.  If the command does not require data to be passed, this object can be set to null.</param>
+        ///<returns>
+        ///true if this command can be executed; otherwise, false.
+        ///</returns>
         public bool CanExecute(object parameter)
         {
-            if (_canExecute == null)
-                return true;
-            return _canExecute();
+            if (_canExecute == null) return true;
+            return _canExecute(parameter);
         }
 
-        public void RasieCanExecuteChanged()
+        /// <summary>
+        /// Raises <see cref="CanExecuteChanged"/> so every command invoker can requery to check if the command can execute.
+        /// <remarks>Note that this will trigger the execution of <see cref="CanExecute"/> once for each invoker.</remarks>
+        /// </summary>
+        public event EventHandler CanExecuteChanged
         {
-            CanExecuteChanged(this, EventArgs.Empty);
+            add
+            {
+                CommandManager.RequerySuggested += value;
+            }
+            remove
+            {
+                CommandManager.RequerySuggested += value;
+            }
         }
+        #endregion
     }
 
     public abstract class NotificationUOObject : INotifyPropertyChanged

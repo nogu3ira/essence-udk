@@ -322,8 +322,10 @@ map5.mul
 
         ISurface IDataFactory.GetItemSurface(uint id)
         {
+            const int landscount = 0x4000;
             WriteableBitmap bitmap;
-            ConvertItemSurface(container_Art[0x4000 + id], out bitmap);
+
+            ConvertItemSurface(container_Art[landscount + id], out bitmap);
             bitmap.Freeze();
             return bitmap != null ? new BitmapSurface(bitmap) : null;
         }
