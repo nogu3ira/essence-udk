@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Common\TileBaseView.cs" />
     <Compile Include="Common\GDIAdapter.cs" />
+    <Compile Include="Ultima\TileItemView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -79,7 +80,6 @@
   <ItemGroup>
     <Folder Include="System\" />
     <Folder Include="Themes\" />
-    <Folder Include="Ultima\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EssenceUDK.Platform\EssenceUDK.Platform.csproj">

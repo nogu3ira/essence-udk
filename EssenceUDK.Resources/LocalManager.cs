@@ -1,6 +1,9 @@
 ﻿// This is based on project "Advanced WPF Localization".
 // For updates and addition information look at http://www.codeproject.com/Articles/249369/Advanced-WPF-Localization
 
+//TODO: Rewrire.... this dhit doesn't work and it's uncomfortable to use, we have to use smth like separated *.xml or *.ini
+//      filse to make it smart and comfortable. I mean using separated localization for each module, or just sections in xml.
+
 namespace EssenceUDK.Resources
 {
     using System;

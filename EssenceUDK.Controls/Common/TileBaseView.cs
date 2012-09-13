@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using EssenceUDK.Platform;
+using EssenceUDK.Platform.DataTypes;
 
 namespace EssenceUDK.Controls.Common
 {
@@ -48,7 +49,7 @@ namespace EssenceUDK.Controls.Common
     ///
     /// </summary>
     
-    public class TileBaseView : ListBox
+    public abstract class TileBaseView : ListBox
     {
         #region Control Properties
         
@@ -62,14 +63,14 @@ namespace EssenceUDK.Controls.Common
 
 
         [Description("Source Collection<Image> of tiles."), Category("EssenceUDK.Controls")]
-        public Collection<Image> TileSource {
-            get { return (Collection<Image>)GetValue(TileSourceProperty); }
-            set { SetValue(TileSourceProperty, value); }
+        public new IEnumerable<ISurface> ItemsSource {
+            get { return (IEnumerable<ISurface>)GetValue(ItemsSourceProperty); }
+            set { SetValue(ItemsSourceProperty, value); }
         }
-        private static readonly DependencyProperty TileSourceProperty = DependencyProperty.Register(
-                        "TileSource", typeof(Collection<Image>), typeof(TileBaseView), new UIPropertyMetadata());
 
         #endregion
+
+        protected virtual string _SourcePath { get { return "Image"; } }
 
         static TileBaseView()
         {
@@ -93,6 +94,9 @@ namespace EssenceUDK.Controls.Common
             */
         }
 
+        internal TileBaseView() : base()
+        { 
+        }
 
         protected override void OnInitialized(EventArgs e)
         {
@@ -143,7 +147,7 @@ namespace EssenceUDK.Controls.Common
             image.SetValue(Image.StretchProperty, Stretch.Fill);
             var imgsrs = new Binding();
 
-            imgsrs.Path = new PropertyPath("Surface.Image");
+            imgsrs.Path = new PropertyPath(_SourcePath);
             image.SetValue(Image.SourceProperty, imgsrs);
             image.SetValue(Image.WidthProperty, 44.0);
             image.SetValue(Image.HeightProperty, 44.0);
@@ -154,57 +158,11 @@ namespace EssenceUDK.Controls.Common
 
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
-                /*
-                List<BitmapImage> imglist = new List<BitmapImage>();
-                DirectoryInfo imgDir = new DirectoryInfo(@"C:\UltimaOnline\34\45\CustomItemsPanel\CustomItemsPanel\Robots"); //new DirectoryInfo( @"..\..\Robots" );
-
-                //List<BitmapImage> imglist = new List<BitmapImage>();
-                //DirectoryInfo imgDir = new DirectoryInfo(@"C:\\imgs");
-                foreach (FileInfo imgFile in imgDir.GetFiles("*.jpg"))
-                {
-                    Uri uri = new Uri(imgFile.FullName);
-                    imglist.Add(new BitmapImage(uri));
-                }
-
-                */
-                var uomanager = new UODataManager(new Uri(@"C:\UltimaOnline\client"), UODataType.ClassicAdventuresOnHighSeas, false);
-                
-                
-                SetValue(ItemsSourceProperty, uomanager.GetItemTile());
+                //var uomanager = new UODataManager(new Uri(@"C:\UltimaOnline\client"), UODataType.ClassicAdventuresOnHighSeas, false);
+                //SetValue(ItemsSourceProperty, uomanager.GetItemTile());
 
             }
-            //SetValue(TileBaseView.DataContextProperty, imglist);
         }
-
-        /*
-         * <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                <Border 
-                    BorderBrush="Black" 
-                    BorderThickness="4" 
-                    CornerRadius="5"
-                    Margin="6"
-                    >
-                    <Image 
-                    Source="{Binding Path=UriSource}" 
-                    Stretch="Fill"
-                    Width="100" Height="120" 
-                    />
-                </Border>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-
-        <Setter Property="ItemsPanel">
-            <Setter.Value>
-                <ItemsPanelTemplate>
-                    <WrapPanel />
-                </ItemsPanelTemplate>
-            </Setter.Value>
-        </Setter>
-         */
-
 
         /*
          * = Визуальные:

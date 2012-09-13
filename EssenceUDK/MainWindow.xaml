@@ -2,8 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:EssenceUDK" 
-        xmlns:contr="clr-namespace:EssenceUDK.Controls.Common;assembly=EssenceUDK.Controls" 
-        Title="Essence UDK (Ultima Developer Kit)" Height="385" Width="853" xmlns:my="clr-namespace:EssenceUDK" Icon="/EssenceUDK;component/EssenceUDK.ico" xmlns:my1="clr-namespace:EssenceUDK.Controls.Common;assembly=EssenceUDK.Controls" xmlns:my2="clr-namespace:EssenceUDK.Controls;assembly=EssenceUDK.Controls">
+        xmlns:contr="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls" 
+        Title="Essence UDK (Ultima Developer Kit)" Height="385" Width="853" xmlns:my="clr-namespace:EssenceUDK" Icon="/EssenceUDK;component/EssenceUDK.ico">
 
     <Grid ShowGridLines="False">
         <Grid.ColumnDefinitions>
@@ -18,7 +18,7 @@
                 <my:Preferences x:Name="preferences1" />
             </TabItem>
             <TabItem Header="tabDebugTest">
-                <contr:TileBaseView Name="tileBaseView1" />
+                <contr:TileItemView Name="tileItemView1" />
             </TabItem>
         </TabControl>
     </Grid>

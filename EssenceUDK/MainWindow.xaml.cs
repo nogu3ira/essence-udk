@@ -27,57 +27,21 @@ namespace EssenceUDK
         {
             InitializeComponent();
 
-            // test
+            // test - lets switch to our tab at startup
             tabControl1.SelectedIndex = 2;
 
-            /*
-            ImageSource img;
+            // now we need create base uo data storage class, it base class we will use to do any work with uo data, so generally we need to store it as static.
+            // but just now for testing we dont do it. (Remember shilw we will write controls in EsseceUDK.Add-ins we need to get manager at EsseceUDK assembly)
+            var manager = new UODataManager(new Uri(@"C:\UltimaOnline\client"), UODataType.ClassicAdventuresOnHighSeas, false);
             
-            var uomanager = new UODataManager(new Uri(@"C:\UltimaOnline\client"), UODataType.ClassicAdventuresOnHighSeas, false);
-            foreach (var tile in uomanager.GetItemTile())
-            {
-                img = tile.Surface.Image;
-                // Do evets
-                if (Application.Current != null)
-                    Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(delegate { }));
+            // ok, we get manager just now let get tiles and set them as sourse to our list. Yeh, it's really simple)
+            tileItemView1.ItemsSource = manager.GetItemTile(); // just now we just get first 1000 items for testing
 
-            }*/
-                
-
-            //SetValue(ItemsSourceProperty, uomanager.GetItemTile());
-        }
-
-
-        public static List<BitmapImage> LoadImages()
-		{
-			List<BitmapImage> robotImages = new List<BitmapImage>();
-			DirectoryInfo robotImageDir = new DirectoryInfo( @"C:\UltimaOnline\34\45\CustomItemsPanel\CustomItemsPanel\Robots" ); //new DirectoryInfo( @"..\..\Robots" );
-			
-            foreach( FileInfo robotImageFile in robotImageDir.GetFiles( "*.jpg" ) ) {
-				Uri uri = new Uri( robotImageFile.FullName );
-				robotImages.Add( new BitmapImage( uri ) );
-			}
-			return robotImages;
-		}
-    }
-
-    public static class RobotImageLoader
-    {
-        public static List<BitmapImage> LoadImages()
-        {
-            List<BitmapImage> robotImages = new List<BitmapImage>();
-            DirectoryInfo robotImageDir = new DirectoryInfo(@"C:\UltimaOnline\34\45\CustomItemsPanel\CustomItemsPanel\Robots"); //new DirectoryInfo( @"..\..\Robots" );
-
-            foreach (FileInfo robotImageFile in robotImageDir.GetFiles("*.jpg"))
-            //DirectoryInfo robotImageDir = new DirectoryInfo(@"C:\UltimaOnline\_build\uoFiddler\Extracted\Equip");
-
-            //if (DesignerProperties.GetIsInDesignMode(this))
-            //foreach( FileInfo robotImageFile in robotImageDir.GetFiles( "*.bmp" ) )
-            {
-                Uri uri = new Uri(robotImageFile.FullName);
-                robotImages.Add(new BitmapImage(uri));
-            }
-            return robotImages;
+            // PS xaml is good, but lets devide all properties of controls in two types: visual-style and visual-logic.
+            // The first one is part of theme or control design. The second are user customizable or controll changeble,
+            // for example - sizes of tiles in tileItemView1 (we just add some Properties to it later). The idea is that if
+            // we decide ti rewrite control in future to own we can easily change it without any problems.
         }
     }
+
 }

@@ -206,11 +206,11 @@ namespace EssenceUDK.Platform
         {
 
             //var arr = new ItemTile[5000];
-            //var arr = new ItemTile[10000];
+            //var arr = new ItemTile[25000];
             var arr = new ItemTile[1000];
-            //Array.Copy(StorageItem, arr, arr.Length);
+            Array.Copy(StorageItem, arr, arr.Length);
             //Array.Copy(StorageItem, 5000, arr, 0, arr.Length);
-            Array.Copy(StorageItem, 0xE000, arr, 0, arr.Length);
+            //Array.Copy(StorageItem, 0xE000, arr, 0, arr.Length);
             return new ObservableCollection<ModelItemData>(arr.Select(t => new ModelItemData(t)));
             //return new ObservableCollection<ModelItemData>(StorageItem.Select(t => new ModelItemData(t)));
         }

@@ -103,10 +103,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EssenceUDK.Add-ins\EssenceUDK.Add-ins.csproj">
-      <Project>{51793A49-891E-469D-A216-331D7AA7B480}</Project>
-      <Name>EssenceUDK.Add-ins</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EssenceUDK.Controls\EssenceUDK.Controls.csproj">
       <Project>{65F4F53B-DD6D-497C-9FD0-C9B2F48AB74C}</Project>
       <Name>EssenceUDK.Controls</Name>

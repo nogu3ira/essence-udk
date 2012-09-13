@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace EssenceUDK.Platform
+namespace EssenceUDK.Platform.UtilHelpers
 {
     public static class Utils
     {
