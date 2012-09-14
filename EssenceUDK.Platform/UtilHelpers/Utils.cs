@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+﻿using Microsoft.Win32;
 
 namespace EssenceUDK.Platform.UtilHelpers
 {
@@ -150,6 +151,38 @@ namespace EssenceUDK.Platform.UtilHelpers
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool ReadFile(IntPtr hFile, IntPtr lpBuffer, uint nNumberOfBytesToRead, out uint lpNumberOfBytesRead, IntPtr lpOverlapped);
+
+        #endregion
+
+        #region Registry
+
+        public static T GetRegistryKey<T>(string key, string name)
+        {
+            if (typeof(T) == typeof(string))
+                return (T)((object)GetRegistryKey(key, name, String.Empty));
+            else
+                return GetRegistryKey<T>(key, name, DynamicExecutor.CreateInstance<T>());
+        }
+
+        public static T GetRegistryKey<T>(string key, string name, T defvalue)
+        {            
+            var skey = Registry.LocalMachine.OpenSubKey(String.Format(@"SOFTWARE{0}\{1}", Environment.Is64BitOperatingSystem ? @"\Wow6432Node" : String.Empty, key));
+            try {
+                if (skey == null)
+                    return defvalue;
+                var sval = skey.GetValue(name, defvalue);
+                var styp = skey.GetValueKind(name);
+                if (styp == RegistryValueKind.String && typeof(T) == typeof(string))
+                    return (T)sval;
+                if (styp == RegistryValueKind.DWord && typeof(T) == typeof(uint))
+                    return (T)sval;
+                if (styp == RegistryValueKind.QWord && typeof(T) == typeof(UInt64))
+                    return (T)sval;
+                if (styp == RegistryValueKind.None || sval == null)
+                    return defvalue;
+            } catch {;}
+            return defvalue;
+        }
 
         #endregion
     }

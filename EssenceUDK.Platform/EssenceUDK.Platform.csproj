@@ -56,6 +56,8 @@
     <Compile Include="UODataManager.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UtilHelpers\ClientInfo.cs" />
+    <Compile Include="UtilHelpers\DynamicExecutor.cs" />
     <Compile Include="UtilHelpers\Language.cs" />
     <Compile Include="UtilHelpers\Utils.cs" />
   </ItemGroup>
@@ -65,6 +67,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GenaralDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EssenceUDK.Resources\EssenceUDK.Resources.csproj">
+      <Project>{BF268AE6-1FC3-4A1B-A6D8-CCAD0BAB4833}</Project>
+      <Name>EssenceUDK.Resources</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
