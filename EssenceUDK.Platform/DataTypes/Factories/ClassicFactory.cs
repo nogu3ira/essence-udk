@@ -86,8 +86,7 @@ map5.mul
     */
     internal class ClassicFactory : IDataFactory
     {
-        public readonly Uri Uri = null;
-        public readonly UODataType DataType = UODataType.Inavalide;
+        public readonly UODataManager Data;
         
         private IDataContainer   container_LandData, container_ItemData, container_LandTile, container_ItemTile, container_LandTexm, container_ItemAnim;
 
@@ -102,29 +101,27 @@ map5.mul
 
         private string GetPath(string file)
         {
-            string folder = Uri.LocalPath;
+            string folder = Data.Location.LocalPath;
             return Path.Combine(folder, file);
         }
 
-        internal ClassicFactory(Uri uri, UODataType type, bool realtime)
+        internal ClassicFactory(UODataManager data)
         {
-            Uri = uri;
-            DataType = type;
-            MulContainer virtualcontainer;
-
-            if (type.HasFlag(UODataType.UseUopFiles))
+            Data = data;
+            if (data.DataType.HasFlag(UODataType.UseUopFiles))
                 throw new NotImplementedException();
 
-            virtualcontainer   = MulContainer.GetVirtual(null, GetPath("tiledata.mul"), realtime);
-            container_LandData = new MulContainer(virtualcontainer, 0, (_LandLength>>5), (uint)(type.HasFlag(UODataType.UseNewDatas) ?  964 :  836));
-            container_ItemData = new MulContainer(virtualcontainer,    (_LandLength>>5)* (uint)(type.HasFlag(UODataType.UseNewDatas) ?  964 :  836), 
-                                                                                      0, (uint)(type.HasFlag(UODataType.UseNewDatas) ? 1316 : 1188));
+            MulContainer virtualcontainer = null;
+            virtualcontainer   = MulContainer.GetVirtual(null, GetPath("tiledata.mul"), data.RealTime);
+            container_LandData = new MulContainer(virtualcontainer, 0, (_LandLength>>5), (uint)(data.DataType.HasFlag(UODataType.UseNewDatas) ?  964 :  836));
+            container_ItemData = new MulContainer(virtualcontainer,    (_LandLength>>5)* (uint)(data.DataType.HasFlag(UODataType.UseNewDatas) ?  964 :  836), 
+                                                                                      0, (uint)(data.DataType.HasFlag(UODataType.UseNewDatas) ? 1316 : 1188));
             
-            virtualcontainer   = MulContainer.GetVirtual(GetPath("artidx.mul"), GetPath("art.mul"), realtime);
+            virtualcontainer   = MulContainer.GetVirtual(GetPath("artidx.mul"), GetPath("art.mul"), data.RealTime);
             container_LandTile = new MulContainer(virtualcontainer, 0, _LandLength);
             container_ItemTile = new MulContainer(virtualcontainer, _LandLength, 0);
 
-            container_LandTexm = new MulContainer(GetPath("texidx.mul"), GetPath("texmaps.mul"), realtime);
+            container_LandTexm = new MulContainer(GetPath("texidx.mul"), GetPath("texmaps.mul"), data.RealTime);
 
             //container_ItemAnim = new MulContainer(0, GetPath("animdata.mul"), realtime);
 
@@ -149,42 +146,100 @@ map5.mul
 
         private const uint _LandLength = 0x4000;
 
-        //private uint[]            _Header;
+        internal sealed unsafe class LandData : ILandData
+        {
+            internal interface IRawData
+            {
+                TileFlag   Flags        { get; set; }
+                ushort     TexID        { get; set; }
+                byte*       Name        { get; set; }
+            }
+
+            private    IRawData     _Data;
+            private    Language     _Lang;
+            private    string       _Name;
+
+            string     ILandData.Name         { get { return _Name ?? (_Name = _Lang.ReadAnsiString(_Data.Name, 20)); }     set { throw new NotImplementedException(); } }
+            TileFlag   ILandData.Flags        { get { return _Data.Flags; }        set { _Data.Flags = value; } }
+            ushort     ILandData.TexID        { get { return _Data.TexID; }        set { _Data.TexID = value; } }
+
+            internal LandData(Language lang, IRawData data)
+            {
+                _Data = data;
+                _Lang = lang;
+                _Name = null;
+            }
+        }
+
+        internal sealed unsafe class ItemData : IItemData
+        {
+            internal interface IRawData
+            {
+                TileFlag    Flags       { get; set; }
+                byte        Weight      { get; set; }
+                byte        Quality     { get; set; }
+                ushort      Miscdata    { get; set; }
+                byte        Unk1        { get; set; }
+                byte        Quantity    { get; set; }
+                ushort      Animation   { get; set; }
+                byte        Unk2        { get; set; }
+                byte        Hue         { get; set; }
+                byte        StackingOff { get; set; }
+                byte        Value       { get; set; }
+                byte        Height      { get; set; }
+                byte*       Name        { get; set; }
+            }
+
+            private    IRawData     _Data;
+            private    Language     _Lang;
+            private    string       _Name;
+
+            string     IItemData.Name         { get { return _Name ?? (_Name = _Lang.ReadAnsiString(_Data.Name, 20)); }     set { throw new NotImplementedException(); } }
+            TileFlag   IItemData.Flags        { get { return _Data.Flags; }        set { _Data.Flags = value; } }
+            byte       IItemData.Height       { get { return _Data.Height; }       set { _Data.Height = value; } }
+            byte       IItemData.Quality      { get { return _Data.Quality; }      set { _Data.Quality = value; } }
+            byte       IItemData.Quantity     { get { return _Data.Quantity; }     set { _Data.Quantity = value; } }
+            ushort     IItemData.Animation    { get { return _Data.Animation; }    set { _Data.Animation = value; } }
+            byte       IItemData.StackingOff  { get { return _Data.StackingOff; }  set { _Data.StackingOff = value; } }
+
+            internal ItemData(Language lang, IRawData data)
+            {
+                _Data = data;
+                _Lang = lang;
+                _Name = null;
+            }
+        }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 26, Pack = 1)]
-        internal unsafe struct OldLandData : ILandData
+        private unsafe struct OldLandData : LandData.IRawData
         {
             [MarshalAs(UnmanagedType.U4)]
             private TileFlag   _Flags;
             private ushort     _TexID;
             private fixed byte _Name[20];
-            //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-            //private string     _Name;
-
-            //string     ILandData.Name         { get { return _Name; }         set { _Name = value; } }
-            string     ILandData.Name         { get { return String.Empty; }  set { ; } }
-            TileFlag   ILandData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-            ushort     ILandData.TexID        { get { return _TexID; }        set { _TexID = value; } }
+            
+            TileFlag   LandData.IRawData.Flags        { get { return _Flags; }        set { _Flags = value; } }
+            ushort     LandData.IRawData.TexID        { get { return _TexID; }        set { _TexID = value; } }
+            byte*      LandData.IRawData.Name         { get { byte* ptr; fixed (byte* p = _Name) ptr = p; return ptr; }   
+                                                        set { ; } }
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 30, Pack = 1)]
-        internal unsafe struct NewLandData : ILandData
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 26, Pack = 1)]
+        private unsafe struct NewLandData : LandData.IRawData
         {
             [MarshalAs(UnmanagedType.U8)]
-            internal TileFlag   _Flags;
-            internal ushort     _TexID;
-            internal fixed byte _Name[20];
-            //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-            //private string     _Name;
+            private TileFlag   _Flags;
+            private ushort     _TexID;
+            private fixed byte _Name[20];
 
-            //string     ILandData.Name         { get { return _Name; }         set { _Name = value; } }
-            string     ILandData.Name         { get { return String.Empty; }         set { ; } }
-            TileFlag   ILandData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-            ushort     ILandData.TexID        { get { return _TexID; }        set { _TexID = value; } }
+            TileFlag   LandData.IRawData.Flags        { get { return _Flags; }        set { _Flags = value; } }
+            ushort     LandData.IRawData.TexID        { get { return _TexID; }        set { _TexID = value; } }
+            byte*      LandData.IRawData.Name         { get { byte* ptr; fixed (byte* p = _Name) ptr = p; return ptr; }   
+                                                        set { ; } }
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 37, Pack = 1)]
-        internal unsafe struct OldItemData : IItemData
+        private unsafe struct OldItemData : ItemData.IRawData
         {
             [MarshalAs(UnmanagedType.U4)]
             private TileFlag   _Flags;
@@ -200,21 +255,25 @@ map5.mul
             private byte       _Value;
             private byte       _Height;
             private fixed byte _Name[20];
-            //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-            //private string     _Name;
 
-            //string     ILandData.Name         { get { return _Name; }         set { _Name = value; } }
-            string     IItemData.Name         { get { return String.Empty; }         set { ; } }
-            TileFlag   IItemData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-            byte       IItemData.Height       { get { return _Height; }       set { _Height = value; } }
-            byte       IItemData.Quality      { get { return _Quality; }      set { _Quality = value; } }
-            byte       IItemData.Quantity     { get { return _Quantity; }     set { _Quantity = value; } }
-            ushort     IItemData.Animation    { get { return _Animation; }    set { _Animation = value; } }
-            byte       IItemData.StackingOff  { get { return _StackingOff; }  set { _StackingOff = value; } }
+            TileFlag   ItemData.IRawData.Flags        { get { return _Flags; }        set { _Flags = value; } }
+            byte       ItemData.IRawData.Weight       { get { return _Weight; }       set { _Weight = value; } }
+            byte       ItemData.IRawData.Quality      { get { return _Quality; }      set { _Quality = value; } }
+            ushort     ItemData.IRawData.Miscdata     { get { return _Miscdata; }     set { _Miscdata = value; } }
+            byte       ItemData.IRawData.Unk1         { get { return _Unk1; }         set { _Unk1 = value; } }
+            byte       ItemData.IRawData.Quantity     { get { return _Quantity; }     set { _Quantity = value; } }
+            ushort     ItemData.IRawData.Animation    { get { return _Animation; }    set { _Animation = value; } }
+            byte       ItemData.IRawData.Unk2         { get { return _Unk2; }         set { _Unk2 = value; } }
+            byte       ItemData.IRawData.Hue          { get { return _Hue; }          set { _Hue = value; } }
+            byte       ItemData.IRawData.StackingOff  { get { return _StackingOff; }  set { _StackingOff = value; } }
+            byte       ItemData.IRawData.Value        { get { return _Value; }        set { _Value = value; } }
+            byte       ItemData.IRawData.Height       { get { return _Height; }       set { _Height = value; } }
+            byte*      ItemData.IRawData.Name         { get { byte* ptr; fixed (byte* p = _Name) ptr = p; return ptr; }   
+                                                        set { ; } }
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 41, Pack = 1)]
-        internal unsafe struct NewItemData : IItemData
+        private unsafe struct NewItemData : ItemData.IRawData
         {
             [MarshalAs(UnmanagedType.U8)]
             private TileFlag   _Flags;
@@ -230,17 +289,21 @@ map5.mul
             private byte       _Value;
             private byte       _Height;
             private fixed byte _Name[20];
-            //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-            //private string     _Name;
-
-            //string     ILandData.Name         { get { return _Name; }         set { _Name = value; } }
-            string     IItemData.Name         { get { return String.Empty; }         set { ; } }
-            TileFlag   IItemData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-            byte       IItemData.Height       { get { return _Height; }       set { _Height = value; } }
-            byte       IItemData.Quality      { get { return _Quality; }      set { _Quality = value; } }
-            byte       IItemData.Quantity     { get { return _Quantity; }     set { _Quantity = value; } }
-            ushort     IItemData.Animation    { get { return _Animation; }    set { _Animation = value; } }
-            byte       IItemData.StackingOff  { get { return _StackingOff; }  set { _StackingOff = value; } }
+            
+            TileFlag   ItemData.IRawData.Flags        { get { return _Flags; }        set { _Flags = value; } }
+            byte       ItemData.IRawData.Weight       { get { return _Weight; }       set { _Weight = value; } }
+            byte       ItemData.IRawData.Quality      { get { return _Quality; }      set { _Quality = value; } }
+            ushort     ItemData.IRawData.Miscdata     { get { return _Miscdata; }     set { _Miscdata = value; } }
+            byte       ItemData.IRawData.Unk1         { get { return _Unk1; }         set { _Unk1 = value; } }
+            byte       ItemData.IRawData.Quantity     { get { return _Quantity; }     set { _Quantity = value; } }
+            ushort     ItemData.IRawData.Animation    { get { return _Animation; }    set { _Animation = value; } }
+            byte       ItemData.IRawData.Unk2         { get { return _Unk2; }         set { _Unk2 = value; } }
+            byte       ItemData.IRawData.Hue          { get { return _Hue; }          set { _Hue = value; } }
+            byte       ItemData.IRawData.StackingOff  { get { return _StackingOff; }  set { _StackingOff = value; } }
+            byte       ItemData.IRawData.Value        { get { return _Value; }        set { _Value = value; } }
+            byte       ItemData.IRawData.Height       { get { return _Height; }       set { _Height = value; } }
+            byte*      ItemData.IRawData.Name         { get { byte* ptr; fixed (byte* p = _Name) ptr = p; return ptr; }   
+                                                        set { ; } }
         }
 
         #endregion
@@ -601,11 +664,11 @@ map5.mul
             uint i;
             var tiles = new LandTile[container_LandTile.EntryLength];
             for (uint b = i = 0; i < tiles.Length && b < container_LandData.EntryLength; ++b, ++i) {
-                var tdata = DataType.HasFlag(UODataType.UseNewDatas)
-                          ? container_LandData.Read<NewLandData>(b, 4, 32).Select(t=>(ILandData)t).ToArray()
-                          : container_LandData.Read<OldLandData>(b, 4, 32).Select(t=>(ILandData)t).ToArray();
-                for (uint c = 0; i < tiles.Length && c < 32; ++c, ++i) 
-                    tiles[i] = new LandTile(i, this, tdata[c]);
+                var tdata = Data.DataType.HasFlag(UODataType.UseNewDatas) // we just skip block header
+                          ? container_LandData.Read<NewLandData>(b, 4, 32).Select(t=>(ILandData)new LandData(Data.Language, t)).ToArray()
+                          : container_LandData.Read<OldLandData>(b, 4, 32).Select(t=>(ILandData)new LandData(Data.Language, t)).ToArray();
+                for (uint c = 0; i < tiles.Length && c < 32; ++c, ++i)
+                    tiles[i] = new LandTile(i, this, tdata[c], container_LandTile.IsValid(i) || container_LandTexm.IsValid(tdata[c].TexID));
                 --i;
             }
             return tiles;
@@ -630,11 +693,11 @@ map5.mul
             uint i;
             var tiles = new ItemTile[container_ItemTile.EntryLength];
             for (uint b = i = 0; i < tiles.Length && b < container_ItemData.EntryLength; ++b, ++i) {
-                var tdata = DataType.HasFlag(UODataType.UseNewDatas)
-                          ? container_ItemData.Read<NewItemData>(b, 4, 32).Select(t=>(IItemData)t).ToArray()
-                          : container_ItemData.Read<OldItemData>(b, 4, 32).Select(t=>(IItemData)t).ToArray();
-                for (uint c = 0; i < tiles.Length && c < 32; ++c, ++i) 
-                    tiles[i] = new ItemTile(i, this, tdata[c]);
+                var tdata = Data.DataType.HasFlag(UODataType.UseNewDatas) // we just skip block header
+                          ? container_ItemData.Read<NewItemData>(b, 4, 32).Select(t=>(IItemData)new ItemData(Data.Language, t)).ToArray()
+                          : container_ItemData.Read<OldItemData>(b, 4, 32).Select(t=>(IItemData)new ItemData(Data.Language, t)).ToArray();
+                for (uint c = 0; i < tiles.Length && c < 32; ++c, ++i)
+                    tiles[i] = new ItemTile(i, this, tdata[c], container_ItemTile.IsValid(i));
                 --i;
             }
             return tiles;

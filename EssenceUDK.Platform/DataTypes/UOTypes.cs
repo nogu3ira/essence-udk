@@ -13,18 +13,21 @@ namespace EssenceUDK.Platform.DataTypes
         protected uint      _TileId;
         protected ISurface  _Surface;
         protected ITileData _TileData;
+        protected bool      _IsValid;
 
         //protected Color   RadarColor;
 
         protected IDataFactory dataFactory;
-        internal  EntryTile(uint id, IDataFactory factory, ITileData tiledata)
+        internal  EntryTile(uint id, IDataFactory factory, ITileData tiledata, bool valid)
         {
-            _TileId = id;
+            _TileId     = id;
             dataFactory = factory;
-            _TileData = tiledata;
+            _TileData   = tiledata;
+            _IsValid    = valid;
         }
 
-        public uint TileId { get { return _TileId; } set { _TileId = value; } }
+        public uint TileId  { get { return _TileId; } set { _TileId = value; } }
+        public bool IsValid { get { return _IsValid; } }
         public abstract ISurface Surface { get; set; }
     }
 
@@ -43,7 +46,7 @@ namespace EssenceUDK.Platform.DataTypes
         ushort   IItemData.Animation    { get { return ((IItemData)_TileData).Animation; }      set { ((IItemData)_TileData).Animation = value; } }
         byte     IItemData.StackingOff  { get { return ((IItemData)_TileData).StackingOff; }    set { ((IItemData)_TileData).StackingOff = value; } }
 
-        internal  ItemTile(uint id, IDataFactory factory, IItemData tiledata) : base(id, factory, tiledata)
+        internal  ItemTile(uint id, IDataFactory factory, IItemData tiledata, bool valid) : base(id, factory, tiledata, valid)
         {          
         }
     }
@@ -65,7 +68,7 @@ namespace EssenceUDK.Platform.DataTypes
         TileFlag ILandData.Flags        { get { return ((ILandData)_TileData).Flags; }          set { ((ILandData)_TileData).Flags = value; } }
         ushort   ILandData.TexID        { get { return ((ILandData)_TileData).TexID; }          set { ((ILandData)_TileData).TexID = value; } }
 
-        internal LandTile(uint id, IDataFactory factory, ILandData tiledata) : base(id, factory, tiledata)
+        internal LandTile(uint id, IDataFactory factory, ILandData tiledata, bool valid) : base(id, factory, tiledata, valid)
         {
         }
     }
@@ -288,6 +291,7 @@ namespace EssenceUDK.Platform.DataTypes
     {
         uint       TileId       { get; set; }
         ISurface   Surface      { get; set; }
+        bool       IsValid      { get; }
     }
 
     public interface ILandTile : IEntryTile, ILandData
@@ -298,5 +302,4 @@ namespace EssenceUDK.Platform.DataTypes
     public interface IItemTile : IEntryTile, IItemData
     { 
     }
-
 }

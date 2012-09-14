@@ -152,19 +152,5 @@ namespace EssenceUDK.Platform.UtilHelpers
         private static extern bool ReadFile(IntPtr hFile, IntPtr lpBuffer, uint nNumberOfBytesToRead, out uint lpNumberOfBytesRead, IntPtr lpOverlapped);
 
         #endregion
-
-        public static string ReadAnsiString(byte[] chars)
-        {
-            int count;
-            for (count = 0; count < chars.Length && chars[count] != 0; ++count) ;
-            return Encoding.GetEncoding(1251).GetString(chars, 0, count);
-        }
-
-        public static unsafe string ReadAnsiString(byte* chars, uint count)
-        {
-            var buffer = new byte[count];
-            for (count = 0; count < buffer.Length && chars[count] != 0; ++count) buffer[count] = chars[count];
-            return Encoding.GetEncoding(1251).GetString(buffer, 0, (int)count);
-        }
     }
 }

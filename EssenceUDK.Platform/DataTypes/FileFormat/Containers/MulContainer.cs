@@ -108,6 +108,15 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             get { return _EntryLength; }
         }
 
+        public bool IsValid(uint id)
+        {
+            if (id >= _EntryLength)
+                return false;
+            if (IdxTable != null && (IdxTable[id].Offset == 0xFFFFFFFF || IdxTable[id].Length == 0xFFFFFFFF))
+                return false;
+            return true;
+        }
+
         byte[] IDataContainer.this[uint id] {
             get { return Read(id);  }
             set { Write(id, value); }
@@ -136,10 +145,10 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
                 StreamMul.Seek(_EntryOff + id*EntrySize, SeekOrigin.Begin);
                 return Utils.ArrayRead<byte>(StreamMul, (int)EntrySize);             
             } else {
-                if (IdxTable[_EntryOff+id].Offset == 0xFFFFFFFF || IdxTable[_EntryOff+id].Length == 0xFFFFFFFF)
+                if (IdxTable[id].Offset == 0xFFFFFFFF || IdxTable[id].Length == 0xFFFFFFFF)
                     return null;
-                StreamMul.Seek(IdxTable[_EntryOff+id].Offset, SeekOrigin.Begin);
-                return Utils.ArrayRead<byte>(StreamMul, (int)IdxTable[_EntryOff+id].Length);
+                StreamMul.Seek(IdxTable[id].Offset, SeekOrigin.Begin);
+                return Utils.ArrayRead<byte>(StreamMul, (int)IdxTable[id].Length);
             }
         }
 

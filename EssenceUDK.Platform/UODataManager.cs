@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using EssenceUDK.Platform.DataTypes;
 using EssenceUDK.Platform.Factories;
+﻿using EssenceUDK.Platform.UtilHelpers;
 
 namespace EssenceUDK.Platform
 {
@@ -146,9 +147,10 @@ namespace EssenceUDK.Platform
         ClassicAdventuresOnHighSeasUpdated  = UseUopFiles | UseDifPatch | UseNewDatas,
     }
 
-    public class UODataManager
+    public sealed class UODataManager
     {
         public readonly UODataType DataType;
+        public readonly Language   Language;
         public readonly Uri        Location;
         public readonly bool       RealTime;
 
@@ -157,19 +159,20 @@ namespace EssenceUDK.Platform
         //public static UODataManager[] Instanes { get { return m_Instanes.Values; } }
         private static Hashtable m_Instanes = new Hashtable(2);
 
-        public UODataManager(Uri uri, UODataType type, bool realtime = true)
+        public UODataManager(Uri uri, UODataType type, Language language, bool realtime = true)
         {
-            if (uri == null || type == 0)
+            if (uri == null || type == 0 || language == null)
                 throw new ArgumentException("Bad parametre values");
             if (m_Instanes.ContainsKey(uri))
                 throw new ArgumentException("Already inited with selected Uri");
 
             Location = uri;
             DataType = type;
+            Language = language;
             RealTime = realtime;
             m_Instanes[uri] = this;
 
-            dataFactory = type.HasFlag(UODataType.UseMulFiles) || type.HasFlag(UODataType.UseUopFiles) ? new ClassicFactory(uri, type, realtime) : null;
+            dataFactory = type.HasFlag(UODataType.UseMulFiles) || type.HasFlag(UODataType.UseUopFiles) ? new ClassicFactory(this) : null;
 
             // Initialize data... its loading, wait, wait
             // TODO: We need separeted thread for data working
@@ -206,20 +209,12 @@ namespace EssenceUDK.Platform
 
         public IEnumerable<ModelItemData> GetItemTile()
         {
-
-            //var arr = new ItemTile[5000];
-            //var arr = new ItemTile[25000];
-            var arr = new ItemTile[1000];
-            Array.Copy(StorageItem, arr, arr.Length);
-            //Array.Copy(StorageItem, 5000, arr, 0, arr.Length);
-            //Array.Copy(StorageItem, 0xE000, arr, 0, arr.Length);
-            return new ObservableCollection<ModelItemData>(arr.Select(t => new ModelItemData(t)));
-            //return new ObservableCollection<ModelItemData>(StorageItem.Select(t => new ModelItemData(t)));
+            return new ObservableCollection<ModelItemData>(StorageItem.Select(t => new ModelItemData(t)));
         }
 
-        public IEnumerable<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None)
+        public IEnumerable<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None, bool valid = true)
         {
-            return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
+            return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
         }
 
         public ILandTile GetLandTile(int id)
@@ -244,20 +239,12 @@ namespace EssenceUDK.Platform
 
         public IEnumerable<ModelLandData> GetLandTile()
         {
-
-            //var arr = new LandTile[5000];
-            //var arr = new LandTile[25000];
-            var arr = new LandTile[1000];
-            Array.Copy(StorageLand, arr, arr.Length);
-            //Array.Copy(StorageLand, 5000, arr, 0, arr.Length);
-            //Array.Copy(StorageLand, 0xE000, arr, 0, arr.Length);
-            return new ObservableCollection<ModelLandData>(arr.Select(t => new ModelLandData(t)));
-            //return new ObservableCollection<ModelLandData>(StorageLand.Select(t => new ModelLandData(t)));
+            return new ObservableCollection<ModelLandData>(StorageLand.Select(t => new ModelLandData(t)));
         }
 
-        public IEnumerable<ModelLandData> GetLandTile(TileFlag flags = TileFlag.None)
+        public IEnumerable<ModelLandData> GetLandTile(TileFlag flags = TileFlag.None, bool valid = true)
         {
-            return new ObservableCollection<ModelLandData>(StorageLand.Where(t => t.Flags.HasFlag(flags)).Select(t => new ModelLandData(t)));
+            return new ObservableCollection<ModelLandData>(StorageLand.Where(t => t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelLandData(t)));
         }
 
 

@@ -56,6 +56,7 @@ namespace EssenceUDK.Platform
 
     internal interface IDataContainer
     {
+        bool IsValid(uint id);
         uint EntryLength { get; }
         byte[] this[uint id] { get; set; }
         T   Read<T>(uint id, uint offset) where T : struct;

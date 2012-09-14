@@ -21,6 +21,8 @@ namespace EssenceUDK.Platform
 
         public uint TileId { get { return _data.TileId; } set { _data.TileId = value; RaisePropertyChanged(() => TileId); } }
 
+        public bool IsValid { get { return _data.IsValid; } }
+
         public ISurface Surface { get { return _data.Surface; } set { _data.Surface = value; RaisePropertyChanged(() => Surface); } }
 
         public string Name { get { return _data.Name; } set { _data.Name = value; RaisePropertyChanged(() => Name); } }
@@ -56,6 +58,8 @@ namespace EssenceUDK.Platform
         #region Properties
 
         public uint TileId { get { return _data.TileId; } set { _data.TileId = value; RaisePropertyChanged(() => TileId); } }
+
+        public bool IsValid { get { return _data.IsValid; } }
 
         public ISurface Surface { get { return _data.Surface; } set { _data.Surface = value; RaisePropertyChanged(() => Surface); } }
 
