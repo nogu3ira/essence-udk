@@ -213,13 +213,12 @@ map5.mul
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 26, Pack = 1)]
         private unsafe struct OldLandData : LandData.IRawData
         {
-            [MarshalAs(UnmanagedType.U4)]
-            private TileFlag   _Flags;
+            private uint       _Flags;
             private ushort     _TexID;
             private fixed byte _Name[20];
             
-            TileFlag   LandData.IRawData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-            ushort     LandData.IRawData.TexID        { get { return _TexID; }        set { _TexID = value; } }
+            TileFlag   LandData.IRawData.Flags        { get { return (TileFlag)_Flags; }    set { _Flags = (uint)value; } }
+            ushort     LandData.IRawData.TexID        { get { return _TexID; }              set { _TexID = value; } }
             byte*      LandData.IRawData.Name         { get { byte* ptr; fixed (byte* p = _Name) ptr = p; return ptr; }   
                                                         set { ; } }
         }
@@ -241,8 +240,7 @@ map5.mul
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 37, Pack = 1)]
         private unsafe struct OldItemData : ItemData.IRawData
         {
-            [MarshalAs(UnmanagedType.U4)]
-            private TileFlag   _Flags;
+            private uint       _Flags;
             private byte       _Weight;
             private byte       _Quality;
             private ushort     _Miscdata;
@@ -256,18 +254,18 @@ map5.mul
             private byte       _Height;
             private fixed byte _Name[20];
 
-            TileFlag   ItemData.IRawData.Flags        { get { return _Flags; }        set { _Flags = value; } }
-            byte       ItemData.IRawData.Weight       { get { return _Weight; }       set { _Weight = value; } }
-            byte       ItemData.IRawData.Quality      { get { return _Quality; }      set { _Quality = value; } }
-            ushort     ItemData.IRawData.Miscdata     { get { return _Miscdata; }     set { _Miscdata = value; } }
-            byte       ItemData.IRawData.Unk1         { get { return _Unk1; }         set { _Unk1 = value; } }
-            byte       ItemData.IRawData.Quantity     { get { return _Quantity; }     set { _Quantity = value; } }
-            ushort     ItemData.IRawData.Animation    { get { return _Animation; }    set { _Animation = value; } }
-            byte       ItemData.IRawData.Unk2         { get { return _Unk2; }         set { _Unk2 = value; } }
-            byte       ItemData.IRawData.Hue          { get { return _Hue; }          set { _Hue = value; } }
-            byte       ItemData.IRawData.StackingOff  { get { return _StackingOff; }  set { _StackingOff = value; } }
-            byte       ItemData.IRawData.Value        { get { return _Value; }        set { _Value = value; } }
-            byte       ItemData.IRawData.Height       { get { return _Height; }       set { _Height = value; } }
+            TileFlag   ItemData.IRawData.Flags        { get { return (TileFlag)_Flags; }set { _Flags = (uint)value; } }
+            byte       ItemData.IRawData.Weight       { get { return _Weight; }         set { _Weight = value; } }
+            byte       ItemData.IRawData.Quality      { get { return _Quality; }        set { _Quality = value; } }
+            ushort     ItemData.IRawData.Miscdata     { get { return _Miscdata; }       set { _Miscdata = value; } }
+            byte       ItemData.IRawData.Unk1         { get { return _Unk1; }           set { _Unk1 = value; } }
+            byte       ItemData.IRawData.Quantity     { get { return _Quantity; }       set { _Quantity = value; } }
+            ushort     ItemData.IRawData.Animation    { get { return _Animation; }      set { _Animation = value; } }
+            byte       ItemData.IRawData.Unk2         { get { return _Unk2; }           set { _Unk2 = value; } }
+            byte       ItemData.IRawData.Hue          { get { return _Hue; }            set { _Hue = value; } }
+            byte       ItemData.IRawData.StackingOff  { get { return _StackingOff; }    set { _StackingOff = value; } }
+            byte       ItemData.IRawData.Value        { get { return _Value; }          set { _Value = value; } }
+            byte       ItemData.IRawData.Height       { get { return _Height; }         set { _Height = value; } }
             byte*      ItemData.IRawData.Name         { get { byte* ptr; fixed (byte* p = _Name) ptr = p; return ptr; }   
                                                         set { ; } }
         }

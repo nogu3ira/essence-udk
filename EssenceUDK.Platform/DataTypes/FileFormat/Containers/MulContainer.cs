@@ -112,7 +112,7 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
         {
             if (id >= _EntryLength)
                 return false;
-            if (IdxTable != null && (IdxTable[id].Offset == 0xFFFFFFFF || IdxTable[id].Length == 0xFFFFFFFF))
+            if (IdxTable != null && (IdxTable[id].Offset == 0xFFFFFFFF || IdxTable[id].Length == 0x00000000 || IdxTable[id].Length == 0xFFFFFFFF))
                 return false;
             return true;
         }
