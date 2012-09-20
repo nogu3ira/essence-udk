@@ -13,15 +13,11 @@ using EssenceUDK.Platform.DataTypes;
 using EssenceUDK.Platform.DataTypes.FileFormat.Containers;
 using EssenceUDK.Platform.UtilHelpers;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
+using Color = System.Drawing.Color;
 
 namespace EssenceUDK.Platform.Factories
 {
     /*
-     * anim.mul
-anim2.mul
-anim3.mul
-anim4.mul
-anim5.mul
 animinfo.mul
 
  
@@ -90,6 +86,7 @@ map5.mul
         
         private IDataContainer   container_LandData, container_ItemData, container_LandTile, container_ItemTile, container_LandTexm, container_ItemAnim;
 
+        private IDataContainer[] container_Animation;
 
 
         private IDataContainer[] container_UniFont;
@@ -101,8 +98,9 @@ map5.mul
 
         private string GetPath(string file)
         {
-            string folder = Data.Location.LocalPath;
-            return Path.Combine(folder, file);
+            var folder = Data.Location.LocalPath;
+            var flocat = Path.Combine(folder, file);
+            return File.Exists(flocat) ? flocat : null;
         }
 
         internal ClassicFactory(UODataManager data)
@@ -110,6 +108,12 @@ map5.mul
             Data = data;
             if (data.DataType.HasFlag(UODataType.UseUopFiles))
                 throw new NotImplementedException();
+
+
+            //IDataContainer uop = new UopContainer(GetPath("AnimationSequence.uop"), data.RealTime);
+            //var sequence = new byte[uop.EntryLength][];
+            //for (var i = 0U; i < uop.EntryLength; ++i)
+            //    sequence[i] = uop[i];
 
             MulContainer virtualcontainer = null;
             virtualcontainer   = MulContainer.GetVirtual(null, GetPath("tiledata.mul"), data.RealTime);
@@ -124,6 +128,27 @@ map5.mul
             container_LandTexm = new MulContainer(GetPath("texidx.mul"), GetPath("texmaps.mul"), data.RealTime);
 
             //container_ItemAnim = new MulContainer(0, GetPath("animdata.mul"), realtime);
+
+            var animationcontainer = new List<IDataContainer>(16);
+            if (!String.IsNullOrEmpty(GetPath("anim.idx")) && !String.IsNullOrEmpty(GetPath("anim.mul")))
+                animationcontainer.Add(new MulContainer(GetPath("anim.idx"), GetPath("anim.mul"), data.RealTime));
+            if (!String.IsNullOrEmpty(GetPath("anim2.idx")) && !String.IsNullOrEmpty(GetPath("anim2.mul")))
+                animationcontainer.Add(new MulContainer(GetPath("anim2.idx"), GetPath("anim2.mul"), data.RealTime));
+            if (!String.IsNullOrEmpty(GetPath("anim3.idx")) && !String.IsNullOrEmpty(GetPath("anim3.mul")))
+                animationcontainer.Add(new MulContainer(GetPath("anim3.idx"), GetPath("anim3.mul"), data.RealTime));
+            if (!String.IsNullOrEmpty(GetPath("anim4.idx")) && !String.IsNullOrEmpty(GetPath("anim4.mul")))
+                animationcontainer.Add(new MulContainer(GetPath("anim4.idx"), GetPath("anim4.mul"), data.RealTime));
+            if (!String.IsNullOrEmpty(GetPath("anim5.idx")) && !String.IsNullOrEmpty(GetPath("anim5.mul")))
+                animationcontainer.Add(new MulContainer(GetPath("anim5.idx"), GetPath("anim5.mul"), data.RealTime));
+            if (!String.IsNullOrEmpty(GetPath("animationframe1.uop")))
+                animationcontainer.Add(new UopContainer(GetPath("animationframe1.uop"), data.RealTime));
+            if (!String.IsNullOrEmpty(GetPath("animationframe2.uop")))
+                animationcontainer.Add(new UopContainer(GetPath("animationframe2.uop"), data.RealTime));
+            if (!String.IsNullOrEmpty(GetPath("animationframe3.uop")))
+                animationcontainer.Add(new UopContainer(GetPath("animationframe3.uop"), data.RealTime));
+            if (!String.IsNullOrEmpty(GetPath("animationframe4.uop")))
+                animationcontainer.Add(new UopContainer(GetPath("animationframe4.uop"), data.RealTime));
+            container_Animation = animationcontainer.ToArray();
 
 
             /*
@@ -302,6 +327,37 @@ map5.mul
             byte       ItemData.IRawData.Height       { get { return _Height; }       set { _Height = value; } }
             byte*      ItemData.IRawData.Name         { get { byte* ptr; fixed (byte* p = _Name) ptr = p; return ptr; }   
                                                         set { ; } }
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 40, Pack = 1)]
+        private unsafe struct NewAnimHeader
+        {
+            internal uint       _Header; // 0x41 0x4D 0x4F (0x55) AMO(U)
+            internal uint       _Version;
+            internal uint       _FileSize;
+            internal uint       _AnimationID;
+            internal short      _MainInitX;
+            internal short      _MainInitY;
+            internal short      _MainEndX;
+            internal short      _MainEndY;
+            internal uint       _ColourCount;
+            internal uint       _ColourOffset;
+            internal uint       _FramesCount;
+            internal uint       _FramesOffset;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 16, Pack = 1)]
+        private unsafe struct NewAnimFrame
+        {
+            internal ushort     _Unknown1;
+            internal ushort     _Unknown2;
+            internal short      _MainInitX;
+            internal short      _MainInitY;
+            internal short      _MainEndX;
+            internal short      _MainEndY;
+            internal uint       _FrameLook; // offset to frame data from begining of it's header
+            internal ushort     Width       { get { return (ushort)Math.Abs(_MainEndX - _MainInitX); } }
+            internal ushort     Height      { get { return (ushort)Math.Abs(_MainEndY - _MainInitY); } }
         }
 
         #endregion
@@ -653,6 +709,65 @@ map5.mul
             rawdata = null;
         }
 
+        // animation convertors   --------------------------------------------------------------
+
+        public static unsafe void ConvertAnimSurface(byte[] rawdata, ushort[] palette, out Bitmap bmp, int offset = 0)
+        {
+            bmp = null;
+            var centX  = BitConverter.ToInt16(rawdata,   offset + 0);
+            var centY  = BitConverter.ToInt16(rawdata,   offset + 2);
+            var width  = BitConverter.ToUInt16(rawdata,  offset + 4);
+            var height = BitConverter.ToUInt16(rawdata,  offset + 6);
+            if (height == 0 || width == 0)
+                return;
+
+            bmp = new Bitmap(width, height, PixelFormat.Format16bppArgb1555);
+            BitmapData bd = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format16bppArgb1555);
+            ushort* line = (ushort*)bd.Scan0;
+            int delta = bd.Stride >> 1;
+
+            int xBase = centX - 0x200;
+            int yBase = centY + height - 0x200;
+
+            line += xBase;
+            line += yBase * delta;
+
+            uint header; int pos = offset + 4;
+            while ((header = BitConverter.ToUInt32(rawdata,  pos+=4)) != 0x7FFF7FFF) {
+                header ^= 0x80200000; // DoubleXor = (0x200 << 22) | (0x200 << 12);
+                var drun = (header & 0xFFF);
+                var offy = ((header >> 12) & 0x3FF);
+                var offx = ((header >> 22) & 0x3FF);
+
+                ushort* cur = line + (((offy) * delta) + ((offx) & 0x3FF));
+                ushort* end = cur + (drun);
+                while (cur < end)
+                    *cur++ = palette[rawdata[pos++]];
+
+            }
+            bmp.UnlockBits(bd);
+        }
+
+        private static uint GetInternalAnimIndex(IDataContainer container, uint id)
+        {
+            var internid = 0U;
+            var filename = Path.GetFileName(container is MulContainer ? (container as MulContainer).FNameMul :
+                                            container is UopContainer ? (container as UopContainer).FNameUop : String.Empty).ToLower();
+            switch (filename) {
+                default         : internid = 0xDEADBEEFU; break;
+                case "anim.mul" : internid = (id < 200) ? id * 110 : (id < 400) ? 22000 + (id - 200) * 65 : 35000 + (id - 400) * 175;    break;
+                case "anim2.mul": internid = (id < 200) ? id * 110 : 22000 + (id - 200) * 65;    break;
+                case "anim3.mul": internid = (id < 200) ? 9000 + id * 65 : (id < 400) ? 22000 + (id - 200) * 110 : 35000 + (id - 400) * 175; break;
+                case "anim4.mul": internid = (id < 200) ? id * 110 : (id < 400) ? 22000 + (id - 200) * 65 : 35000 + (id - 400) * 175; break;
+                case "anim5.mul": internid = (id < 200) ? id * 110 : (id < 400) ? 22000 + (id - 200) * 65 : 35000 + (id - 400) * 175; break;
+                case "animationframe1.uop" : internid = 0xDEADBEEFU; break;
+                case "animationframe2.uop" : internid = 0xDEADBEEFU; break;
+                case "animationframe3.uop" : internid = 0xDEADBEEFU; break;
+                case "animationframe4.uop" : internid = 0xDEADBEEFU; break;
+            }
+            return internid < container.EntryLength ? internid : 0xDEADBEEFU;
+        }
+
         //                        --------------------------------------------------------------
 
         #endregion
@@ -706,6 +821,67 @@ map5.mul
             BitmapSource bitmap;
             ConvertItemSurface(container_ItemTile[id], out bitmap);            
             return bitmap != null ? new BitmapSurface(bitmap) : null;
+        }
+
+
+        IAnimation[] IDataFactory.GetAnimations()
+        {
+return new IAnimation[0];
+int ooo = 0;
+            var list = new List<IAnimation>(1000);
+            foreach (var container in container_Animation) {
+                if (container is MulContainer) continue;
+                var anim = new Animation();
+                
+                for (var i = 0U; i < container.EntryLength; ++i) {
+                    var buffer = container[i]; // as anim use compresion is faster to work with its buffer
+                    var header = Utils.BuffToStruct<NewAnimHeader>(buffer, 0)[0];
+                    var frames = Utils.BuffToStruct<NewAnimFrame>(buffer, (int)header._FramesOffset, (int)header._FramesCount);
+
+                    
+    Color[]  colors  = new Color[0x100];
+    ushort[] palette = new ushort[0x100];
+    for (int k = 0; k < header._ColourCount; k++) {
+        //colors[k] = Color.FromArgb(BitConverter.ToInt32(buffer, (int)header._ColourOffset + 4*k));
+        colors[k] = Color.FromArgb(buffer[header._ColourOffset+4*k + 0], buffer[header._ColourOffset+4*k + 1], buffer[header._ColourOffset+4*k + 2]);
+        //palette[k] = (ushort)((colors[k].R >> 3) << 10 | (colors[k].G >> 3) << 5 | (colors[k].B >> 3));// | (bin.ReadByte()>>7)<<15);
+        //palette[k] ^= 0x8000;
+        palette[k] = (ushort)(colors[k].R >> 3 << 10 | colors[k].G >> 3 << 5 | colors[k].B >> 3 << 0); if (palette[k] > 0) palette[k] |= 0x8000;
+
+        //palette[p] = (ushort)(bin.ReadUInt16() ^ 0x8000);
+    }
+    //palette = Utils.BuffToStruct<ushort>(buffer, (int)header._ColourOffset, 0x100);
+    //for (int p = 0; p < 0x100; p++)
+    //    palette[p] ^= 0x8000;
+if (header._AnimationID == 0197) {
+    
+
+                    //ushort[] palete = palette;
+                    //for (var f = 0U; f < frames.Length; f++) {
+                    //    int offset = (int)(header._FramesOffset + f * 16 + frames[f]._FrameLook);
+                    //    palete = Utils.BuffToStruct<ushort>(buffer, offset, 0x100);
+                    //    for (int p = 0; p < 0x100; p++)
+                    //        if (palette[p] > 0)
+                    //            palete[p] |= 0x8000;
+                    //    Bitmap   bitmap;
+                    //    ConvertAnimSurface(buffer, palete, out bitmap, offset + 0x200);
+                    //    short centrx = BitConverter.ToInt16(buffer, offset + 0x200);
+                    //    short centry = BitConverter.ToInt16(buffer, offset + 0x202);
+
+                    //    var path = Path.Combine(@"C:\UltimaOnline", Path.GetFileNameWithoutExtension((container as UopContainer).FNameUop), String.Format("{0:D4}_{1:D2}_{2:D2}.bmp", header._AnimationID, ooo, f));
+                    //    if (Directory.Exists((container as UopContainer).FNameUop))
+                    //        Directory.CreateDirectory((container as UopContainer).FNameUop);
+                    //    if (bitmap != null)
+                    //        bitmap.Save(path);
+                    //}
+++ooo;
+}
+
+                }
+
+
+            }
+            return list.ToArray();
         }
 
     }

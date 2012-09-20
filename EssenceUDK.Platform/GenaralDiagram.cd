@@ -1,5 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="EssenceUDK.Platform.DataTypes.BitmapSurface" Collapsed="true">
+    <Position X="19.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAgAAABAAAgAAAAEAAAQABAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataTypes\Surfaces.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EssenceUDK.Platform.Factories.ClassicFactory" Collapsed="true">
+    <Position X="22.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAKAkQAAEAEAAEAAACIAAEBgAMACGBggBIQAAgAAAIA=</HashCode>
+      <FileName>DataTypes\Factories\ClassicFactory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EssenceUDK.Platform.DataTypes.FileFormat.Containers.MulContainer" Collapsed="true">
+    <Position X="23.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAACAAAIAAIAAAIAAAAwAAEAKABJABIAACERAiA=</HashCode>
+      <FileName>DataTypes\FileFormat\Containers\MulContainer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Class Name="EssenceUDK.Platform.DataTypes.EntryTile" Collapsed="true">
     <Position X="19.75" Y="5" Width="1.5" />
     <TypeIdentifier>
@@ -21,30 +45,6 @@
     <TypeIdentifier>
       <HashCode>QAAAAAAAAQAAAAAAEAIAAAAEAAAAAAAAAAIAAAAAAAA=</HashCode>
       <FileName>DataTypes\UOTypes.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="EssenceUDK.Platform.DataTypes.BitmapSurface" Collapsed="true">
-    <Position X="19.75" Y="3.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAQAAAAAgAAABAAAgAAAAEAAAQABAAAAAAAAAAAAA=</HashCode>
-      <FileName>DataTypes\Surfaces.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="EssenceUDK.Platform.Factories.ClassicFactory" Collapsed="true">
-    <Position X="22.75" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAKAkQAAEAAAAEAAACIAAEBAAMACGBggBIQAAAAAAIA=</HashCode>
-      <FileName>DataTypes\Factories\ClassicFactory.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="EssenceUDK.Platform.DataTypes.FileFormat.Containers.MulContainer" Collapsed="true">
-    <Position X="23.5" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAEAAAACAAAIAAAAAAoAAAAwAAEAIABJABIAACERAiA=</HashCode>
-      <FileName>DataTypes\FileFormat\Containers\MulContainer.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -83,7 +83,7 @@
   <Interface Name="EssenceUDK.Platform.IPalette" Collapsed="true">
     <Position X="17.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Interfaces.cs</FileName>
     </TypeIdentifier>
   </Interface>

@@ -15,6 +15,42 @@ namespace EssenceUDK.Platform.UtilHelpers
     {
         #region Arrays and Structures Helpers
 
+        public static T[] BuffToStruct<T>(byte[] arr, int offset = 0, int count = 1) where T : struct
+        {
+            int sizeOfT = Marshal.SizeOf(typeof(T));
+            GCHandle gch = GCHandle.Alloc(arr, GCHandleType.Pinned);
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(arr, offset);
+            T[] ret = new T[count];
+            while (count-- > 0)
+                ret[count] = (T)Marshal.PtrToStructure(ptr + sizeOfT * count, typeof(T));
+            gch.Free();
+            return ret;
+        }
+
+        public static byte[] StructToBuff<T>(T value) where T : struct
+        {
+            byte[] arr = new byte[Marshal.SizeOf(value)];
+            GCHandle gch = GCHandle.Alloc(arr, GCHandleType.Pinned);
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
+            Marshal.StructureToPtr(value, ptr, true);
+            gch.Free();
+            return arr;
+        }
+
+        public static byte[] StructToBuff<T>(T[] value) where T : struct
+        {
+            int sizeOfT = Marshal.SizeOf(value);
+            byte[] arr = new byte[sizeOfT * value.Length];
+            GCHandle gch = GCHandle.Alloc(arr, GCHandleType.Pinned);
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
+
+            int count = 0;
+            while (count++ < value.Length)
+                Marshal.StructureToPtr(value[count], ptr + sizeOfT * count, true);
+            gch.Free();
+            return arr;
+        }
+
         /// <summary>
         /// Writes a part of an array to a file stream as quickly as possible,
         /// without making any additional copies of the data.

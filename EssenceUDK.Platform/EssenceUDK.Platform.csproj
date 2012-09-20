@@ -57,6 +57,7 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UtilHelpers\ClientInfo.cs" />
+    <Compile Include="UtilHelpers\Compressor.cs" />
     <Compile Include="UtilHelpers\DynamicExecutor.cs" />
     <Compile Include="UtilHelpers\Language.cs" />
     <Compile Include="UtilHelpers\Utils.cs" />

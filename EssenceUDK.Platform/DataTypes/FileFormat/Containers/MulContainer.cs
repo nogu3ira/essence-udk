@@ -108,7 +108,7 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             get { return _EntryLength; }
         }
 
-        public bool IsValid(uint id)
+        bool IDataContainer.IsValid(uint id)
         {
             if (id >= _EntryLength)
                 return false;
@@ -122,12 +122,12 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             set { Write(id, value); }
         }
 
-        public T Read<T>(uint id, uint offset) where T : struct
+        T IDataContainer.Read<T>(uint id, uint offset)
         {
-            return Read<T>(id, offset, 1)[0];
+            return (this as IDataContainer).Read<T>(id, offset, 1)[0];
         }
 
-        public T[] Read<T>(uint fromId, uint offset, uint count) where T : struct
+        T[] IDataContainer.Read<T>(uint fromId, uint offset, uint count)
         {
             if (IdxTable != null)
                 throw new Exception();

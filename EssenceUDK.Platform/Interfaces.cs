@@ -5,11 +5,14 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Drawing;
 using System.Windows.Media;
+using Color = EssenceUDK.Platform.DataTypes.Color;
 
 namespace EssenceUDK.Platform
 {
     public interface IPalette
     {
+        uint Length { get; }
+        Color this[byte id] { get; set; }
     }
 
     public interface IClipper

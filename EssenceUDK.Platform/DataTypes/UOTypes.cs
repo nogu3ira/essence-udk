@@ -8,71 +8,6 @@ using EssenceUDK.Platform.Factories;
 
 namespace EssenceUDK.Platform.DataTypes
 {
-    public abstract class EntryTile : IEntryTile
-    {
-        protected uint      _TileId;
-        protected ISurface  _Surface;
-        protected ITileData _TileData;
-        protected bool      _IsValid;
-
-        //protected Color   RadarColor;
-
-        protected IDataFactory dataFactory;
-        internal  EntryTile(uint id, IDataFactory factory, ITileData tiledata, bool valid)
-        {
-            _TileId     = id;
-            dataFactory = factory;
-            _TileData   = tiledata;
-            _IsValid    = valid;
-        }
-
-        public uint TileId  { get { return _TileId; } set { _TileId = value; } }
-        public bool IsValid { get { return _IsValid; } }
-        public abstract ISurface Surface { get; set; }
-    }
-
-    public sealed class ItemTile : EntryTile, IItemTile, IItemData
-    {
-        public override ISurface     Surface {
-            get { return _Surface ?? (_Surface = dataFactory.GetItemSurface(_TileId)); }
-            set { ; }
-        }
-
-        string   IItemData.Name         { get { return ((IItemData)_TileData).Name; }           set { ((IItemData)_TileData).Name = value; } }
-        TileFlag IItemData.Flags        { get { return ((IItemData)_TileData).Flags; }          set { ((IItemData)_TileData).Flags = value; } }
-        byte     IItemData.Height       { get { return ((IItemData)_TileData).Height; }         set { ((IItemData)_TileData).Height = value; } }
-        byte     IItemData.Quality      { get { return ((IItemData)_TileData).Quality; }        set { ((IItemData)_TileData).Quality = value; } }
-        byte     IItemData.Quantity     { get { return ((IItemData)_TileData).Quantity; }       set { ((IItemData)_TileData).Quantity = value; } }
-        ushort   IItemData.Animation    { get { return ((IItemData)_TileData).Animation; }      set { ((IItemData)_TileData).Animation = value; } }
-        byte     IItemData.StackingOff  { get { return ((IItemData)_TileData).StackingOff; }    set { ((IItemData)_TileData).StackingOff = value; } }
-
-        internal  ItemTile(uint id, IDataFactory factory, IItemData tiledata, bool valid) : base(id, factory, tiledata, valid)
-        {          
-        }
-    }
-
-    public sealed class LandTile : EntryTile, ILandTile, ILandData
-    {
-        public override ISurface     Surface {
-            get { return _Surface ?? (_Surface = dataFactory.GetLandSurface(_TileId)); }
-            set { ; }
-        }
-
-        public          ISurface     Texture {
-            get { return _Texture ?? (_Texture = dataFactory.GetTexmSurface(((ILandData)_TileData).TexID)); }
-            set { ; }
-        }
-        protected ISurface _Texture;
-
-        string   ILandData.Name         { get { return ((ILandData)_TileData).Name; }           set { ((ILandData)_TileData).Name = value; } }
-        TileFlag ILandData.Flags        { get { return ((ILandData)_TileData).Flags; }          set { ((ILandData)_TileData).Flags = value; } }
-        ushort   ILandData.TexID        { get { return ((ILandData)_TileData).TexID; }          set { ((ILandData)_TileData).TexID = value; } }
-
-        internal LandTile(uint id, IDataFactory factory, ILandData tiledata, bool valid) : base(id, factory, tiledata, valid)
-        {
-        }
-    }
-
     /// <summary>
     /// An enumeration of 64 different tile flags.
     /// </summary>
@@ -261,10 +196,6 @@ namespace EssenceUDK.Platform.DataTypes
         UnUsed32        = 0x8000000000000000
     }
 
-
-
-
-
     public interface ITileData
     {
     }
@@ -302,4 +233,101 @@ namespace EssenceUDK.Platform.DataTypes
     public interface IItemTile : IEntryTile, IItemData
     { 
     }
+
+    public abstract class EntryTile : IEntryTile
+    {
+        protected uint      _TileId;
+        protected ISurface  _Surface;
+        protected ITileData _TileData;
+        protected bool      _IsValid;
+
+        //protected Color   RadarColor;
+
+        protected IDataFactory dataFactory;
+        internal  EntryTile(uint id, IDataFactory factory, ITileData tiledata, bool valid)
+        {
+            _TileId     = id;
+            dataFactory = factory;
+            _TileData   = tiledata;
+            _IsValid    = valid;
+        }
+
+        public uint TileId  { get { return _TileId; } set { _TileId = value; } }
+        public bool IsValid { get { return _IsValid; } }
+        public abstract ISurface Surface { get; set; }
+    }
+
+    public sealed class ItemTile : EntryTile, IItemTile, IItemData
+    {
+        public override ISurface     Surface {
+            get { return _Surface ?? (_Surface = dataFactory.GetItemSurface(_TileId)); }
+            set { ; }
+        }
+
+        string   IItemData.Name         { get { return ((IItemData)_TileData).Name; }           set { ((IItemData)_TileData).Name = value; } }
+        TileFlag IItemData.Flags        { get { return ((IItemData)_TileData).Flags; }          set { ((IItemData)_TileData).Flags = value; } }
+        byte     IItemData.Height       { get { return ((IItemData)_TileData).Height; }         set { ((IItemData)_TileData).Height = value; } }
+        byte     IItemData.Quality      { get { return ((IItemData)_TileData).Quality; }        set { ((IItemData)_TileData).Quality = value; } }
+        byte     IItemData.Quantity     { get { return ((IItemData)_TileData).Quantity; }       set { ((IItemData)_TileData).Quantity = value; } }
+        ushort   IItemData.Animation    { get { return ((IItemData)_TileData).Animation; }      set { ((IItemData)_TileData).Animation = value; } }
+        byte     IItemData.StackingOff  { get { return ((IItemData)_TileData).StackingOff; }    set { ((IItemData)_TileData).StackingOff = value; } }
+
+        internal  ItemTile(uint id, IDataFactory factory, IItemData tiledata, bool valid) : base(id, factory, tiledata, valid)
+        {          
+        }
+    }
+
+    public sealed class LandTile : EntryTile, ILandTile, ILandData
+    {
+        public override ISurface     Surface {
+            get { return _Surface ?? (_Surface = dataFactory.GetLandSurface(_TileId)); }
+            set { ; }
+        }
+
+        public          ISurface     Texture {
+            get { return _Texture ?? (_Texture = dataFactory.GetTexmSurface(((ILandData)_TileData).TexID)); }
+            set { ; }
+        }
+        protected ISurface _Texture;
+
+        string   ILandData.Name         { get { return ((ILandData)_TileData).Name; }           set { ((ILandData)_TileData).Name = value; } }
+        TileFlag ILandData.Flags        { get { return ((ILandData)_TileData).Flags; }          set { ((ILandData)_TileData).Flags = value; } }
+        ushort   ILandData.TexID        { get { return ((ILandData)_TileData).TexID; }          set { ((ILandData)_TileData).TexID = value; } }
+
+        internal LandTile(uint id, IDataFactory factory, ILandData tiledata, bool valid) : base(id, factory, tiledata, valid)
+        {
+        }
+    }
+
+
+
+    public interface IAnimation
+    {     
+    }
+
+    public sealed class Animation : IAnimation
+    {
+        private uint        _AnimId;
+        private AnimEntry[] _Entries;
+    }
+
+    public sealed class AnimEntry
+    {
+        private uint        _AnimId;
+        private Animation   _Parent;
+        private byte        _Action;
+        private byte        _Direct;
+        private IPalette    _Palette;
+        private AnimFrame[] _Frames;
+    }
+
+    public sealed class AnimFrame
+    {
+        private AnimEntry   _Parent;
+        private IPalette    _Palette;
+        private ISurface    _Surface;
+        private short       _SCentrX;
+        private short       _SCentrY;
+    }
+
 }

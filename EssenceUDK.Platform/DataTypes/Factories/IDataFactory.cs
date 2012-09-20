@@ -14,5 +14,7 @@ namespace EssenceUDK.Platform.Factories
 
         IItemTile[] GetItemTiles();
         ISurface GetItemSurface(uint id);
+
+        IAnimation[] GetAnimations();
     }
 }

@@ -178,11 +178,13 @@ namespace EssenceUDK.Platform
             // TODO: We need separeted thread for data working
             StorageLand = dataFactory.GetLandTiles();
             StorageItem = dataFactory.GetItemTiles();
+            StorageAnim = dataFactory.GetAnimations();
         }
 
         // Cached storages (always using caching)
-        private ILandTile[] StorageLand;
-        private IItemTile[] StorageItem;
+        private ILandTile[]  StorageLand;
+        private IItemTile[]  StorageItem;
+        private IAnimation[] StorageAnim;
         
 
         #region StorageItem Interfaces

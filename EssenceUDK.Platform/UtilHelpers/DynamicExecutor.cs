@@ -1,13 +1,5 @@
-﻿/***************************************************************************
- *                                               Created by :        StaticZ
- *               DynamicExecutor.cs              UO Quintessense server team
- *              ____________________             url   :   http://uoquint.ru
- *              Version : 14/01/2011             email :    admin@uoquint.ru 
- *                                               ---------------------------
- *
- ***************************************************************************/
-
-using System;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Reflection;
 
@@ -15,6 +7,16 @@ namespace EssenceUDK.Platform.UtilHelpers
 {
 	internal static class DynamicExecutor 
     {
+	    public static string ExecutablePath {
+            get { return _ExecutablePath ?? (_ExecutablePath = Assembly.GetExecutingAssembly().Location); }
+	    }
+        private static string _ExecutablePath = null;
+
+        public static string ApplicationDir {
+            get { return _ApplicationDir ?? (_ApplicationDir = Path.GetDirectoryName(ExecutablePath)); }
+        }
+        private static string _ApplicationDir = null;
+
         public static T CreateInstance<T>()
         {
             return (T)Activator.CreateInstance(typeof(T));
