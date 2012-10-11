@@ -209,12 +209,12 @@ namespace EssenceUDK.Platform
             return StorageItem[id];
         }
 
-        public IEnumerable<ModelItemData> GetItemTile()
+        public IList<ModelItemData> GetItemTile()
         {
             return new ObservableCollection<ModelItemData>(StorageItem.Select(t => new ModelItemData(t)));
         }
 
-        public IEnumerable<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None, bool valid = true)
+        public IList<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None, bool valid = true)
         {
             return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
         }
@@ -239,7 +239,7 @@ namespace EssenceUDK.Platform
             return StorageLand[id];
         }
 
-        public IEnumerable<ModelLandData> GetLandTile()
+        public IList<ModelLandData> GetLandTile()
         {
             return new ObservableCollection<ModelLandData>(StorageLand.Select(t => new ModelLandData(t)));
         }
