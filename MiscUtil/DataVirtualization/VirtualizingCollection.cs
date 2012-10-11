@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace MapMakerApplication.Utilities.DataVirtualization
+namespace MiscUtil.DataVirtualization
 {
     /// <summary>
     /// Specialized list implementation that provides data virtualization. The collection is divided up into pages,

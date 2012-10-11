@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace MapMakerApplication.Utilities.DataVirtualization
+namespace MiscUtil.DataVirtualization
 {
     /// <summary>
     /// Represents a provider of collection details.

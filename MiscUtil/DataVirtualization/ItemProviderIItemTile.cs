@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using EssenceUDK.Platform;
-using EssenceUDK.Platform.DataTypes;
 
-namespace MapMakerApplication.Utilities.DataVirtualization
+namespace MiscUtil.DataVirtualization
 {
     public class ItemProviderModelItemData : IItemsProvider<ModelItemData>
     {
