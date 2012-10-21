@@ -1049,13 +1049,7 @@ namespace OpenUO.MapMaker.MapMaking
                 ID = RandomFromList(areaColorCoordinates.North.Coasts.Coast.LineSouth.List);
 
                 var texture= (short)RandomFromList(areaColorCoordinates.North.Coasts.Ground.LineSouth.List);
-                if (texture == 100)
-                {
-                    int a = 0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
-
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
                 PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
@@ -1084,11 +1078,6 @@ namespace OpenUO.MapMaker.MapMaking
                 mapObjectCoordinates.Center.Altitude = -15;
                 var texture =
                     (short)RandomFromList(areaColorCoordinates.South.Coasts.Ground.LineNorth.List);
-                if (texture == 100)
-                {
-                    int a = 0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 ID = RandomFromList(areaColorCoordinates.South.Coasts.Coast.LineNorth.List);
                 PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
@@ -1116,11 +1105,6 @@ namespace OpenUO.MapMaker.MapMaking
 
                 ID = RandomFromList(areaColorCoordinates.East.Coasts.Coast.LineWest.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.East.Coasts.Ground.LineWest.List);
-                if (texture == 100)
-                {
-                    int a = 0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1152,11 +1136,6 @@ namespace OpenUO.MapMaker.MapMaking
 
                 ID = RandomFromList(areaColorCoordinates.West.Coasts.Coast.LineEast.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.West.Coasts.Ground.LineWest.List);
-                if (texture == 100)
-                {
-                    int a = 0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = (sbyte)Random.Next(-4, 2);
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1179,11 +1158,6 @@ namespace OpenUO.MapMaker.MapMaking
             {
                 ID = RandomFromList(areaColorCoordinates.NorthEast.Coasts.Coast.EdgeSouthWest.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.NorthEast.Coasts.Ground.EdgeSouthWest.List);
-                if (texture == 100)
-                {
-                    int a = 0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1200,11 +1174,6 @@ namespace OpenUO.MapMaker.MapMaking
             {
                 ID = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.EdgeSouthEast.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.NorthWest.Coasts.Ground.EdgeSouthEast.List);
-                if (texture == 100)
-                {
-                    int a = 0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1221,11 +1190,6 @@ namespace OpenUO.MapMaker.MapMaking
             {
                 ID = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.EdgeNorthEast.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.SouthWest.Coasts.Ground.EdgeNorthEast.List);
-                if (texture == 100)
-                {
-                    int a = 0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1242,11 +1206,6 @@ namespace OpenUO.MapMaker.MapMaking
             {
                 ID = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.EdgeNorthWest.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.SouthEast.Coasts.Ground.EdgeNorthWest.List);
-                if (texture == 100)
-                {
-                    int a = 0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1290,11 +1249,6 @@ namespace OpenUO.MapMaker.MapMaking
                 ID = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.BorderSouthWest.List);
                 var texture= (short)RandomFromList(areaColorCoordinates.NorthWest.Coasts.Ground.BorderNorthWest.List);
 
-                if(texture==100)
-                {
-                    int a=0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1313,11 +1267,6 @@ namespace OpenUO.MapMaker.MapMaking
             {
                 ID = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.BorderNorthWest.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.SouthWest.Coasts.Ground.BorderSouthWest.List);
-                if(texture == 100)
-                {
-                    int a=0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.SouthWest.Occupied = 1;
@@ -1334,11 +1283,6 @@ namespace OpenUO.MapMaker.MapMaking
             {
                 ID = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.BorderNorthEast.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.SouthEast.Coasts.Ground.BorderSouthEast.List);
-                if(texture==100)
-                {
-                    int a=0;
-                    a++;
-                }
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
