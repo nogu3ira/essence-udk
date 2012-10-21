@@ -242,7 +242,10 @@ namespace MiscUtil.DataVirtualization
 
         bool IList.Contains(object value)
         {
+            if(value is T)
             return Contains((T)value);
+
+            return false;
         }
 
         /// <summary>
@@ -278,7 +281,10 @@ namespace MiscUtil.DataVirtualization
 
         int IList.IndexOf(object value)
         {
+            if(value is T)
             return IndexOf((T)value);
+
+            return -1;
         }
 
         /// <summary>

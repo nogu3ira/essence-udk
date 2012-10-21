@@ -1,0 +1,58 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:MyWinCollection="clr-namespace:MyWinCollection;assembly=EssenceUDK.Controls" x:Class="MapMakerApplication.Controllers.TextureEditor" 
+             d:DesignHeight="300" 
+             d:DesignWidth="300"
+             mc:Ignorable="d"
+             >
+	<UserControl.Resources>
+		<ItemsPanelTemplate x:Key="ItemsPanelTemplate1">
+			<WrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"
+				MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"
+                               />
+		</ItemsPanelTemplate>
+	</UserControl.Resources>
+	<UserControl.DataContext>
+		<Binding Source="{StaticResource ResourceKey=Locator}"/>
+	</UserControl.DataContext>
+    <Grid DataContext="{Binding}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.141*" />
+            <ColumnDefinition Width="0.262*" />
+            <ColumnDefinition Width="0.131*" />
+            <ColumnDefinition Width="0.269*" />
+            <ColumnDefinition Width="0.197*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="21.582" />
+        	<RowDefinition Height="19.92"/>
+        	<RowDefinition Height="0.096*"/>
+        	<RowDefinition Height="0.41*"/>
+            <RowDefinition Height="0.092*" />
+            <RowDefinition Height="19.718" />
+            <RowDefinition Height="0.061*" />
+            <RowDefinition Height="0.341*" />
+        </Grid.RowDefinitions>
+                <ListBox 
+                    x:Name="ListBoxNumericTexture" 
+                    Style="{StaticResource TileStyle}"
+                    ItemTemplate="{StaticResource MyImagesItemTemplateTextureFromInt}"
+                    ItemsSource="{Binding Sdk.SelectedAreaTexture.List, Source={StaticResource Locator}}" 
+                    Grid.Row="7" Grid.ColumnSpan="5" ItemsPanel="{DynamicResource ItemsPanelTemplate1}"
+                    SelectedItem="{Binding Path=Sdk.SelectedAreaTextureTileInt}"
+            />
+
+        <ListBox
+            x:Name="ListBoxLandTexture" Style="{StaticResource TileStyle}" 
+            ItemsSource="{Binding Lands, Mode=OneWay}" 
+            Grid.ColumnSpan="5"
+            ItemTemplate="{StaticResource MyImagesItemTemplateTexture}" 
+            Grid.Row="3"
+            SelectedItem="{Binding Path=Sdk.SelectedAreaTextureTile}"
+            />
+        <Button Content="Add" Grid.Row="5" x:Name="button1" Grid.Column="1" Command="{Binding Path=Sdk.CommandTextureTileAdd}"/>
+        <Button Content="Remove" Grid.Column="3" Grid.Row="5" x:Name="button2" Command="{Binding Path=Sdk.CommandTextureTileRemove}"/>
+        <TextBlock TextWrapping="Wrap"><Run Language="it-it" Text="Name"/></TextBlock>
+        <TextBlock Grid.Row="1" TextWrapping="Wrap"><Run Language="it-it" Text="Index"/></TextBlock>
+        <TextBox Grid.ColumnSpan="4" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Sdk.SelectedAreaTexture.Name}"/>
+    	<xctk:IntegerUpDown Grid.Column="1" Grid.Row="1" Minimum="0" Value="{Binding Sdk.SelectedAreaTexture.Index}"/>
+    </Grid>
+</UserControl>

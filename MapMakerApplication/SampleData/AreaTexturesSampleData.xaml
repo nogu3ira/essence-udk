@@ -1,0 +1,14 @@
+<OpenUO_MapMaker_Elements_Textures_TextureArea:AreaTextures xmlns:OpenUO_MapMaker_Elements_Textures_TextureArea="clr-namespace:OpenUO.MapMaker.Elements.Textures.TextureArea;assembly=OpenUO.MapMaker" xmlns:System="clr-namespace:System;assembly=mscorlib" Error="Quisque adipiscing maecenas vivamus" Index="77" Name="Aliquam vestibulum class integer">
+	<OpenUO_MapMaker_Elements_Textures_TextureArea:AreaTextures.List>
+		<System:Int32>77</System:Int32>
+		<System:Int32>33</System:Int32>
+		<System:Int32>33</System:Int32>
+		<System:Int32>50</System:Int32>
+		<System:Int32>56</System:Int32>
+		<System:Int32>17</System:Int32>
+		<System:Int32>96</System:Int32>
+		<System:Int32>62</System:Int32>
+		<System:Int32>66</System:Int32>
+		<System:Int32>58</System:Int32>
+	</OpenUO_MapMaker_Elements_Textures_TextureArea:AreaTextures.List>
+</OpenUO_MapMaker_Elements_Textures_TextureArea:AreaTextures>
