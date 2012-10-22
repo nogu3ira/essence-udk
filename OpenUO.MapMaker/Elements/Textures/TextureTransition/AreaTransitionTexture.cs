@@ -51,6 +51,7 @@ namespace OpenUO.MapMaker.Elements.Textures.TextureTransition
             Serialize(()=>Name,info);
             Serialize(()=>ColorFrom,info);
             Serialize(()=>ColorTo,info);
+            Serialize(()=>IndexTo,info);
         }
 
         protected AreaTransitionTexture(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
@@ -59,6 +60,7 @@ namespace OpenUO.MapMaker.Elements.Textures.TextureTransition
             Name = Deserialize(() => Name, info);
             ColorFrom = Deserialize(() => ColorFrom, info);
             ColorTo = Deserialize(() => ColorTo, info);
+            _indexTo = info.GetInt32("IndexTo");
         }
 
         

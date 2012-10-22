@@ -206,7 +206,7 @@ namespace OpenUO.MapMaker.MapMaking
 
                     PlaceTextures(areacolorcoordinates, buildMapCoordinates);
                     MakeCoast(areacolorcoordinates, buildMapCoordinates);
-                    //TextureTranstion(coordinates, areacolorcoordinates, buildMapCoordinates);
+                    TextureTranstion(coordinates, areacolorcoordinates, buildMapCoordinates);
                     //MakeCliffs(coordinates,areacolorcoordinates,buildMapCoordinates);
                     //ItemsTransations(coordinates,areacolorcoordinates,buildMapCoordinates);
                     if (!AutomaticZMode)
@@ -459,335 +459,313 @@ namespace OpenUO.MapMaker.MapMaking
         /// <param name="mapObjectCoordinates"> </param>
         private void TextureTranstion(Coordinates coordinates, AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates)
         {
-            //var listSmooth = TxtureSmooth.FindFromByColor(BitmapMap[CalculateZone(x, y)]);
             var transitionList = areaColorCoordinates.Center.TextureTransitions;
             if (!transitionList.Any())
                 return;
-            Color A = BitmapMap[coordinates.Center];
+            if (areaColorCoordinates.List.All(o => o.Color == areaColorCoordinates.Center.Color))
+                return;
+            var colors = areaColorCoordinates.List.Select(o => o.Color);
+            AreaTransitionTexture texture = null;
+            foreach (var color in colors)
+            {
+                texture = areaColorCoordinates.Center.FindTransitionTexture(color);
+                if (texture != null)
+                    break;
+            }
+            if (texture == null)
+                return;
+
             int special = 0;
             int z = 0;
 
-            //if (_MapOcc[_directions[(int)Directions.Location]] == 0)
-            if (mapObjectCoordinates.Center.Occupied == 0)
+            if (mapObjectCoordinates.Center.Occupied != 0) return;
+
+            #region Line
+            //Line
+            // B
+            //xAx
+            //y1 = y - 1;
+            if (
+                areaColorCoordinates.North.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.East.Color != areaColorCoordinates.North.Color
+                && areaColorCoordinates.West.Color != areaColorCoordinates.North.Color
+                )
             {
-                // x = nicht def.
-
-                //Border
-                //xB
-                //Ax
-                //int x1 = x + 1;
-                //int y1 = y - 1;
-                //if (BitmapMap[CalculateZone(x1, y1)] != A)
-                if (BitmapMap[coordinates.NorthEast] != A)
+                //var smoothT = Smooth(listSmooth, x, y - 1);
+                var transation = areaColorCoordinates.Center.FindTransitionTexture(areaColorCoordinates.North.Color);
+                if (transation != null)
                 {
+                    //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Line.Third.List);
+                    special = 1;
+                    //z = _MapAlt[_directions[(int)Directions.North]] + _MapAlt[_directions[(int)Directions.South]];
+                    //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Line.CollectionThird.List);
+                    //z = _mapObjects[_directions[(int)Directions.North]].Altitude +
+                    //    _mapObjects[_directions[(int)Directions.South]].Altitude;
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.LineSouth.List);
+                    z = mapObjectCoordinates.North.Altitude +
+                        mapObjectCoordinates.South.Altitude;
+                }
+            }
 
-                    //var transition = GetTransationTexture(transitionList, coordinates.NorthEast);
-                    var transition = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.NorthEast]);
-                    //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Border.Forth.List);
-                    //z = _MapAlt[_directions[(int)Directions.NorthEast]] + _MapAlt[_directions[(int)Directions.SouthWest]];
+
+            //xAx
+            // B
+            ////y1 = y + 1;
+            if (
+                areaColorCoordinates.South.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.East.Color != areaColorCoordinates.South.Color
+                && areaColorCoordinates.West.Color != areaColorCoordinates.South.Color
+                )
+            {
+                //var smoothT = Smooth(listSmooth, x, y + 1);
+                var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.South]);
+                if (transation != null)
+                {
+                    //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Line.First.List);
                     special = 2;
-                    if (transition != null)
-                    {
-                        mapObjectCoordinates.Center.Texture =
-                            (short)RandomFromList(transition.BorderSouthWest.List);
-                        z = mapObjectCoordinates.NorthEast.Altitude +
-                            mapObjectCoordinates.SouthWest.Altitude;
-                    }
+                    //z = _MapAlt[_directions[(int)Directions.South]] + _MapAlt[_directions[(int)Directions.North]];
+                    //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Line.CollectionFirst.List);
+                    //z = _mapObjects[_directions[(int)Directions.South]].Altitude +
+                    //    _mapObjects[_directions[(int)Directions.North]].Altitude;
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.LineNorth.List);
+                    z = mapObjectCoordinates.South.Altitude +
+                        mapObjectCoordinates.North.Altitude;
                 }
-                //x1 = x - 1;
-                //y1 = y -1;
-                //Bx
-                //xA
-                //if (BitmapMap[_directions[(int)Directions.NorthWest]] != A)
-                if (BitmapMap[coordinates.NorthWest] != A)
+            }
+            //x
+            //AB
+            //x
+            //x1 = x + 1;
+            if (
+                areaColorCoordinates.East.Color!= areaColorCoordinates.Center.Color
+                && areaColorCoordinates.North.Color != areaColorCoordinates.East.Color
+                && areaColorCoordinates.South.Color != areaColorCoordinates.East.Color
+                )
+            {
+                //    var smoothT = Smooth(listSmooth, x + 1, y);
+                var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.East]);
+                if (transation != null)
                 {
-                    var transition = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.NorthWest]);
-                    //var smoothT = Smooth(listSmooth, x - 1, y - 1);
-
-                    //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Border.Third.List);
-                    if (transition != null)
-                    {
-                        special = 1;
-                        mapObjectCoordinates.Center.Texture = (short)RandomFromList(transition.BorderSouthEast.List);
-                        //z = _MapAlt[_directions[(int)Directions.NorthWest]] + _MapAlt[_directions[(int)Directions.SouthEast]];
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Border.CollectionThird.List);
-                        //z = _mapObjects[_directions[(int)Directions.NorthWest]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.SouthEast]].Altitude;
-
-                        z = mapObjectCoordinates.NorthWest.Altitude +
-                            mapObjectCoordinates.SouthEast.Altitude;
-                    }
+                    //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Line.Forth.List);
+                    special = 2;
+                    //z = _MapAlt[_directions[(int)Directions.East]] + _MapAlt[_directions[(int)Directions.West]];
+                    //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Line.CollectionForth.List);
+                    //z = _mapObjects[_directions[(int)Directions.East]].Altitude +
+                    //    _mapObjects[_directions[(int)Directions.West]].Altitude;
+                    mapObjectCoordinates.Center.Texture =
+                        (short)RandomFromList(transation.LineWest.List);
+                    z = mapObjectCoordinates.East.Altitude +
+                        mapObjectCoordinates.West.Altitude;
                 }
-                //GA
-                //BG
-                //x1 = x - 1;
-                //y1 = y + 1;
-                //if (BitmapMap[_directions[(int)Directions.SouthWest]] != A)
-                if (BitmapMap[coordinates.SouthWest] != A)
+            }
+            // x
+            //BA
+            // x
+            //x1 = x - 1;
+            //if (BitmapMap[_directions[(int)Directions.West]] != A)
+            if (
+                areaColorCoordinates.West.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.West.Color != areaColorCoordinates.North.Color
+                && areaColorCoordinates.West.Color != areaColorCoordinates.South.Color
+                )
+            {
+                //var smoothT = GetTransationTexture(listSmooth, x - 1, y);
+
+                var transation = areaColorCoordinates.Center.FindTransitionTexture(areaColorCoordinates.West.Color);
+                if (transation != null)
                 {
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.SouthWest]);
-                    //???? controllare, possibile errore
-                    //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Border.Second.List);
-                    if (transation != null)
-                    {
-                        special = 2;
-                        //z = _MapAlt[_directions[(int)Directions.SouthWest]] + _MapAlt[_directions[(int)Directions.NorthEast]];
-
-
-
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Border.CollectionSecond.List);
-                        //z = _mapObjects[_directions[(int)Directions.SouthWest]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.NorthEast]].Altitude;
-
-
-
-                        _mapObjects[coordinates.Center].Texture = (short)RandomFromList(transation.BorderSouthEast.List);
-                        z = _mapObjects[coordinates.SouthWest].Altitude +
-                            _mapObjects[coordinates.NorthEast].Altitude;
-                    }
-
+                    //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Line.Second.List);
+                    special = 1;
+                    //z = _MapAlt[_directions[(int)Directions.West]] + _MapAlt[_directions[(int)Directions.East]];
+                    //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Line.CollectionSecond.List);
+                    //z = _mapObjects[_directions[(int)Directions.West]].Altitude +
+                    //    _mapObjects[_directions[(int)Directions.East]].Altitude;
+                    mapObjectCoordinates.Center.Texture =
+                        (short)RandomFromList(transation.LineEast.List);
+                    z = mapObjectCoordinates.West.Altitude +
+                        mapObjectCoordinates.East.Altitude;
                 }
-                //Ax
-                //xB
-                //x1 = x + 1;
-                //y1 = y + 1;
-                //if (BitmapMap[_directions[(int)Directions.SouthEast]] != A)
-                if (BitmapMap[coordinates.SouthEast] != A)
-                {
-                    //var smoothT = Smooth(listSmooth, x + 1, y + 1);
-                    //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Border.First.List);
-                    //z = _MapAlt[_directions[(int)Directions.SouthEast]] + _MapAlt[_directions[(int)Directions.NorthWest]];
-                    //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Border.CollectionFirst.List);
-                    //z = _mapObjects[_directions[(int)Directions.SouthEast]].Altitude +
-                    //    _mapObjects[_directions[(int)Directions.NorthWest]].Altitude;
+            }
 
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.SouthEast]);
-                    if (transation != null)
-                    {
-                        special = 2;
-                        mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.BorderNorthWest.List);
-                        z = _mapObjects[coordinates.SouthEast].Altitude +
-                            _mapObjects[coordinates.NorthWest].Altitude;
-                    }
+            #endregion //Line
+
+            #region Border
+            //Border
+            //xB
+            //Ax
+            if (
+                areaColorCoordinates.NorthEast.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.East.Color != areaColorCoordinates.NorthEast.Color
+                && areaColorCoordinates.North.Color != areaColorCoordinates.NorthEast.Color
+                )
+            {
+
+                var transition = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.NorthEast]);
+                special = 2;
+                if (transition != null)
+                {
+                    mapObjectCoordinates.Center.Texture =
+                        (short)RandomFromList(transition.BorderSouthWest.List);
+                    z = mapObjectCoordinates.NorthEast.Altitude +
+                        mapObjectCoordinates.SouthWest.Altitude;
                 }
+            }
 
-                //Line
-                // B
-                //xAx
-                //y1 = y - 1;
-                //if (BitmapMap[_directions[(int)Directions.North]] != A)
-                if (BitmapMap[coordinates.North] != A)
+            //Bx
+            //xA
+            if (
+                areaColorCoordinates.NorthWest.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.West.Color != areaColorCoordinates.NorthWest.Color
+                && areaColorCoordinates.North.Color != areaColorCoordinates.NorthWest.Color
+                )
+            {
+                var transition = areaColorCoordinates.Center.FindTransitionTexture(areaColorCoordinates.NorthWest.Color);
+
+                if (transition != null)
                 {
-                    //var smoothT = Smooth(listSmooth, x, y - 1);
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.North]);
-                    if (transation != null)
-                    {
-                        //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Line.Third.List);
-                        special = 1;
-                        //z = _MapAlt[_directions[(int)Directions.North]] + _MapAlt[_directions[(int)Directions.South]];
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Line.CollectionThird.List);
-                        //z = _mapObjects[_directions[(int)Directions.North]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.South]].Altitude;
-                        mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.LineSouth.List);
-                        z = mapObjectCoordinates.North.Altitude +
-                            mapObjectCoordinates.South.Altitude;
-                    }
+                    special = 1;
+                    mapObjectCoordinates.Center.Texture = 
+                        (short)RandomFromList(transition.BorderSouthEast.List);
+
+                    z = mapObjectCoordinates.NorthWest.Altitude +
+                        mapObjectCoordinates.SouthEast.Altitude;
                 }
+            }
 
-
-                //xAx
-                // B
-                ////y1 = y + 1;
-                //if (BitmapMap[_directions[(int)Directions.South]] != A)
-                if (BitmapMap[coordinates.South] != A)
+            //GA
+            //BG
+            if (
+                areaColorCoordinates.SouthWest.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.West.Color != areaColorCoordinates.SouthWest.Color
+                && areaColorCoordinates.South.Color != areaColorCoordinates.SouthWest.Color
+                )
+            {
+                var transation = areaColorCoordinates.Center.FindTransitionTexture(areaColorCoordinates.SouthWest.Color);
+                if (transation != null)
                 {
-                    //var smoothT = Smooth(listSmooth, x, y + 1);
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.South]);
-                    if (transation != null)
-                    {
-                        //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Line.First.List);
-                        special = 2;
-                        //z = _MapAlt[_directions[(int)Directions.South]] + _MapAlt[_directions[(int)Directions.North]];
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Line.CollectionFirst.List);
-                        //z = _mapObjects[_directions[(int)Directions.South]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.North]].Altitude;
-                        mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.LineNorth.List);
-                        z = mapObjectCoordinates.South.Altitude +
-                            mapObjectCoordinates.North.Altitude;
-                    }
-                }
-                //x
-                //AB
-                //x
-                //x1 = x + 1;
-                //if (BitmapMap[_directions[(int)Directions.East]] != A)
-                if (BitmapMap[coordinates.East] != A)
-                {
-                    //    var smoothT = Smooth(listSmooth, x + 1, y);
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.East]);
-                    if (transation != null)
-                    {
-                        //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Line.Forth.List);
-                        special = 2;
-                        //z = _MapAlt[_directions[(int)Directions.East]] + _MapAlt[_directions[(int)Directions.West]];
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Line.CollectionForth.List);
-                        //z = _mapObjects[_directions[(int)Directions.East]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.West]].Altitude;
-                        _mapObjects[coordinates.Center].Texture =
-                            (short)RandomFromList(transation.LineEast.List);
-                        z = _mapObjects[coordinates.East].Altitude +
-                            _mapObjects[coordinates.West].Altitude;
-                    }
-                }
-                // x
-                //BA
-                // x
-                //x1 = x - 1;
-                //if (BitmapMap[_directions[(int)Directions.West]] != A)
-                if (BitmapMap[coordinates.West] != A)
-                {
-                    //var smoothT = GetTransationTexture(listSmooth, x - 1, y);
+                    special = 2;
 
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.East]);
-                    if (transation != null)
-                    {
-                        //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Line.Second.List);
-                        special = 1;
-                        //z = _MapAlt[_directions[(int)Directions.West]] + _MapAlt[_directions[(int)Directions.East]];
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Line.CollectionSecond.List);
-                        //z = _mapObjects[_directions[(int)Directions.West]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.East]].Altitude;
-                        _mapObjects[coordinates.Center].Texture =
-                            (short)RandomFromList(transation.LineWest.List);
-                        z = _mapObjects[coordinates.West].Altitude +
-                            _mapObjects[coordinates.East].Altitude;
-                    }
-                }
-
-                //Edge
-                //B
-                //AB
-                //x1 = x + 1;
-                ////y1 = y - 1;
-                //if (BitmapMap[_directions[(int)Directions.East]] != A && BitmapMap[_directions[(int)Directions.North]] != A)
-
-                if (BitmapMap[coordinates.East] != A && BitmapMap[coordinates.North] != A)
-                {
-                    //var smoothT = GetTransationTexture(listSmooth, x, y - 1);
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.NorthEast]);
-                    if (transation != null)
-                    {
-                        //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Edge.Forth.List);
-                        special = 2;
-                        //z = _MapAlt[_directions[(int)Directions.NorthEast]] + _MapAlt[_directions[(int)Directions.SouthWest]];
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Edge.CollectionForth.List);
-                        //z = _mapObjects[_directions[(int)Directions.NorthEast]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.SouthWest]].Altitude;
-                        mapObjectCoordinates.Center.Texture =
-                            (short)RandomFromList(transation.EdgeSouthWest.List);
-                        z = mapObjectCoordinates.NorthEast.Altitude +
-                            mapObjectCoordinates.SouthWest.Altitude;
-                    }
-                }
-                // B
-                //BA
-                //y1 = y - 1;
-                //x1 = x - 1;
-                //if (BitmapMap[_directions[(int)Directions.West]] != A && BitmapMap[_directions[(int)Directions.North]] != A)
-                if (BitmapMap[coordinates.West] != A && BitmapMap[coordinates.North] != A)
-                {
-                    //var smoothT = GetTransationTexture(listSmooth, x, y - 1);
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.NorthWest]);
-                    //_MapID[CalculateZone(x,y)] = RandomFromList(smoothT.Edge.Third.List);
-                    if (transation != null)
-                    {
-                        special = 1;
-                        //z = _MapAlt[_directions[(int)Directions.NorthWest]] + _MapAlt[_directions[(int)Directions.SouthEast]];
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Edge.CollectionThird.List);
-                        //z = _mapObjects[_directions[(int)Directions.NorthEast]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.SouthWest]].Altitude;
-                        mapObjectCoordinates.Center.Texture =
-                            (short)RandomFromList(transation.EdgeSouthEast.List);
-                        z = mapObjectCoordinates.NorthEast.Altitude +
-                            mapObjectCoordinates.SouthWest.Altitude;
-                    }
-                }
-                //BA
-                // B
-                //x1 = x - 1;
-                //y1 = y + 1;
-                //if (BitmapMap[_directions[(int)Directions.West]] != A && BitmapMap[_directions[(int)Directions.South]] != A)
-                if (BitmapMap[coordinates.West] != A && BitmapMap[coordinates.South] != A)
-                {
-                    //var smoothT = GetTransationTexture(listSmooth, x, y + 1);
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.SouthWest]);
-                    //_MapID[CalculateZone(x,y)] = RandomFromList(smoothT.Edge.Second.List);
-                    if (transation != null)
-                    {
-                        special = 2;
-                        //z = _MapAlt[_directions[(int)Directions.SouthWest]] + _MapAlt[_directions[(int)Directions.NorthEast]];
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Edge.CollectionSecond.List);
-                        //z = _mapObjects[_directions[(int)Directions.SouthWest]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.NorthEast]].Altitude;
-
-                        mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.EdgeNorthEast.List);
-                        z = mapObjectCoordinates.SouthWest.Altitude +
-                            mapObjectCoordinates.NorthEast.Altitude;
-                    }
-                }
-                //AB
-                //B
-                //x1 = x + 1;
-                //y1 = y + 1;
-                //if (BitmapMap[_directions[(int)Directions.East]] != A && BitmapMap[_directions[(int)Directions.South]] != A)
-
-                if (BitmapMap[coordinates.East] != A && BitmapMap[coordinates.South] != A)
-                {
-                    //var smoothT = GetTransationTexture(listSmooth, x, y + 1);
-
-                    var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.SouthEast]);
-                    //_MapID[_directions[(int)Directions.Location]] = RandomFromList(smoothT.Edge.First.List);
-                    if (transation != null)
-                    {
-                        special = 2;
-                        //z = _MapAlt[_directions[(int)Directions.SouthEast]] + _MapAlt[_directions[(int)Directions.NorthWest]];
-                        //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Edge.CollectionFirst.List);
-                        //z = _mapObjects[_directions[(int)Directions.SouthEast]].Altitude +
-                        //    _mapObjects[_directions[(int)Directions.NorthWest]].Altitude;
-
-                        mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.EdgeNorthWest.List);
-                        z = mapObjectCoordinates.SouthEast.Altitude +
-                            mapObjectCoordinates.NorthWest.Altitude;
-                    }
-
-                }
-                if (special > 0)
-                    //_MapOcc[_directions[(int)Directions.Location]] = 1;
-                    //_mapObjects[_directions[(int)Directions.Center]].Occupied = 1;
-                    mapObjectCoordinates.Center.Occupied = 1;
-
-                //if (BitmapMapZ[_directions[(int)Directions.Center]] == Colors.Black)
-                if (BitmapMapZ[coordinates.Center] == Colors.Black)
-                {
-                    //_MapAlt[_directions[(int)Directions.Location]] = z / 2;
-                    //_mapObjects[_directions[(int)Directions.Center]].Altitude = (sbyte)(z / 2);
-                    _mapObjects[coordinates.Center].Altitude = (sbyte)(z / 2);
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.BorderNorthEast.List);
+                    z = mapObjectCoordinates.NorthWest.Altitude +
+                        mapObjectCoordinates.NorthEast.Altitude;
                 }
 
             }
+            //Ax
+            //xB
+            if (
+                areaColorCoordinates.SouthEast.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.East.Color != areaColorCoordinates.SouthEast.Color
+                && areaColorCoordinates.South.Color != areaColorCoordinates.SouthEast.Color
+                )
+            {
+
+                var transation = areaColorCoordinates.Center.FindTransitionTexture(BitmapMap[coordinates.SouthEast]);
+                if (transation != null)
+                {
+                    special = 2;
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.BorderNorthWest.List);
+                    z = _mapObjects[coordinates.SouthEast].Altitude +
+                        _mapObjects[coordinates.NorthWest].Altitude;
+                }
+            }
+
+            #endregion // Border
+
+            #region Edge
+            //Edge
+            //B
+            //AB
+
+            if (
+                areaColorCoordinates.NorthEast.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.North.Color == areaColorCoordinates.NorthEast.Color
+                && areaColorCoordinates.NorthEast.Color == areaColorCoordinates.East.Color
+                )
+            {
+                var transition = 
+                    areaColorCoordinates.Center.FindTransitionTexture(areaColorCoordinates.NorthEast.Color);
+                if (transition != null)
+                {
+                    special = 2;
+                    mapObjectCoordinates.Center.Texture =
+                        (short)RandomFromList(transition.EdgeSouthWest.List);
+                    z = mapObjectCoordinates.NorthEast.Altitude +
+                        mapObjectCoordinates.SouthWest.Altitude;
+                }
+            }
+
+            // B
+            //BA
+            if (
+                areaColorCoordinates.NorthWest.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.North.Color == areaColorCoordinates.NorthWest.Color
+                && areaColorCoordinates.NorthWest.Color == areaColorCoordinates.West.Color
+                )
+            {
+                var transation = 
+                    areaColorCoordinates.Center.FindTransitionTexture(areaColorCoordinates.West.Color);
+                if (transation != null)
+                {
+                    special = 1;
+                    mapObjectCoordinates.Center.Texture =
+                        (short)RandomFromList(transation.EdgeSouthEast.List);
+                    z = mapObjectCoordinates.NorthEast.Altitude +
+                        mapObjectCoordinates.SouthWest.Altitude;
+                }
+            }
+
+            //BA
+            // B
+            if (
+                areaColorCoordinates.SouthWest.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.South.Color == areaColorCoordinates.SouthWest.Color
+                && areaColorCoordinates.SouthWest.Color == areaColorCoordinates.West.Color
+                )
+            {
+                var transation = 
+                    areaColorCoordinates.Center.FindTransitionTexture(areaColorCoordinates.SouthWest.Color);
+                if (transation != null)
+                {
+                    special = 2;
+
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.EdgeNorthEast.List);
+                    z = mapObjectCoordinates.SouthWest.Altitude +
+                        mapObjectCoordinates.NorthEast.Altitude;
+                }
+            }
+
+            //AB
+            //B
+            if (
+                areaColorCoordinates.SouthEast.Color != areaColorCoordinates.Center.Color
+                && areaColorCoordinates.South.Color == areaColorCoordinates.SouthEast.Color
+                && areaColorCoordinates.East.Color == areaColorCoordinates.SouthEast.Color
+                )
+            {
+                var transation = 
+                    areaColorCoordinates.Center.FindTransitionTexture(areaColorCoordinates.SouthEast.Color);
+                if (transation != null)
+                {
+                    special = 2;
+
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.EdgeNorthWest.List);
+                    z = mapObjectCoordinates.SouthEast.Altitude +
+                        mapObjectCoordinates.NorthWest.Altitude;
+                }
+
+            }
+            if (special > 0)
+                mapObjectCoordinates.Center.Occupied = 1;
+
+            if (BitmapMapZ[coordinates.Center] == Colors.Black)
+            {
+                _mapObjects[coordinates.Center].Altitude = (sbyte)(z / 2);
+            }
+            #endregion Edge
+
         }
 
-        /// <summary>
-        /// utility find function
-        /// </summary>
-        /// <param name="listsmooth">list of all smooths</param>
-        /// <param name="location"> </param>
-        /// <returns></returns>
-        private AreaTransitionTexture GetTransationTexture(IList<AreaTransitionTexture> listsmooth, int location)
-        {
-            return listsmooth.FirstOrDefault(s => s.ColorTo == BitmapMap[location]) ??
-                                  listsmooth.FirstOrDefault();
-        }
         #endregion
 
         #region Items Transations
@@ -799,12 +777,12 @@ namespace OpenUO.MapMaker.MapMaking
         /// <param name="mapObjectCoordinates"> </param>
         void ItemsTransations(Coordinates coordinates, AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates)
         {
+            if (mapObjectCoordinates.Center.Items != null || mapObjectCoordinates.Center.Occupied != 0) return;
             //int special = 0;
-
-            int zlev = 0;
-            var item = new ItemClone();
-
-            if (areaColorCoordinates.Center.TransitionItems.Count == 0)
+            var transitionList = areaColorCoordinates.Center.TransitionItems;
+            if (!transitionList.Any())
+                return;
+            if (areaColorCoordinates.List.All(o => o.Color == areaColorCoordinates.Center.Color))
                 return;
 
             var colors = areaColorCoordinates.List.Select(o => o.Color);
@@ -817,141 +795,149 @@ namespace OpenUO.MapMaker.MapMaking
             }
             if (k == null) return;
 
+            int zlev = 0;
+            var item = new ItemClone();
 
-            //if ((_AddItemMap[_directions[(int)Directions.Location]] == null || _AddItemMap[_directions[(int)Directions.Location]].Count == 0) && _MapOcc[_directions[(int)Directions.Location]] == 0)
-            if (mapObjectCoordinates.Center.Items == null && mapObjectCoordinates.Center.Occupied == 0)
+
+            #region Border
+            //Border
+            //GB
+            //xG
+            if (BitmapMap[coordinates.NorthEast] != areaColorCoordinates.Center.Color)
             {
-                //Border
-                //GB
-                //xG
-                if (BitmapMap[coordinates.NorthEast] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthEast.Color);
-                    //7
-                    if (transation != null)
-                        item = new ItemClone() { Id = RandomFromList(transation.BorderSouthWest.List) };
-                }
-                //BG
-                //Gx
-                if (BitmapMap[coordinates.NorthWest] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthWest.Color);
-                    //6
-                    if (transation != null)
-                        item = new ItemClone { Id = RandomFromList(transation.BorderSouthEast.List) };
-                }
-                //Gx
-                //BG
-                if (BitmapMap[coordinates.SouthWest] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthWest.Color);
-                    //5
-                    if (transation != null)
-                        item = new ItemClone { Id = RandomFromList(transation.BorderNorthEast.List) };
-                }
-                //xG
-                //GB
-                if (BitmapMap[coordinates.SouthEast] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthEast.Color);
-                    //4
-                    if (transation != null)
-                        item = new ItemClone { Id = RandomFromList(transation.BorderNorthWest.List) };
-                }
-
-                //Line
-                // B
-                //GxG
-                if (BitmapMap[coordinates.North] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.North.Color);
-                    //2
-                    if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineSouth.List) };
-                }
-                //GxG
-                // B
-                if (BitmapMap[coordinates.South] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.South.Color);
-                    //0
-                    if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineNorth.List) };
-                }
-                //G
-                //xB
-                //G
-                if (BitmapMap[coordinates.East] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.East.Color);
-                    //3
-                    if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineWest.List) };
-                }
-                // G
-                //Bx
-                // G
-                if (BitmapMap[coordinates.West] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.West.Color);
-                    //1
-                    if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineEast.List) };
-                }
-
-                //Edge
-                //B
-                //xB
-                if (BitmapMap[coordinates.East] != areaColorCoordinates.Center.Color && BitmapMap[coordinates.North] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthEast.Color);
-                    //11
-                    if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeSouthWest.List) };
-                }
-                // B
-                //Bx
-                if (BitmapMap[coordinates.West] != areaColorCoordinates.Center.Color && BitmapMap[coordinates.North] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthWest.Color);
-                    //10
-                    if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeSouthEast.List) };
-                }
-                //Bx
-                // B
-                if (BitmapMap[coordinates.West] != areaColorCoordinates.Center.Color && BitmapMap[coordinates.South] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthWest.Color);
-                    //9
-                    if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeNorthEast.List) };
-                }
-                //xB
-                //B
-                if (BitmapMap[coordinates.East] != areaColorCoordinates.Center.Color && BitmapMap[coordinates.South] != areaColorCoordinates.Center.Color)
-                {
-                    var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthEast.Color);
-                    //8
-                    if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeNorthWest.List) };
-                }
-
-                //if (item.Id == 0)
-                //    item.Id = smoothItem.Border.List[5 % 4].List[0];
-
-
-                var coast = areaColorCoordinates.Center;
-
-                if (coast.Type == TypeColor.Water)
-                {
-                    zlev = Random.Next(coast.Min, coast.Max);
-                    //item.Z = _MapAlt[_directions[(int)Directions.Location]] + zlev;
-                    item.Z = (sbyte)(mapObjectCoordinates.Center.Altitude + zlev);
-                }
-
-                //if (_AddItemMap[_directions[(int)Directions.Location]] == null)
-                //    _AddItemMap[_directions[(int)Directions.Location]] = new List<Item>();
-                if (item.Id != 0)
-                    if (mapObjectCoordinates.Center.Items == null)
-                        mapObjectCoordinates.Center.Items = new List<ItemClone>();
-
-                //_AddItemMap[_directions[(int)Directions.Location]].Add(item);
-                if (item.Id != 0)
-                    mapObjectCoordinates.Center.Items.Add(item);
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthEast.Color);
+                //7
+                if (transation != null)
+                    item = new ItemClone() { Id = RandomFromList(transation.BorderSouthWest.List) };
             }
+            //BG
+            //Gx
+            if (BitmapMap[coordinates.NorthWest] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthWest.Color);
+                //6
+                if (transation != null)
+                    item = new ItemClone { Id = RandomFromList(transation.BorderSouthEast.List) };
+            }
+            //Gx
+            //BG
+            if (BitmapMap[coordinates.SouthWest] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthWest.Color);
+                //5
+                if (transation != null)
+                    item = new ItemClone { Id = RandomFromList(transation.BorderNorthEast.List) };
+            }
+            //xG
+            //GB
+            if (BitmapMap[coordinates.SouthEast] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthEast.Color);
+                //4
+                if (transation != null)
+                    item = new ItemClone { Id = RandomFromList(transation.BorderNorthWest.List) };
+            }
+            #endregion //Border
+
+
+            #region Line
+            //Line
+            // B
+            //GxG
+            if (BitmapMap[coordinates.North] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.North.Color);
+                //2
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineSouth.List) };
+            }
+            //GxG
+            // B
+            if (BitmapMap[coordinates.South] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.South.Color);
+                //0
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineNorth.List) };
+            }
+            //G
+            //xB
+            //G
+            if (BitmapMap[coordinates.East] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.East.Color);
+                //3
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineWest.List) };
+            }
+            // G
+            //Bx
+            // G
+            if (BitmapMap[coordinates.West] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.West.Color);
+                //1
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineEast.List) };
+            }
+            #endregion //Line
+
+
+            #region Edge
+            //Edge
+            //B
+            //xB
+            if (BitmapMap[coordinates.East] != areaColorCoordinates.Center.Color && BitmapMap[coordinates.North] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthEast.Color);
+                //11
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeSouthWest.List) };
+            }
+            // B
+            //Bx
+            if (BitmapMap[coordinates.West] != areaColorCoordinates.Center.Color && BitmapMap[coordinates.North] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthWest.Color);
+                //10
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeSouthEast.List) };
+            }
+            //Bx
+            // B
+            if (BitmapMap[coordinates.West] != areaColorCoordinates.Center.Color && BitmapMap[coordinates.South] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthWest.Color);
+                //9
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeNorthEast.List) };
+            }
+            //xB
+            //B
+            if (BitmapMap[coordinates.East] != areaColorCoordinates.Center.Color && BitmapMap[coordinates.South] != areaColorCoordinates.Center.Color)
+            {
+                var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthEast.Color);
+                //8
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeNorthWest.List) };
+            }
+
+            #endregion //Edge
+
+            //if (item.Id == 0)
+            //    item.Id = smoothItem.Border.List[5 % 4].List[0];
+
+
+            var coast = areaColorCoordinates.Center;
+
+            if (coast.Type == TypeColor.Water)
+            {
+                zlev = Random.Next(coast.Min, coast.Max);
+                //item.Z = _MapAlt[_directions[(int)Directions.Location]] + zlev;
+                item.Z = (sbyte)(mapObjectCoordinates.Center.Altitude + zlev);
+            }
+
+            //if (_AddItemMap[_directions[(int)Directions.Location]] == null)
+            //    _AddItemMap[_directions[(int)Directions.Location]] = new List<Item>();
+            if (item.Id != 0)
+                if (mapObjectCoordinates.Center.Items == null)
+                    mapObjectCoordinates.Center.Items = new List<ItemClone>();
+
+            //_AddItemMap[_directions[(int)Directions.Location]].Add(item);
+            if (item.Id != 0)
+                mapObjectCoordinates.Center.Items.Add(item);
         }
 
         #endregion //Items Transations
@@ -1437,7 +1423,6 @@ namespace OpenUO.MapMaker.MapMaking
         //}
 
         #endregion
-
 
         #region Items
 

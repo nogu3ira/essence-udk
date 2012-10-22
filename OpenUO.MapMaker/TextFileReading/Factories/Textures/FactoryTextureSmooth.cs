@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Windows.Media;
 using OpenUO.MapMaker.Elements.Textures;
 using OpenUO.MapMaker.Elements.Textures.TextureTransition;
+using OpenUO.MapMaker.TextFileReading.Factories2;
 
-namespace OpenUO.MapMaker.TextFileReading.Factories2.Textures
+namespace OpenUO.MapMaker.TextFileReading.Factories.Textures
 {
     public class FactoryTextureSmooth : FactoryTransition
     {
@@ -29,8 +29,8 @@ namespace OpenUO.MapMaker.TextFileReading.Factories2.Textures
                     {
                         Smooth.List.Add(smooth);
                     }
-                    smooth.Name = s;
                     smooth = new AreaTransitionTexture();
+                    smooth.Name = s;
                     continue;
                 }
                 var chars = new char[]{'/'};

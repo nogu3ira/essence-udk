@@ -27,7 +27,6 @@ using OpenUO.MapMaker.TextFileReading;
 using OpenUO.MapMaker.TextFileReading.Factories.Colors;
 using OpenUO.MapMaker.TextFileReading.Factories.Items;
 using OpenUO.MapMaker.TextFileReading.Factories.Textures;
-using OpenUO.MapMaker.TextFileReading.Factories2.Textures;
 
 namespace OpenUO.MapMaker
 {

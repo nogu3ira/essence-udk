@@ -35,7 +35,7 @@ namespace OpenUO.MapMaker.Elements.ColorArea.ColorArea
         private Dictionary<Color, AreaTransitionTexture> _transitionTextureFinding;
         private Dictionary<Color, AreaTransitionItem> _transitionItemsFinding;
         public bool Initialized { get; private set; }
-        #endregion
+            #endregion
 
         #region Props
 
@@ -316,6 +316,7 @@ namespace OpenUO.MapMaker.Elements.ColorArea.ColorArea
                 {
                 }
             }
+
         }
 
         public AreaTransitionTexture FindTransitionTexture(Color color)
@@ -331,6 +332,7 @@ namespace OpenUO.MapMaker.Elements.ColorArea.ColorArea
             _transitionItemsFinding.TryGetValue(color, out transitionItem);
             return transitionItem;
         }
+
     }
 
     public enum TypeColor
