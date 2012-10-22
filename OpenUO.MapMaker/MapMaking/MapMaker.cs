@@ -961,49 +961,7 @@ namespace OpenUO.MapMaker.MapMaking
         #region Coasts
 
 
-        ///// <summary>
-        ///// function to use if you didn't make a good coast bmp
-        ///// </summary>
-        //void CoastBMP()
-        //{
-        //    int x, y;
-        //    Color A, B;
-        //    int z = 2;
-
-        //        for (x = Math.Max(2, MinX); x < _X; x++)
-        //            for (y = Math.Max(2, MinY); y < _Y; y++)
-        //            {
-        //                A = ColorAreasCoast.List[0].Color;
-        //                B = ColorAreasCoast.List[1].Color;
-        //                if (BitmapMap[CalculateZone(x,y)] == A)
-        //                {
-        //                    //Seiten
-        //                    if (BitmapMap[CalculateZone(x, y - z)] != A && BitmapMap[_directions[(int)Directions.West]] == A && BitmapMap[_directions[(int)Directions.East]] == A) _Tmp[CalculateZone(x, y)] = B;
-        //                    if (BitmapMap[CalculateZone(x, y + z)] != A && BitmapMap[_directions[(int)Directions.West]] == A && BitmapMap[_directions[(int)Directions.East]] == A) _Tmp[CalculateZone(x, y)] = B;
-        //                    if (BitmapMap[CalculateZone(x + z, y)] != A && BitmapMap[_directions[(int)Directions.North]] == A && BitmapMap[_directions[(int)Directions.South]] == A) _Tmp[CalculateZone(x, y)] = B;
-        //                    if (BitmapMap[CalculateZone(x - z, y)] != A && BitmapMap[_directions[(int)Directions.North]] == A && BitmapMap[_directions[(int)Directions.South]] == A) _Tmp[CalculateZone(x, y)] = B;
-        //                    //Kanten
-        //                    if (BitmapMap[CalculateZone(x + z, y - z)] != A && BitmapMap[_directions[(int)Directions.East]] == A && BitmapMap[_directions[(int)Directions.North]] == A) _Tmp[CalculateZone(x, y)] = B;
-        //                    if (BitmapMap[CalculateZone(x - z, y - z)] != A && BitmapMap[_directions[(int)Directions.West]] == A && BitmapMap[_directions[(int)Directions.North]] == A) _Tmp[CalculateZone(x, y)] = B;
-        //                    if (BitmapMap[CalculateZone(x - z, y + z)] != A && BitmapMap[_directions[(int)Directions.West]] == A && BitmapMap[_directions[(int)Directions.South]] == A) _Tmp[CalculateZone(x, y)] = B;
-        //                    if (BitmapMap[CalculateZone(x + z, y + z)] != A && BitmapMap[_directions[(int)Directions.East]] == A && BitmapMap[_directions[(int)Directions.South]] == A) _Tmp[CalculateZone(x, y)] = B;
-        //                    //ECKEN
-        //                    if (BitmapMap[CalculateZone(x + z, y)] != A && BitmapMap[CalculateZone(x, y - z)] != A) _Tmp[CalculateZone(x, y)] = B;
-        //                    if (BitmapMap[CalculateZone(x - z, y)] != A && BitmapMap[CalculateZone(x, y - z)] != A) _Tmp[CalculateZone(x, y)] = B;
-        //                    if (BitmapMap[CalculateZone(x - z, y)] != A && BitmapMap[CalculateZone(x, y + z)] != A) _Tmp[CalculateZone(x, y)] = B;
-        //                    if (BitmapMap[CalculateZone(x + z, y)] != A && BitmapMap[CalculateZone(x, y + z)] != A) _Tmp[CalculateZone(x, y)] = B;
-        //                }
-        //            }
-
-
-        //        for (x = Math.Max(2, MinX); x < _X; x++)
-        //            for (y = Math.Max(2, MinY); y < _Y; y++)
-        //                if (_Tmp[CalculateZone(x,y)] != Color.Black)
-        //                    BitmapMap[CalculateZone(x,y)] = _Tmp[CalculateZone(x,y)];
-
-
-        //}
-
+        
         /// <summary>
         /// Make Coast method, it search if the given parameter is a coast or not
         /// </summary>
@@ -1013,7 +971,7 @@ namespace OpenUO.MapMaker.MapMaking
             //int ID = 0;
             //if (!ItemsCoasts.FindCoastByColor(Water))
             //    return;
-            int ID = 0;
+            var id = 0;
             if (areaColorCoordinates.Center.Type != TypeColor.WaterCoast)
                 return;
 
@@ -1023,127 +981,144 @@ namespace OpenUO.MapMaker.MapMaking
                 return;
             }
 
-            Boolean found = false;
-
 
             #region Line
             //Line
-            // LLL 
+            //  L 
             // WxW
-            //if (BitmapMap[_directions[(int)Directions.North]] == i.Ground.Color && BitmapMap[_directions[(int)Directions.West]] == Water && BitmapMap[_directions[(int)Directions.East]] == Water)
             if (
                 areaColorCoordinates.North.Type != TypeColor.WaterCoast
                 && areaColorCoordinates.West.Type == TypeColor.WaterCoast
                 && areaColorCoordinates.East.Type == TypeColor.WaterCoast
-                //&& areaColorCoordinates.NorthEast.Type != TypeColor.WaterCoast
-                //&& areaColorCoordinates.NorthWest.Type != TypeColor.WaterCoast
                 )
             {
-                //num 2 
-                //_MapID[_directions[(int)Directions.Location]] = RandomFromList(i.Ground.Lines[2 / 4].List[2 % 4].List);
-                //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(i.Ground.LineSouth.List); ;
-                //_MapAlt[_directions[(int)Directions.Location]] = -15;
-                //_mapObjects[_directions[(int)Directions.Center]].Altitude = -15;
-                //_mapObjects[_directions[(int)Directions.Center]].Occupied = 1;
-                //ID = RandomFromList(i.Coast.LineNorth.List);
-                ID = RandomFromList(areaColorCoordinates.North.Coasts.Coast.LineSouth.List);
+                id = RandomFromList(areaColorCoordinates.North.Coasts.Coast.LineSouth.List);
 
                 var texture= (short)RandomFromList(areaColorCoordinates.North.Coasts.Ground.LineSouth.List);
                 mapObjectCoordinates.Center.Texture = texture;
+
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
 
             }
             // WxW
-            //  L 
-            //if (BitmapMap[_directions[(int)Directions.South]] == i.Ground.Color && BitmapMap[_directions[(int)Directions.West]] == Water && BitmapMap[_directions[(int)Directions.East]] == Water)
+            //  L  
             if (
-                areaColorCoordinates.South.Type != TypeColor.WaterCoast
+                areaColorCoordinates.South.Type != TypeColor.WaterCoast //&& mapObjectCoordinates.South.Occupied == 0
                 && areaColorCoordinates.West.Type == TypeColor.WaterCoast
                 && areaColorCoordinates.East.Type == TypeColor.WaterCoast
-                //&& areaColorCoordinates.SouthEast.Type != TypeColor.WaterCoast
-                //&& areaColorCoordinates.SouthWest.Type != TypeColor.WaterCoast
                 )
             {
-                //num 0
-                //_MapID[_directions[(int)Directions.Location]] = RandomFromList(i.Ground.Lines[0 / 4].List[0 % 4].List);
-                //ID = RandomFromList(i.Coast.LineSouth.List);
-                //_MapAlt[_directions[(int)Directions.Location]] = -15;
-                //_mapObjects[_directions[(int)Directions.North]].Occupied = 1;
-                //_mapObjects[_directions[(int)Directions.Center]].Altitude = -15;
-                //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(i.Ground.LineNorth.List);
                 mapObjectCoordinates.North.Occupied = 1;
                 mapObjectCoordinates.Center.Altitude = -15;
                 var texture =
                     (short)RandomFromList(areaColorCoordinates.South.Coasts.Ground.LineNorth.List);
                 mapObjectCoordinates.Center.Texture = texture;
-                ID = RandomFromList(areaColorCoordinates.South.Coasts.Coast.LineNorth.List);
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
+                id = RandomFromList(areaColorCoordinates.South.Coasts.Coast.LineNorth.List);
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
             }
-            // WL
+            // W
             // xL 
-            // WL
-            //if (BitmapMap[_directions[(int)Directions.East]] == i.Ground.Color && BitmapMap[_directions[(int)Directions.North]] == Water && BitmapMap[_directions[(int)Directions.South]] == Water)
+            // W
             if (
-                areaColorCoordinates.East.Type != TypeColor.WaterCoast
+                areaColorCoordinates.East.Type != TypeColor.WaterCoast //&& mapObjectCoordinates.East.Occupied == 0
                 && areaColorCoordinates.North.Type == TypeColor.WaterCoast
                 && areaColorCoordinates.South.Type == TypeColor.WaterCoast
-                //&& areaColorCoordinates.SouthEast.Type != TypeColor.WaterCoast
-                //&& areaColorCoordinates.NorthEast.Type != TypeColor.WaterCoast
                 )
             {
-                //3
-                //_MapID[_directions[(int)Directions.Location]] = RandomFromList(i.Ground.Lines[3 / 4].List[3 % 4].List);
-                //ID = RandomFromList(i.Coast.LineWest.List);
-                ////_MapAlt[_directions[(int)Directions.Location]] = -15;
-                //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(i.Ground.LineEast.List);
-                //_mapObjects[_directions[(int)Directions.Center]].Altitude = -15;
-                //_mapObjects[_directions[(int)Directions.East]].Occupied = 1;
-
-                ID = RandomFromList(areaColorCoordinates.East.Coasts.Coast.LineWest.List);
+                id = RandomFromList(areaColorCoordinates.East.Coasts.Coast.LineWest.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.East.Coasts.Ground.LineWest.List);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
             }
             //  W
             // Lx
             //  W
-            //if (BitmapMap[_directions[(int)Directions.West]] == i.Ground.Color && BitmapMap[_directions[(int)Directions.North]] == Water && BitmapMap[_directions[(int)Directions.South]] == Water)
-            if (areaColorCoordinates.West.Type != TypeColor.WaterCoast
+            if (areaColorCoordinates.West.Type != TypeColor.WaterCoast// && mapObjectCoordinates.West.Occupied == 0
                 && areaColorCoordinates.North.Type == TypeColor.WaterCoast
                 && areaColorCoordinates.South.Type == TypeColor.WaterCoast
-                //&& areaColorCoordinates.SouthWest.Type != TypeColor.WaterCoast
-                //&& areaColorCoordinates.NorthWest.Type != TypeColor.WaterCoast
                 )
             {
-                //1
-                ////_MapID[_directions[(int)Directions.Location]] = RandomFromList(i.Ground.Lines[1 / 4].List[1 % 4].List);
-                //ID = RandomFromList(i.Coast.LineEast.List);
-                ////if (neu.spezial != 2)
-                ////    MapAlt(x, y) = RandomNum(-4, 2);
-                ////_MapAlt[_directions[(int)Directions.Location]] = -15;
-                ////_MapOcc[_directions[(int)Directions.Location]] = 1;
-                //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(i.Ground.LineWest.List);
-                //_mapObjects[_directions[(int)Directions.Center]].Altitude = (sbyte)Random.Next(-4, 2);
-                //_mapObjects[_directions[(int)Directions.Center]].Occupied = 1;
-
-
-                ID = RandomFromList(areaColorCoordinates.West.Coasts.Coast.LineEast.List);
-                var texture = (short)RandomFromList(areaColorCoordinates.West.Coasts.Ground.LineWest.List);
+                id = RandomFromList(areaColorCoordinates.West.Coasts.Coast.LineEast.List);
+                var texture = (short)RandomFromList(areaColorCoordinates.West.Coasts.Ground.LineEast.List);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = (sbyte)Random.Next(-4, 2);
                 mapObjectCoordinates.Center.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
 
             }
             #endregion // Line
+
+            #region Border
+            //Border
+            // WL
+            // xW
+            if (
+                areaColorCoordinates.NorthEast.Type != TypeColor.WaterCoast && areaColorCoordinates.NorthEast.Type != TypeColor.Water 
+                && areaColorCoordinates.East.Type == TypeColor.WaterCoast
+                && areaColorCoordinates.North.Type == TypeColor.WaterCoast
+                )
+            {
+                id = RandomFromList(areaColorCoordinates.NorthEast.Coasts.Coast.BorderSouthWest.List);
+                var texture= (short)RandomFromList(areaColorCoordinates.NorthEast.Coasts.Ground.BorderNorthEast.List);
+                mapObjectCoordinates.Center.Texture = texture;
+                mapObjectCoordinates.Center.Altitude = -15;
+                mapObjectCoordinates.Center.Occupied = 1;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
+            }
+            // LW
+            // Wx
+            if (
+                areaColorCoordinates.NorthWest.Type != TypeColor.WaterCoast && areaColorCoordinates.NorthWest.Type != TypeColor.Water
+                && areaColorCoordinates.West.Type == TypeColor.WaterCoast
+                && areaColorCoordinates.North.Type == TypeColor.WaterCoast
+                )
+            {
+                id = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.BorderSouthEast.List);
+                var texture= (short)RandomFromList(areaColorCoordinates.NorthWest.Coasts.Ground.BorderNorthWest.List);
+
+                mapObjectCoordinates.Center.Texture = texture;
+                mapObjectCoordinates.Center.Altitude = -15;
+                mapObjectCoordinates.Center.Occupied = 1;
+
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
+
+            }
+            // Wx
+            // LW
+            if (
+                areaColorCoordinates.SouthWest.Type != TypeColor.WaterCoast 
+                && areaColorCoordinates.West.Type == TypeColor.WaterCoast
+                && areaColorCoordinates.South.Type == TypeColor.WaterCoast
+                )
+            {
+                id = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.BorderNorthEast.List);
+                var texture = (short)RandomFromList(areaColorCoordinates.SouthWest.Coasts.Ground.BorderSouthWest.List);
+                mapObjectCoordinates.Center.Texture = texture;
+                mapObjectCoordinates.Center.Altitude = -15;
+                mapObjectCoordinates.SouthWest.Occupied = 1;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
+            }
+            // xW
+            // WL
+            if (
+                areaColorCoordinates.SouthEast.Type != TypeColor.WaterCoast 
+                && areaColorCoordinates.East.Type == TypeColor.WaterCoast
+                && areaColorCoordinates.South.Type == TypeColor.WaterCoast
+                )
+            {
+                id = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.BorderNorthWest.List);
+                var texture = (short)RandomFromList(areaColorCoordinates.SouthEast.Coasts.Ground.BorderSouthEast.List);
+                mapObjectCoordinates.Center.Texture = texture;
+                mapObjectCoordinates.Center.Altitude = -15;
+                mapObjectCoordinates.Center.Occupied = 1;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
+            }
+
+            #endregion //Border
 
             #region  Edge
 
@@ -1151,147 +1126,71 @@ namespace OpenUO.MapMaker.MapMaking
             // LL
             // xL
             if (
-                areaColorCoordinates.NorthEast.Type != TypeColor.WaterCoast
+                areaColorCoordinates.NorthEast.Type != TypeColor.WaterCoast// && mapObjectCoordinates.NorthEast.Occupied == 0
                 && areaColorCoordinates.East.Type != TypeColor.WaterCoast
                 && areaColorCoordinates.North.Type != TypeColor.WaterCoast
                 )
             {
-                ID = RandomFromList(areaColorCoordinates.NorthEast.Coasts.Coast.EdgeSouthWest.List);
+                id = RandomFromList(areaColorCoordinates.NorthEast.Coasts.Coast.EdgeSouthWest.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.NorthEast.Coasts.Ground.EdgeSouthWest.List);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
             }
             // LL
             // Lx
             if (
-                areaColorCoordinates.NorthWest.Type != TypeColor.WaterCoast
+                areaColorCoordinates.NorthWest.Type != TypeColor.WaterCoast// && mapObjectCoordinates.NorthWest.Occupied == 0
                 && areaColorCoordinates.West.Type != TypeColor.WaterCoast
                 && areaColorCoordinates.North.Type != TypeColor.WaterCoast
                 )
             {
-                ID = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.EdgeSouthEast.List);
+                id = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.EdgeSouthEast.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.NorthWest.Coasts.Ground.EdgeSouthEast.List);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
             }
             // Lx
             // LL
             if (
-                areaColorCoordinates.SouthWest.Type != TypeColor.WaterCoast
+                areaColorCoordinates.SouthWest.Type != TypeColor.WaterCoast// && mapObjectCoordinates.SouthWest.Occupied == 0
                 && areaColorCoordinates.West.Type != TypeColor.WaterCoast
                 && areaColorCoordinates.South.Type != TypeColor.WaterCoast
                 )
             {
-                ID = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.EdgeNorthEast.List);
+                id = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.EdgeNorthEast.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.SouthWest.Coasts.Ground.EdgeNorthEast.List);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
             }
             // xL
             // LL
             if (
-                areaColorCoordinates.SouthEast.Type != TypeColor.WaterCoast
+                areaColorCoordinates.SouthEast.Type != TypeColor.WaterCoast // && mapObjectCoordinates.SouthEast.Occupied == 0
                 && areaColorCoordinates.East.Type != TypeColor.WaterCoast
                 && areaColorCoordinates.South.Type != TypeColor.WaterCoast
                 )
             {
-                ID = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.EdgeNorthWest.List);
+                id = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.EdgeNorthWest.List);
                 var texture = (short)RandomFromList(areaColorCoordinates.SouthEast.Coasts.Ground.EdgeNorthWest.List);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -15;
                 mapObjectCoordinates.Center.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
+                PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates);
             }
 
             #endregion //Edge
 
-            #region Border
-            //Border
-            // WL
-            // xW
-            if (
-                areaColorCoordinates.NorthEast.Type != TypeColor.WaterCoast 
-                && areaColorCoordinates.East.Type == TypeColor.WaterCoast
-                && areaColorCoordinates.North.Type == TypeColor.WaterCoast
-                )
+            if(id == 0)
             {
-                ID = RandomFromList(areaColorCoordinates.NorthEast.Coasts.Coast.BorderSouthEast.List);
-                var texture= (short)RandomFromList(areaColorCoordinates.NorthEast.Coasts.Ground.BorderNorthEast.List);
-                if (texture == 100)
-                {
-                    int a = 0;
-                    a++;
-                }
-                mapObjectCoordinates.Center.Texture = texture;
-                mapObjectCoordinates.Center.Altitude = -15;
-                mapObjectCoordinates.Center.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
+                id++;
+                //PlaceCoastItem(areaColorCoordinates.Center.Coasts.Coast.Texture, mapObjectCoordinates, areaColorCoordinates);
             }
-            // LW
-            // Wx
-            if (
-                areaColorCoordinates.NorthWest.Type != TypeColor.WaterCoast 
-                && areaColorCoordinates.West.Type == TypeColor.WaterCoast
-                && areaColorCoordinates.North.Type == TypeColor.WaterCoast
-                )
-            {
-                ID = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.BorderSouthWest.List);
-                var texture= (short)RandomFromList(areaColorCoordinates.NorthWest.Coasts.Ground.BorderNorthWest.List);
-
-                mapObjectCoordinates.Center.Texture = texture;
-                mapObjectCoordinates.Center.Altitude = -15;
-                mapObjectCoordinates.Center.Occupied = 1;
-
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
-
-            }
-            // Wx
-            // LW
-            if (
-                areaColorCoordinates.SouthWest.Type != TypeColor.WaterCoast
-                && areaColorCoordinates.West.Type == TypeColor.WaterCoast
-                && areaColorCoordinates.South.Type == TypeColor.WaterCoast
-                )
-            {
-                ID = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.BorderNorthWest.List);
-                var texture = (short)RandomFromList(areaColorCoordinates.SouthWest.Coasts.Ground.BorderSouthWest.List);
-                mapObjectCoordinates.Center.Texture = texture;
-                mapObjectCoordinates.Center.Altitude = -15;
-                mapObjectCoordinates.SouthWest.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
-            }
-            // xW
-            // WL
-            if (
-                areaColorCoordinates.SouthEast.Type != TypeColor.WaterCoast
-                && areaColorCoordinates.East.Type == TypeColor.WaterCoast
-                && areaColorCoordinates.South.Type == TypeColor.WaterCoast
-                )
-            {
-                ID = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.BorderNorthEast.List);
-                var texture = (short)RandomFromList(areaColorCoordinates.SouthEast.Coasts.Ground.BorderSouthEast.List);
-                mapObjectCoordinates.Center.Texture = texture;
-                mapObjectCoordinates.Center.Altitude = -15;
-                mapObjectCoordinates.Center.Occupied = 1;
-                PlaceCoastItem(ID, mapObjectCoordinates, areaColorCoordinates);
-                return;
-            }
-
-            #endregion //Border
-
 
 
         }
@@ -1311,9 +1210,11 @@ namespace OpenUO.MapMaker.MapMaking
             var item = new ItemClone() { Id = id };
             //if (_AddItemMap[_directions[(int)Directions.Location]] == null) _AddItemMap[_directions[(int)Directions.Location]] = new List<Item>();
             //_AddItemMap[_directions[(int)Directions.Location]].Add(item); // uotc : additem
-            if (mapObjectCoordinates.Center.Items == null) mapObjectCoordinates.Center.Items = new List<ItemClone>();
-            mapObjectCoordinates.Center.Items.Add(item);
-
+            if (mapObjectCoordinates.Center.Items == null)
+            {
+                mapObjectCoordinates.Center.Items = new List<ItemClone>();
+                mapObjectCoordinates.Center.Items.Add(item);
+            }
             //SiENcE mod
             if (!AutomaticZMode)
             {
@@ -1827,15 +1728,15 @@ namespace OpenUO.MapMaker.MapMaking
         //public int SouthWest { get { return _southWest; } }
         //public int X { get { return _x; } }
         //public int Y { get { return _y; } }
-        public int Center { get { return _array[0]; } }
-        public int North { get { return _array[1]; } }
-        public int South { get { return _array[2]; } }
-        public int East { get { return _array[3]; } }
-        public int West { get { return _array[4]; } }
-        public int NorthEast { get { return _array[5]; } }
-        public int NorthWest { get { return _array[6]; } }
-        public int SouthEast { get { return _array[7]; } }
-        public int SouthWest { get { return _array[8]; } }
+        public int Center { get { return _array[(int)Directions.Center]; } }
+        public int North { get { return _array[(int)Directions.North]; } }
+        public int South { get { return _array[(int)Directions.South]; } }
+        public int East { get { return _array[(int)Directions.East]; } }
+        public int West { get { return _array[(int)Directions.West]; } }
+        public int NorthEast { get { return _array[(int)Directions.NorthEast]; } }
+        public int NorthWest { get { return _array[(int)Directions.NorthWest]; } }
+        public int SouthEast { get { return _array[(int)Directions.SouthEast]; } }
+        public int SouthWest { get { return _array[(int)Directions.SouthWest]; } }
         public int X { get { return _array[9]; } }
         public int Y { get { return _array[10]; } }
 
@@ -1844,15 +1745,15 @@ namespace OpenUO.MapMaker.MapMaking
         public Coordinates(int shiftX, int shiftY, int x, int y, int stride)
         {
             _array = new int[11];
-            _array[0] = MapMaker.CalculateZone(x, y, stride);
-            _array[1] = MapMaker.CalculateZone(x, y - shiftY, stride); ;
-            _array[2] = MapMaker.CalculateZone(x, y + shiftY, stride);
-            _array[3] = MapMaker.CalculateZone(x + shiftX, y, stride);
-            _array[4] = MapMaker.CalculateZone(x - shiftX, y, stride);
-            _array[5] = MapMaker.CalculateZone(x - shiftX, y - shiftY, stride);
-            _array[6] = MapMaker.CalculateZone(x + shiftX, y - shiftY, stride);
-            _array[7] = MapMaker.CalculateZone(x - shiftX, y + shiftY, stride);
-            _array[8] = MapMaker.CalculateZone(x + shiftX, y + shiftY, stride);
+            _array[(int)Directions.Center] = MapMaker.CalculateZone(x, y, stride);
+            _array[(int)Directions.North] = MapMaker.CalculateZone(x, y - shiftY, stride); ;
+            _array[(int)Directions.South] = MapMaker.CalculateZone(x, y + shiftY, stride);
+            _array[(int)Directions.East] = MapMaker.CalculateZone(x + shiftX, y, stride);
+            _array[(int)Directions.West] = MapMaker.CalculateZone(x - shiftX, y, stride);
+            _array[(int)Directions.NorthWest] = MapMaker.CalculateZone(x - shiftX, y - shiftY, stride);
+            _array[(int)Directions.NorthEast] = MapMaker.CalculateZone(x + shiftX, y - shiftY, stride);
+            _array[(int)Directions.SouthWest] = MapMaker.CalculateZone(x - shiftX, y + shiftY, stride);
+            _array[(int)Directions.SouthEast] = MapMaker.CalculateZone(x + shiftX, y + shiftY, stride);
             _array[9] = x;
             _array[10] = y;
             //_x = x;

@@ -90,7 +90,7 @@ namespace OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes
         /// <summary>
         /// 
         /// </summary>
-        public CollectionItem EdgeNorthWest { get { return Edge.List[(int)EdgeDirection.SoutWest]; } }
+        public CollectionItem EdgeNorthWest { get { return Edge.List[(int)EdgeDirection.NortWest]; } }
 
         /// <summary>
         /// 
