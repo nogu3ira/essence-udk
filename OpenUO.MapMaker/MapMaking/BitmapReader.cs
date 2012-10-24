@@ -26,6 +26,7 @@ namespace OpenUO.MapMaker.MapMaking
         /// Just cache the bmp in ram
         /// </summary>
         /// <param name="location"></param>
+        /// <param name="altitude"> </param>
         private void Cache(string location, bool altitude)
         {
             using (var bitmap = new Bitmap(location))
