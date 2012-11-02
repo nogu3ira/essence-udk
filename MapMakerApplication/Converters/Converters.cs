@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using EssenceUDK.Platform;
@@ -84,6 +85,33 @@ namespace MapMakerApplication.Converters
                 return null;
 
             return image.Image;
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ConverterInvertVisibility : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var visibility = (Visibility)value;
+
+            switch (visibility)
+            {
+                case Visibility.Visible:
+                    return Visibility.Hidden;
+                case Visibility.Hidden:
+                    return Visibility.Visible;
+                case Visibility.Collapsed:
+                    return Visibility.Visible;
+                default:
+                    return visibility;
+            }
+            
 
         }
 

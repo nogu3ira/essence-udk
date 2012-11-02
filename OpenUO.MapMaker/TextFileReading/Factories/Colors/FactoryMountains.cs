@@ -67,7 +67,7 @@ namespace OpenUO.MapMaker.TextFileReading.Factories.Colors
                 }
                 
             }
-            Mountains.List.Add(mountains);
+            //Mountains.List.Add(mountains);
         }
     }
 }

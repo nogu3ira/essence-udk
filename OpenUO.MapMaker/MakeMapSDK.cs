@@ -7,6 +7,8 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Formatters.Soap;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using MiscUtil.Conversion;
@@ -33,6 +35,14 @@ namespace OpenUO.MapMaker
     public class MakeMapSDK 
     {
         public static Dictionary<int, Color> Colors { get; set; }
+
+        public event EventHandler EventMakingMapEnd;
+
+        public void OnMakingMap(EventArgs e)
+        {
+            EventHandler handler = EventMakingMapEnd;
+            if (handler != null) handler(this, e);
+        }
 
         #region props
 
@@ -465,18 +475,27 @@ namespace OpenUO.MapMaker
 
                     transition.IndexTo = area2.Index;
                 }
-            if (CollectionAreaTransitionCliffTexture!=null)
+            if (CollectionAreaTransitionCliffTexture != null)
+            {
+                var colorclif = new AreaColor { Color = CollectionAreaTransitionCliffTexture.Color, Type = TypeColor.Cliff, Name = "Cliff", Index = CollectionColorArea.List.Count };
+                CollectionColorArea.List.Add(colorclif);
+
+                CollectionColorArea.InitializeSeaches();
+
                 foreach (var cliff in CollectionAreaTransitionCliffTexture.List)
                 {
                     var area = CollectionColorArea.FindByColor(cliff.ColorFrom);
                     if (area == null) continue;
-                
+
                     area.TransitionCliffTextures.Add(cliff);
 
                     var areato = CollectionColorArea.FindByColor(cliff.ColorTo);
                     if (areato == null) continue;
                     cliff.IdTo = areato.Index;
                 }
+               
+            }
+
             #endregion //Textures
 
             #region Items
@@ -521,10 +540,27 @@ namespace OpenUO.MapMaker
 
         public void MapMake(string directory, string bitmaplocation, string bitmapZLocation,int x, int y, int index)
         {
-            var bitmapMap = new BitmapReader(bitmaplocation, false).BitmapColors;
-            var bitmapZ = new BitmapReader(bitmapZLocation, true).BitmapColors;
+            //var bitmapMap = new BitmapReader(bitmaplocation, false).BitmapColors;
+            //var bitmapZ = new BitmapReader(bitmapZLocation, true).BitmapColors;
+            CollectionColorArea.InitializeSeaches();
+            //Thread mapzThread = new Thread(() => BitmapReader.Altitude(bitmapZLocation));
+            //Thread mapThread = new Thread(() => BitmapReader.ProduceMap(CollectionColorArea, bitmaplocation));
+            //var taskZBitmap = Task<sbyte[]>(mapzThread);
 
-            var mulmaker = new MapMaking.MapMaker(bitmapMap, bitmapZ, x, y, index)
+
+            var taskMapBitmap =
+                Task<AreaColor[]>.Factory.StartNew(() => BitmapReader.ProduceMap(CollectionColorArea, bitmaplocation));
+
+            var taskMapZ = Task<sbyte[]>.Factory.StartNew(() => BitmapReader.Altitude(bitmapZLocation));
+
+            var task = new Task[2];
+            task[0] = taskMapBitmap;
+            task[1] = taskMapZ;
+            Task.WaitAll(task);
+
+            
+
+            var mulmaker = new MapMaking.MapMaker(taskMapZ.Result, taskMapBitmap.Result, x, y, index)
                                {
                                    CollectionAreaColor = CollectionColorArea,
                                    TextureAreas = CollectionAreaTexture,
@@ -532,9 +568,11 @@ namespace OpenUO.MapMaker
                                    MulDirectory = directory
                                };
 
-
+            mulmaker.ProgressText += EventProgress;
 
             mulmaker.Bmp2Map();
+            
+            OnMakingMap(EventArgs.Empty);
         }
             
         #endregion
@@ -613,8 +651,8 @@ namespace OpenUO.MapMaker
             writer.Write(color.A); //alfa
             writer.Write(color.A);
         }
-        
-        #endregion
+
+        #endregion //ACO Making
 
         #region UtilityMethods
 
@@ -744,11 +782,19 @@ namespace OpenUO.MapMaker
             {
                 area.PropertyChanged += EventUpdateList;
             }
+            EventUpdateList(this, null);
             //MergingData();
         }
 
         #endregion //Save/Load functions
 
+        public event EventHandler EventMapMakingProgress;
+
+        public void OnEventMapMakingProgress(EventArgs e)
+        {
+            EventHandler handler = EventMapMakingProgress;
+            if (handler != null) handler(this, e);
+        }
 
         private void EventUpdateList(object sender, EventArgs args)
         {
@@ -765,6 +811,16 @@ namespace OpenUO.MapMaker
                 
             }
         }
+
+        private void EventProgress(object sender, EventArgs args)
+        {
+            OnEventMapMakingProgress(args);
+        }
+
+
+        
+
+
 
 
     }

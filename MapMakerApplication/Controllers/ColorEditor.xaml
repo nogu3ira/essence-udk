@@ -59,20 +59,23 @@
         <ComboBox Name="ComboBoxType" Grid.ColumnSpan="3" Grid.Row="5" SelectedItem="{Binding Type}" ItemsSource="{Binding Source={StaticResource ObjectProviderAreaColorTypes}}" Grid.Column="1"/>
         <TextBlock Grid.Row="6" TextWrapping="Wrap"><Run Language="it-it" Text="Color"/></TextBlock>
                 <xctk:ColorPicker SelectedColor="{Binding Color}" Grid.Column="1" Grid.Row="6" />
-        <TextBlock Grid.Column="2" Grid.Row="6" TextWrapping="Wrap" Text="{Binding Color}" Grid.ColumnSpan="2">
+        <TextBlock Grid.Column="2" Grid.Row="6" TextWrapping="Wrap" Text="{Binding Color}" Grid.ColumnSpan="2" >
             <TextBlock.Background>
                 <SolidColorBrush Color="{Binding Color}"/>
             </TextBlock.Background>
         </TextBlock>
-        <CheckBox Content="Auto Grown" Grid.Row="6" Style="{StaticResource vis}" Grid.ColumnSpan="2" IsChecked="{Binding ModeAutomatic}" Margin="0,29,0.333,9" Grid.RowSpan="3"/>
-        <TextBlock Grid.Row="8" TextWrapping="Wrap" Style="{StaticResource vis}" Grid.ColumnSpan="2" Margin="0,11,95.333,7" Grid.RowSpan="2"><Run Language="it-it" Text="Index Top"/></TextBlock>
-        <TextBlock Grid.Row="9" Style="{StaticResource vis}" TextWrapping="Wrap" Grid.Column="1" Margin="12.667,12,9.333,8"><Run Language="it-it" Text="Grown Circles"/></TextBlock>
-        <xctk:PropertyGrid Grid.ColumnSpan="4" Style="{StaticResource vis}" AutoGenerateProperties="False" Grid.Row="11" ShowSearchBox="False" ShowSortOptions="False" ShowSummary="False" ShowTitle="False" SelectedObject="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected}">
+        <CheckBox Content="Auto Grown" Grid.Row="8"  Grid.ColumnSpan="2" IsChecked="{Binding ModeAutomatic}" Style="{StaticResource vis}"/>
+        <TextBlock Grid.Row="9" TextWrapping="Wrap" Style="{StaticResource vis}"><Run Language="it-it" Text="Index Top"/></TextBlock>
+        <ComboBox Grid.Column="1" Grid.Row="9" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.AreaColorIndexes}" SelectedItem="{Binding ColorTopMountain}" Style="{StaticResource vis}"/>
+        <TextBlock Grid.Row="9" TextWrapping="Wrap" Grid.Column="2" Text="{Binding ColorTopMountain}">
+            <TextBlock.Background>
+                <SolidColorBrush Color="{Binding ColorTopMountain}"/>
+            </TextBlock.Background>
+        </TextBlock>
+        <xctk:PropertyGrid Grid.ColumnSpan="4" SelectedObject="{Binding}" Grid.Row="11" Grid.RowSpan="2" Style="{StaticResource vis}" AutoGenerateProperties="False" ShowSearchBox="False" ShowTitle="False" ShowSortOptions="False" IsCategorized="False">
             <xctk:PropertyGrid.PropertyDefinitions>
                 <xctk:PropertyDefinition Name="List"/>
             </xctk:PropertyGrid.PropertyDefinitions>
         </xctk:PropertyGrid>
-
-
     </Grid>
 </UserControl>

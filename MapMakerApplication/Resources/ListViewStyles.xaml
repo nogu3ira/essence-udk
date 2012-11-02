@@ -13,14 +13,14 @@
     </DataTemplate>
 
     <DataTemplate x:Key="MyImagesItemTemplateTexture">
-        <Grid Width="44" Height="44" HorizontalAlignment="Center" Margin="2,2,2,2">
+        <Grid Height="128" Width="128"  HorizontalAlignment="Center" Margin="2,2,2,2">
             <Image Source="{Binding Path=Texture,Converter={StaticResource ImageFromISurface}}" Stretch="Uniform" />
             <TextBlock Text="{Binding TileId}" Foreground="Gold" />
         </Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="MyImagesItemTemplateTextureFromInt">
-        <Grid Width="44" Height="44" HorizontalAlignment="Center" Margin="2,2,2,2">
+        <Grid Width="128" Height="128" HorizontalAlignment="Center" Margin="2,2,2,2">
             <Image Source="{Binding Converter={StaticResource ImageTextureFromIntConverter}}" Stretch="Uniform" />
             <TextBlock Text="{Binding}" Foreground="Gold" />
         </Grid>

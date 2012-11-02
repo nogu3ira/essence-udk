@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using EssenceUDK.Platform.DataTypes;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MapMakerApplication.Messages;
 using OpenUO.MapMaker;
+using OpenUO.MapMaker.Elements;
 using OpenUO.MapMaker.Elements.ColorArea;
 using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
 using OpenUO.MapMaker.Elements.Items;
 using OpenUO.MapMaker.Elements.Items.ItemText;
 using OpenUO.MapMaker.Elements.Textures;
 using OpenUO.MapMaker.Elements.Textures.TextureArea;
+using OpenUO.MapMaker.Elements.Textures.TexureCliff;
 using Color = System.Windows.Media.Color;
 using GalaSoft.MvvmLight.Messaging;
 namespace MapMakerApplication.ViewModel
@@ -67,6 +70,30 @@ namespace MapMakerApplication.ViewModel
         private int _selectedCoastType;
 
         #endregion
+
+        #region EventHandling
+
+        private Visibility _visibility = Visibility.Hidden;
+
+        private string _textProgres;
+        
+        private int _proressBarValue;
+
+        private bool _busy;
+
+        #endregion //EventHandling
+
+        #region Cliffs
+
+        private object _selectedCliff;
+
+        private object _selectedTextureForCliff;
+
+        private object _selectedTextureInListCliff;
+
+        #endregion //cliffs
+
+        private WindowBusy _windowBusy;
 
         #endregion //Declarations
 
@@ -379,6 +406,30 @@ namespace MapMakerApplication.ViewModel
 
         #endregion
 
+        #region Cliffs
+
+        public object SelectedCliff { get { return _selectedCliff; } set { _selectedCliff = value; RaisePropertyChanged(()=>SelectedCliff);  RaisePropertyChanged(()=>CliffList);} }
+
+        public ObservableCollection<int> CliffList { get { return _selectedCliff != null?((AreaTransitionCliffTexture)SelectedCliff).List:null; } }
+
+        public object SelectedTextureForCliff { get { return _selectedTextureForCliff; } set { _selectedTextureForCliff = value; RaisePropertyChanged(()=>SelectedTextureForCliff); } }
+
+        public object SelectedTextureInCliffList { get { return _selectedTextureInListCliff; } set { _selectedTextureInListCliff = value; RaisePropertyChanged(() => SelectedTextureInCliffList); } }
+
+        #endregion //Cliff
+
+        #region EventHandling
+
+        public bool Busy { get { return _busy; } set { _busy = value; RaisePropertyChanged(() => Busy); } }
+
+        public string TextProgress { get { return _textProgres; } set { _textProgres = value; RaisePropertyChanged(() => TextProgress); } }
+
+        public int ProgressBarValue { get { return _proressBarValue; } set { _proressBarValue = value; RaisePropertyChanged(() => ProgressBarValue); } }
+
+        public Visibility Visibility { get { return _visibility; } set { _visibility = value; RaisePropertyChanged(() => Visibility); } }
+
+        #endregion //EventHandling
+
         #endregion //Properties
 
         #region Command Properties
@@ -443,7 +494,23 @@ namespace MapMakerApplication.ViewModel
 
         #endregion //Coasts
 
+
+        #region CliffCommands
+
+        public ICommand CommandAddCliff { get; private set; }
+
+        public ICommand CommandDeleteCliff { get; private set; }
+
+        public ICommand CommandAddCliffTexture { get; private set; }
+
+        public ICommand CommandRemoveCliffTexture { get; private set; }
+
+        #endregion //Cliff Commands
+
+
         public ICommand CommandOpenOptionWindow { get; private set; }
+
+
 
         #endregion //Command Properties
 
@@ -538,12 +605,45 @@ namespace MapMakerApplication.ViewModel
 
             CommandFileOpen = new RelayCommand(() => AppMessages.DialogRequest.Send(new MessageDialogRequest("LOAD")));
             #endregion //Save Commands
+            
+            #region Cliffs Commands
+            CommandAddCliff = new RelayCommand(() => CollectionAreaColorSelected.TransitionCliffTextures.Add(new AreaTransitionCliffTexture()));
+
+            CommandDeleteCliff = new RelayCommand(() =>
+            {
+                var cliff = SelectedCliff as AreaTransitionCliffTexture;
+                CollectionAreaColorSelected.TransitionCliffTextures.Remove(cliff);
+            }, () => SelectedCliff != null);
+
+            CommandAddCliffTexture = new RelayCommand(() =>
+            {
+                var tile = SelectedTextureForCliff as IEntryTile;
+                var collection =
+                    SelectedCliff as AreaTransitionCliffTexture;
+
+                if (tile != null)
+                    if (collection != null)
+                        collection.List.Add((int)tile.TileId);
+            }, () => SelectedTextureForCliff != null &&
+                                                                 SelectedCliff != null && CollectionAreaColorSelected != null);
+
+            CommandRemoveCliffTexture = new RelayCommand(() =>
+            {
+                var number = (int)SelectedTextureInCliffList;
+                var collection =
+                  SelectedCliff as AreaTransitionCliffTexture;
+                if (collection != null) collection.List.Remove(number);
+            }, () => SelectedCliff != null && SelectedTextureInCliffList != null && CollectionAreaColorSelected != null);
+
+            #endregion //Cliff Commands
+
 
             CommandOpenOptionWindow = new RelayCommand(()=> AppMessages.DialogRequest.Send(new MessageDialogRequest("OpenOptionWindow")));
 
             AppMessages.OptionAnswer.Register(this, HandlerOptionResults);
             AppMessages.DialogAnwer.Register(this, HandlerDialogResults);
             AppMessages.MapGeneratorMessage.Register(this, HandlerGenerateMap);
+
         }
 
         #endregion //Constructors
@@ -559,31 +659,7 @@ namespace MapMakerApplication.ViewModel
             if (area == null)
                 return;
 
-            switch (area.Type)
-            {
-                case TypeColor.Land:
-                    {
-                        CollectionColorArea.List.Remove(area);
-                    }
-                    break;
-                case TypeColor.Moutains:
-                    {
-                        CollectionColorArea.List.Remove(area);
-                        CollectionColorMountains.List.Remove(area);
-                    }
-                    break;
-                case TypeColor.Water:
-                    {
-                        CollectionColorArea.List.Remove(area);
-                        CollectionColorCoast.List.Remove(area);
-                    }
-                    break;
-                default:
-                    {
-                        CollectionColorArea.List.Remove(area);
-                    }
-                    break;
-            }
+            CollectionColorArea.List.Remove(area);
 
         }
 
@@ -618,7 +694,7 @@ namespace MapMakerApplication.ViewModel
         private void CollectionAreaMoveCommandExecuted(int increase)
         {
             var area = (AreaColor)CollectionAreaSelectedItem;
-            CollectionColorArea.List.RemoveAt(tmp);
+            CollectionColorArea.List.Remove(area);
             CollectionColorArea.List.Insert(tmp + increase, area);
             RaisePropertyChanged("CollectionColorArea");
 
@@ -832,11 +908,12 @@ namespace MapMakerApplication.ViewModel
 
         private bool CommandCoastSetAsDefaultCan()
         {
-            return CollectionAreaColorSelected != null
+            return SelectedCoastTile != null && CollectionAreaColorSelected!= null
                    && SelectedCoastType == 0;
         }
 
         #endregion //Coasts Commands
+
 
         #endregion //Command Methods
 
@@ -882,13 +959,48 @@ namespace MapMakerApplication.ViewModel
 
         private void HandlerGenerateMap(MapMakeMessage message)
         {
+            Busy = true;
+            ProgressBarValue = 0;
+            TextProgress = "";
             var index = message.Index;
             var xy = OpenUO.MapMaker.MapMaking.Globals.Dimentions[index];
             var indexes = OpenUO.MapMaker.MapMaking.Globals.Indexes[index];
+            _makeMapSDK.EventMakingMapEnd += MakingMapEnd;
+            _windowBusy = new WindowBusy();
 
+            var thread= new System.Threading.Thread(()=>Start(xy,indexes));
+            _makeMapSDK.EventMapMakingProgress += EventHandlerProgressMapCreation;
+            thread.Start();
+            Visibility = Visibility.Visible;
+            
+
+        }
+
+        private void Start(int[] xy,int indexes)
+        {
             _makeMapSDK.MapMake(ApplicationController.OutputFolder, BitmapLocationMap, BitmapLocationMapZ, xy[0], xy[1],
                                 indexes);
         }
+
+        private void MakingMapEnd(object sender, EventArgs eventArgs)
+        {
+            Busy = false;
+            Visibility = Visibility.Hidden;
+        }
+
+
+        private void EventHandlerProgressMapCreation(object sender, EventArgs args)
+        {
+            var arg = args as ProgressEventArgs;
+            if(args!=null)
+            {
+                TextProgress = arg.PayLoad;
+                ProgressBarValue = arg.Progress;
+            }
+
+        }
+
+    
 
         #endregion
 

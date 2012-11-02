@@ -10,4 +10,5 @@
     <Converters:ConverterImageSourceTextureFromInt x:Key="ImageTextureFromIntConverter"/>
     <Converters:ConverterImageSourceLandFromInt x:Key="ConverterImageSourceLandFromInt"/>
     <Converters:ConverterImageSourceItemFromInt x:Key="converterImageSourceItemFromInt"/>
+    <Converters:ConverterInvertVisibility x:Key="VisibilityInverter"/>
 </ResourceDictionary>

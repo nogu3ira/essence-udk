@@ -16,8 +16,12 @@ using System.Linq;
 namespace OpenUO.MapMaker.Elements.ColorArea.ColorArea
 {
     [Serializable]
-    public class AreaColor : NotificationObject, IEquatable<AreaColor>, IComparable<AreaColor>
+    public class AreaColor : NotificationObject
     {
+        
+
+        
+
         #region Declaration
 
         private bool _automaticMode;
@@ -136,108 +140,145 @@ namespace OpenUO.MapMaker.Elements.ColorArea.ColorArea
 
         #endregion//ctor
 
-        #region Implementation of IComparable
+        //#region Implementation of IComparable
 
-        public int CompareTo(AreaColor other)
-        {
-            if (other.TextureIndex == TextureIndex)
-                return 0;
-            else
-            {
-                return -1;
-            }
-        }
+        //public int CompareTo(AreaColor other)
+        //{
+        //    if (other.TextureIndex == TextureIndex)
+        //        return 0;
+        //    else
+        //    {
+        //        return -1;
+        //    }
+        //}
 
-        #endregion //Implementation of IComparable
+        //#endregion //Implementation of IComparable
 
-        #region Implementation of IEquatable
+        //#region Implementation of IEquatable
 
-        public bool Equals(AreaColor other)
-        {
-            if (other.TextureIndex == TextureIndex)
-                return true;
-            if (other.Color == Color)
-                return true;
-            return false;
-        }
+        //public override bool Equals(object obj)
+        //{
+        //    if (ReferenceEquals(null, obj)) return false;
+        //    if (ReferenceEquals(this, obj)) return true;
+        //    if (obj.GetType() != this.GetType()) return false;
+        //    return Equals((AreaColor)obj);
+        //}
 
-        #endregion //Implementation of IEquatable
+
+
+        //public bool Equals(AreaColor other)
+        //{
+        //    if (ReferenceEquals(null, other)) return false;
+        //    if (ReferenceEquals(this, other)) return true;
+        //    return _automaticMode.Equals(other._automaticMode) && _textureIndex == other._textureIndex && _index == other._index && _min == other._min && _max == other._max && _indexTextureTop == other._indexTextureTop && _indexColorTop == other._indexColorTop && string.Equals(_name, other._name) && _typeColor.Equals(other._typeColor) && _color.Equals(other._color) && _colorMountain.Equals(other._colorMountain) && Equals(_coast, other._coast) && Equals(_transitionItems, other._transitionItems) && Equals(_items, other._items) && Equals(_transitionTexture, other._transitionTexture) && Equals(_transitionCliff, other._transitionCliff) && Equals(_list, other._list) && Equals(_transitionTextureFinding, other._transitionTextureFinding) && Equals(_transitionItemsFinding, other._transitionItemsFinding) && Initialized.Equals(other.Initialized);
+        //}
+
+
+        //public override int GetHashCode()
+        //{
+        //    unchecked
+        //    {
+        //        int hashCode = _automaticMode.GetHashCode();
+        //        hashCode = (hashCode * 397) ^ _textureIndex;
+        //        hashCode = (hashCode * 397) ^ _index;
+        //        hashCode = (hashCode * 397) ^ _min;
+        //        hashCode = (hashCode * 397) ^ _max;
+        //        hashCode = (hashCode * 397) ^ _indexTextureTop;
+        //        hashCode = (hashCode * 397) ^ _indexColorTop;
+        //        hashCode = (hashCode * 397) ^ (_name != null ? _name.GetHashCode() : 0);
+        //        hashCode = (hashCode * 397) ^ _typeColor.GetHashCode();
+        //        hashCode = (hashCode * 397) ^ _color.GetHashCode();
+        //        hashCode = (hashCode * 397) ^ _colorMountain.GetHashCode();
+        //        hashCode = (hashCode * 397) ^ (_coast != null ? _coast.GetHashCode() : 0);
+        //        hashCode = (hashCode * 397) ^ (_transitionItems != null ? _transitionItems.GetHashCode() : 0);
+        //        hashCode = (hashCode * 397) ^ (_items != null ? _items.GetHashCode() : 0);
+        //        hashCode = (hashCode * 397) ^ (_transitionTexture != null ? _transitionTexture.GetHashCode() : 0);
+        //        hashCode = (hashCode * 397) ^ (_transitionCliff != null ? _transitionCliff.GetHashCode() : 0);
+        //        hashCode = (hashCode * 397) ^ (_list != null ? _list.GetHashCode() : 0);
+        //        hashCode = (hashCode * 397) ^ Initialized.GetHashCode();
+        //        return hashCode;
+        //    }
+        //}
+
+        //#endregion //Implementation of IEquatable
 
         #region Override
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        
 
-        public override string this[string columnName]
-        {
-            get
-            {
-                string result = null;
+        //public override string ToString()
+        //{
+        //    return Name;
+        //}
 
-                switch (columnName)
-                {
-                    #region General Part
-                    case "Index":
-                        {
-                            if (MakeMapSDK.Colors.Keys.Contains(_index))
-                            {
-                                result = "Index MUST be a not used Index";
-                            }
-                        }
-                        break;
-                    case "Min":
-                        {
-                            if (_min < -128 || _min > 127)
-                            {
-                                result = "Min MUST be between -128 and 127";
-                            }
-                        }
-                        break;
-                    case "Max":
-                        {
-                            if (_max < -128 || _max > 127)
-                            {
-                                result = "Max MUST be between -128 and 127";
-                            }
-                        }
-                        break;
-                    case "Color":
-                        {
-                            if (MakeMapSDK.Colors.ContainsValue(_color))
-                            {
-                                result = "Color MUST be an unused one";
-                            }
-                        }
-                        break;
+        //public override string this[string columnName]
+        //{
+        //    get
+        //    {
+        //        string result = null;
 
-                    #endregion //General Part
+        //        switch (columnName)
+        //        {
+        //            #region General Part
+        //            case "Index":
+        //                {
+        //                    if (MakeMapSDK.Colors.Keys.Contains(_index))
+        //                    {
+        //                        result = "Index MUST be a not used Index";
+        //                    }
+        //                }
+        //                break;
+        //            case "Min":
+        //                {
+        //                    if (_min < -128 || _min > 127)
+        //                    {
+        //                        result = "Min MUST be between -128 and 127";
+        //                    }
+        //                }
+        //                break;
+        //            case "Max":
+        //                {
+        //                    if (_max < -128 || _max > 127)
+        //                    {
+        //                        result = "Max MUST be between -128 and 127";
+        //                    }
+        //                }
+        //                break;
+        //            case "Color":
+        //                {
+        //                    if (MakeMapSDK.Colors.ContainsValue(_color))
+        //                    {
+        //                        result = "Color MUST be an unused one";
+        //                    }
+        //                }
+        //                break;
 
-                    #region Mountain Part
+        //            #endregion //General Part
 
-                    case "ColorTopMountain":
-                        {
-                            if (!MakeMapSDK.Colors.ContainsValue(_colorMountain))
-                            {
-                                result = "Color of the mountain MUST be an used one";
-                            }
-                        }
-                        break;
-                    case "IndexTextureTop":
-                        {
-                            if (!MakeMapSDK.Colors.ContainsKey(_indexTextureTop))
-                            {
-                                result = "Color of the mountain MUST be an used one";
-                            }
-                        }
-                        break;
+        //            #region Mountain Part
 
-                    #endregion //Mountain Part
-                }
-                return result;
-            }
-        }
+        //            case "ColorTopMountain":
+        //                {
+        //                    if (!MakeMapSDK.Colors.ContainsValue(_colorMountain))
+        //                    {
+        //                        result = "Color of the mountain MUST be an used one";
+        //                    }
+        //                }
+        //                break;
+        //            case "IndexTextureTop":
+        //                {
+        //                    if (!MakeMapSDK.Colors.ContainsKey(_indexTextureTop))
+        //                    {
+        //                        result = "Color of the mountain MUST be an used one";
+        //                    }
+        //                }
+        //                break;
+
+        //            #endregion //Mountain Part
+        //        }
+        //        return result;
+        //    }
+        //}
 
         public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
         {
@@ -332,6 +373,8 @@ namespace OpenUO.MapMaker.Elements.ColorArea.ColorArea
             _transitionItemsFinding.TryGetValue(color, out transitionItem);
             return transitionItem;
         }
+
+       
 
     }
 

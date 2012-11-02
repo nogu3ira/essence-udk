@@ -50,6 +50,7 @@
     <Compile Include="Elements\BaseTypes\NotificationObject.cs" />
     <Compile Include="Elements\IContainerSet.cs" />
     <Compile Include="Elements\Interfaces\ITransition.cs" />
+    <Compile Include="Elements\ProgressEventArgs.cs" />
     <Compile Include="MapMaking\BitmapReader.cs" />
     <Compile Include="Elements\BaseTypes\ComplexTypes\CollectionItem.cs" />
     <Compile Include="Elements\ColorArea\ColorArea\AreaColor.cs" />

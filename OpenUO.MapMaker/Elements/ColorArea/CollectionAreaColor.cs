@@ -15,6 +15,7 @@ namespace OpenUO.MapMaker.Elements.ColorArea
     public sealed class CollectionAreaColor : NotificationObject, IContainerSet
     {
         private ObservableCollection<AreaColor> _list;
+        
         #region Ctor
 
         public CollectionAreaColor()
@@ -57,6 +58,14 @@ namespace OpenUO.MapMaker.Elements.ColorArea
             return a;
         }
 
+        public AreaColor FindByByteArray(byte[] arrayRGB)
+        {
+            AreaColor area;
+            
+            _findfastcolor.TryGetValue(Color.FromRgb(arrayRGB[0],arrayRGB[1],arrayRGB[2]), out area);
+            return area;
+        }
+
         public void InitializeSeaches()
         {
             _findfastid = new Dictionary<int, AreaColor>();
@@ -70,7 +79,6 @@ namespace OpenUO.MapMaker.Elements.ColorArea
                     _colordic.Add(area.Color, true);
                     _findfastcolor.Add(area.Color, area);
                     _findfastid.Add(area.Index, area);
-
                 }
                 catch (Exception)
                 {
@@ -91,5 +99,7 @@ namespace OpenUO.MapMaker.Elements.ColorArea
         {
             List = new ObservableCollection<AreaColor>(Deserialize(() => List, info));
         }
+
+
     }
 }
