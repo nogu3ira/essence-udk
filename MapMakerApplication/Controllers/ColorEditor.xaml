@@ -67,7 +67,7 @@
         <CheckBox Content="Auto Grown" Grid.Row="8"  Grid.ColumnSpan="2" IsChecked="{Binding ModeAutomatic}" Style="{StaticResource vis}"/>
         <TextBlock Grid.Row="9" TextWrapping="Wrap" Style="{StaticResource vis}"><Run Language="it-it" Text="Index Top"/></TextBlock>
         <ComboBox Grid.Column="1" Grid.Row="9" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.AreaColorIndexes}" SelectedItem="{Binding ColorTopMountain}" Style="{StaticResource vis}"/>
-        <TextBlock Grid.Row="9" TextWrapping="Wrap" Grid.Column="2" Text="{Binding ColorTopMountain}">
+        <TextBlock Grid.Row="9" TextWrapping="Wrap" Grid.Column="2" Text="{Binding ColorTopMountain}" Style="{StaticResource vis}">
             <TextBlock.Background>
                 <SolidColorBrush Color="{Binding ColorTopMountain}"/>
             </TextBlock.Background>

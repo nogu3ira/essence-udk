@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using System.Xml;
 using EssenceUDK.Platform.DataTypes;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using OpenUO.MapMaker;
 using OpenUO.MapMaker.Elements.Interfaces;
 using OpenUO.MapMaker.Elements.Items.ItemsTransition;
 using OpenUO.MapMaker.Elements.Textures.TextureTransition;
@@ -190,6 +192,12 @@ namespace MapMakerApplication.ViewModel
             ComboboxDirectionSelectedIndex = ComboboxDirectionSelectedIndex;
         }
         #endregion //Tiles
+
+        #region Export Tiles
+
+        
+
+        #endregion
 
         #endregion // commands Methods
 

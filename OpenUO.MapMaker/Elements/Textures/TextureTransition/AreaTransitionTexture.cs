@@ -4,6 +4,7 @@ using System.Windows.Media;
 using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes;
 using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
 using OpenUO.MapMaker.Elements.Interfaces;
+using System.Xml;
 
 namespace OpenUO.MapMaker.Elements.Textures.TextureTransition
 {
@@ -13,6 +14,8 @@ namespace OpenUO.MapMaker.Elements.Textures.TextureTransition
         private Color _colorFrom, _colorTo;
         private string _name;
         private int _indexTo;
+
+
         #region Props
 
         public Color ColorFrom { get { return _colorFrom; } set { _colorFrom = value; RaisePropertyChanged(() => ColorFrom); } }
@@ -64,5 +67,7 @@ namespace OpenUO.MapMaker.Elements.Textures.TextureTransition
         }
 
         
+        
+
     }
 }

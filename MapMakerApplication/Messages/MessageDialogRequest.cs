@@ -53,7 +53,8 @@ namespace MapMakerApplication.Messages
         SelectBitmapMap,
         SelectBitmapZ,
         OpenOptionFolder,
-        OpenOptionOutputFolder
+        OpenOptionOutputFolder,
+        SaveBrushFile
     }
 
 }

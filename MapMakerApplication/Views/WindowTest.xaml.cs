@@ -106,6 +106,22 @@ namespace MapMakerApplication.Views
                         }
                     }
                     break;
+                case "OpenFileXmlExport":
+                    {
+
+                        var result = folderdialog.ShowDialog();
+                        if (result == System.Windows.Forms.DialogResult.OK)
+                        {
+                            AppMessages.DialogAnwer.Send(new MessageDialogResult(folderdialog.SelectedPath) { Type = DialogType.SaveBrushFile });
+                        }
+                        break;
+                    }
+
+                default:
+                    {
+                        MessageBox.Show(this, "Error",obj.Content,MessageBoxButton.OK,MessageBoxImage.Error,MessageBoxResult.OK);
+                    }
+                    break;
             }
         }
 

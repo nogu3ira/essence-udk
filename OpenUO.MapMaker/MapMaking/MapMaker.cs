@@ -23,13 +23,14 @@ namespace OpenUO.MapMaker.MapMaking
     public class MapMaker
     {
         #region Fields
+
         public static Random Random { get; set; }
-        public int MinX = 2;
-        public int MinY = 2;
+        public int MinX = 1;
+        public int MinY = 1;
         private readonly int _stride;
         //private Color[] _bitmap;
         private sbyte[] _bitmapZ;
-        private byte _progressPerc;
+        private double _progressPerc;
 
         private AreaColor[] _bitmapAreaColor;
 
@@ -222,31 +223,27 @@ namespace OpenUO.MapMaker.MapMaking
             TextureAreas.InitializeSeaches();
             #endregion
 
-            if (AutomaticZMode)
-            {
-                OnProgressText(new ProgressEventArgs(){PayLoad = "Making Mountains"});
-                Mountain();
+            //if (AutomaticZMode)
+            //{
+            //    OnProgressText(new ProgressEventArgs(){PayLoad = "Making Mountains"});
+            //    Mountain();
                 
-            }
-            OnProgressText(new ProgressEventArgs(){PayLoad = "Making Map"});
-            for (var x = MinX; x < _X - 1; x++)
-            {
-                OnProgressText(new ProgressEventArgs(){PayLoad = "Making Map", Progress = (byte)((100*x)/_X)});
-                for (var y = MinY; y < _Y - 1; y++)
-                {
-                    var coordinates = MakeIndexesDirections(x, y, 1, 1);
-                    var areacolorcoordinates = new AreaColorCoordinates(coordinates, _bitmapAreaColor);
-                    var buildMapCoordinates = new MapObjectCoordinates(coordinates, _mapObjects);
-                    MakeCoastUolStyle(areacolorcoordinates, buildMapCoordinates, coordinates);
-                    TextureTranstion(coordinates, areacolorcoordinates, buildMapCoordinates);
-                    MakeCliffs(coordinates, areacolorcoordinates, buildMapCoordinates);
-                    ItemsTransations(coordinates, areacolorcoordinates, buildMapCoordinates);
-                    PlaceTextures(areacolorcoordinates, buildMapCoordinates, coordinates);
+            //}
+            var count = Environment.ProcessorCount;
+            if (count > 3)
+                count -=2;
+            var maptasks = new Task[count];
+            OnProgressText(new ProgressEventArgs() { PayLoad = "Making Map" });
 
-                    if (!AutomaticZMode)
-                        ProcessZ(AutomaticZMode, areacolorcoordinates, buildMapCoordinates, coordinates);
-                }
+            for (int i = 0; i < count; i++)
+            {
+                var minX = i == 0 ? MinX : (_X / count) * (i)-1;
+                var MaxX = i<count?(_X/count)*(i+1):_X;
+               
+                maptasks[i]= new Task(()=>BuildMapThread(MaxX, _Y, minX, MinY));
+                maptasks[i].Start();
             }
+            Task.WaitAll(maptasks);
 
             if (!AutomaticZMode)
             {
@@ -254,22 +251,27 @@ namespace OpenUO.MapMaker.MapMaking
             }
             if (AutomaticZMode)
             {
-                OnProgressText(new ProgressEventArgs(){PayLoad = "Making Z levs"});
-                ProcessZ(AutomaticZMode, null, null, new Coordinates(1, 1, 0, 0, 0));
+                OnProgressText(new ProgressEventArgs(){PayLoad = "Making Altitude"});
+                ProcessZ(AutomaticZMode, null, new Coordinates(0,0,0,0,0));
             }
             _bitmapZ = null;
 
             //SetItem();
             OnProgressText(new ProgressEventArgs() { PayLoad = "Writing files" });
-
-            Task writeMul = new Task(WriteMUL);
-            Task writestatic = new Task(WriteStatics);
-            Task[] tasks= new Task[]{writeMul, writestatic};
-            writeMul.Start();
-            writestatic.Start();
-            Task.WaitAll(tasks);
-
-
+            try
+            {
+                Task writeMul = new Task(WriteMUL);
+                Task writestatic = new Task(WriteStatics);
+                Task[] tasks = new[] { writeMul, writestatic };
+                writeMul.Start();
+                writestatic.Start();
+                Task.WaitAll(tasks);
+            }
+            catch (Exception e)
+            {
+                
+                throw e;
+            }
             
 
             OnProgressText(new ProgressEventArgs(){PayLoad = "Done"});
@@ -279,47 +281,34 @@ namespace OpenUO.MapMaker.MapMaking
 
         #region MapInit
 
-        /// <summary>
-        /// I Init the array of the maps files
-        /// </summary>
-        //private void BMP2MUL()
-        //{
-        //    int x, y;
-        //    //rrggbb
+        private void BuildMapThread(int X, int Y, int minX, int minY)
+        {
+            for (var x = minX; x < X - 1; x++)
+            {
+                
+                for (var y = minY; y < Y - 1; y++)
+                {
+                    Random=new Random(DateTime.UtcNow.Millisecond);
+                    var coordinates = MakeIndexesDirections(x, y, 1, 1);
+                    var areacolorcoordinates = new AreaColorCoordinates(coordinates, _bitmapAreaColor);
+                    var buildMapCoordinates = new MapObjectCoordinates(coordinates, _mapObjects);
+                    if (AutomaticZMode)
+                        Mountain(areacolorcoordinates, buildMapCoordinates, coordinates);
 
-        //    for (x = 0; x < _X; x++)
-        //        for (y = 0; y < _Y; y++)
-        //        {
-        //            var location = CalculateZone(x, y);
-        //            //_MapID = 168;
-        //            //_MapAlt[location] = -5;
+                    MakeCoastUolStyle(areacolorcoordinates, buildMapCoordinates, coordinates);
+                    TextureTranstion(coordinates, areacolorcoordinates, buildMapCoordinates);
+                    MakeCliffs(coordinates, areacolorcoordinates, buildMapCoordinates);
+                    ItemsTransations(coordinates, areacolorcoordinates, buildMapCoordinates);
+                    PlaceTextures(areacolorcoordinates, buildMapCoordinates, coordinates);
 
-        //            _mapObjects[location].Texture = 168; // set Default-Texture (water)
-        //            _mapObjects[location].Altitude = -5;
-
-        //            var area = ColorAreas.FindByColor(_bitmap[location]);
-        //            //var coast = ColorAreasCoast.FindByColor(_bitmap[location]);
-
-        //            if (coast == null && area != null)
-        //            {
-        //                //_MapID[location] = RandomTexture(area.Index);
-        //                //_MapAlt[location] = Random.Next(area.Low, area.Hight);
-        //                _mapObjects[location].Texture = (short)RandomTexture(area.TextureIndex);
-        //                _mapObjects[location].Altitude = (sbyte)Random.Next(area.Min, area.Max);
-        //                continue;
-        //            }
-
-
-        //            if (coast != null)
-        //            {
-        //                //_MapID[location] = RandomTexture(coast.Index);
-        //                //_MapAlt[location] = Random.Next(coast.Low,coast.Hight);
-        //                _mapObjects[location].Texture = (short) RandomTexture(area.TextureIndex);
-        //                _mapObjects[location].Altitude = (sbyte) Random.Next(area.Min, area.Max);
-        //                continue;
-        //            }
-        //        }
-        //}
+                    if (!AutomaticZMode)
+                        ProcessZ(AutomaticZMode, buildMapCoordinates, coordinates);
+                }
+            }
+            float percent1 = (100 * (X - minX)) / (_X);
+            _progressPerc += percent1;
+            OnProgressText(new ProgressEventArgs() { PayLoad = "Making Map", Progress = (byte)Math.Round(_progressPerc) });
+        }
 
 
         private void PlaceTextures(AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates, Coordinates coordinates)
@@ -335,55 +324,38 @@ namespace OpenUO.MapMaker.MapMaking
         /// it's used to process the map automatically
         /// </summary>
         /// <param name="mode">mode of how you want to process the map 0 for following the map, 1 to calculate automatically</param>
-        /// <param name="areas"> </param>
         /// <param name="mapObjectCoordinates"> </param>
         /// <param name="coordinates"> </param>
-        private void ProcessZ(bool mode, AreaColorCoordinates areas, MapObjectCoordinates mapObjectCoordinates, Coordinates coordinates)
+        private void ProcessZ(bool mode, MapObjectCoordinates mapObjectCoordinates, Coordinates coordinates)
         {
             if (!mode)
             {
                 mapObjectCoordinates.Center.Altitude = _bitmapZ[coordinates.Center];
-                ;
             }
             else
             {
                 int x;
                 for (x = MinX; x < _X - 1; x++)
                 {
+                    Random = new Random(DateTime.UtcNow.Millisecond);
+                    byte percent1 = (byte)((100 * x) / (_X));
+                    OnProgressText(new ProgressEventArgs(){PayLoad = "Making Altitude",Progress = percent1});
                     int y;
                     for (y = MinY; y < _Y - 1; y++)
                     {
                         var location = CalculateZone(x, y, _stride);
-                        //var area = CollectionAreaColor.FindByColor(_bitmap[location]);
                         var area = _bitmapAreaColor[location];
-                        switch (area.Type)
-                        {
-                            case TypeColor.Moutains:
-                                {
-                                    _mapObjects[location].Altitude += _bitmapZ[location];
-
-                                }
-                                break;
-                            case TypeColor.WaterCoast:
-                                {
-                                    if (_mapObjects[location].Occupied == 0)//&& TextureAreas.FindByIndex(area.TextureIndex).List.Contains(_mapObjects[location].Texture))
-                                    {
-                                        _mapObjects[location].Altitude = (sbyte)Random.Next(area.Min, area.Max);
-                                    }
-                                }
-                                break;
-                            default:
-                                {
-                                    if (_mapObjects[location].Occupied == 0)
-                                        _mapObjects[location].Altitude += (sbyte)Random.Next(area.Min, area.Max);
-                                }
-                                break;
-
-                        }
-                        if (_mapObjects[location].Altitude > 126)
+                        if (_mapObjects[location].Altitude == 0)
+                            _mapObjects[location].Altitude += (sbyte)Random.Next(area.Min, area.Max);
+                        if (_mapObjects[location].Altitude >= 120)
                             _mapObjects[location].Altitude = (sbyte)(Random.Next(120, 125));
-
-                        _mapObjects[location].Altitude += _bitmapZ[location];
+                        var z = _bitmapZ[location];
+                        _mapObjects[location].Altitude = (sbyte)(_mapObjects[location].Altitude + z);
+                        if(_mapObjects[location].Altitude==0)
+                        {
+                            int a=0;
+                            a++;
+                        }
                     }
                 }
             }
@@ -398,34 +370,29 @@ namespace OpenUO.MapMaker.MapMaking
         /// <summary>
         /// method to init the mountains textures
         /// </summary>
-        private void Mountain()
+        private void Mountain(AreaColorCoordinates areacoord, MapObjectCoordinates mapObjectCoordinates, Coordinates coord)
         {
-            byte chk = 1;
+            //byte chk = 1;
             //rrggbb
 
-            for (int x = MinX; x < _X - 1; x++)
-                for (int y = MinY; y < _Y - 1; y++)
-                {
-                    var coord = MakeIndexesDirections(x, y, 1, 1);
+            //for (int x = MinX; x < _X - 1; x++)
+            //    for (int y = MinY; y < _Y - 1; y++)
+            //    {
+                    //var coord = MakeIndexesDirections(x, y, 1, 1);
 
-                    //var areacoord = new AreaColorCoordinates(CollectionAreaColor, coord, _bitmap);
+                    //var areacoord = new AreaColorCoordinates(coord, _bitmapAreaColor);
 
-                    var areacoord = new AreaColorCoordinates(coord, _bitmapAreaColor);
+                    if (areacoord.Center == null || areacoord.Center.Type != TypeColor.Moutains) return;
 
-                    if (areacoord.Center == null || areacoord.Center.Type != TypeColor.Moutains) continue;
+                    //var mapcoord = new MapObjectCoordinates(coord, _mapObjects);
 
-                    var mapcoord = new MapObjectCoordinates(coord, _mapObjects);
-
-                    mapcoord.Center.Altitude =
+                    mapObjectCoordinates.Center.Altitude =
                         (sbyte)Random.Next(areacoord.Center.Min, areacoord.Center.Max);
-                    if (!areacoord.Center.ModeAutomatic) continue;
+                    if (!areacoord.Center.ModeAutomatic) return;
 
                     for (int index = 0; index < areacoord.Center.List.Count; index++)
                     {
                         var cirlce = areacoord.Center.List[index];
-                        //var areacircles = new AreaColorCoordinates(CollectionAreaColor,
-                        //                                           new Coordinates(index, index, coord.X, coord.Y,
-                        //                                                           _stride), _bitmap);
 
                         var areacircles =
                             new AreaColorCoordinates(new Coordinates(index, index, coord.X, coord.Y, _stride),
@@ -440,31 +407,32 @@ namespace OpenUO.MapMaker.MapMaking
                             break;
                         }
 
-                        mapcoord.Center.Altitude = (sbyte)Random.Next(cirlce.From, cirlce.To);
-                        if (mapcoord.Center.Altitude > 127)
-                            mapcoord.Center.Altitude = (sbyte)(Random.Next(120, 125));
+                        mapObjectCoordinates.Center.Altitude = (sbyte)Random.Next(cirlce.From, cirlce.To);
+                        if (mapObjectCoordinates.Center.Altitude > 127)
+                            mapObjectCoordinates.Center.Altitude = (sbyte)(Random.Next(120, 125));
                         if (index >= (areacoord.Center.List.Count / 3) * 2 && areacoord.Center.IndexColorTopMountain != 0)
                         {
-                            mapcoord.Center.Occupied = 30;
+                            var area = _bitmapAreaColor[coord.Center];
+                            area = CollectionAreaColor.FindByIndex(area.IndexColorTopMountain);
+                            mapObjectCoordinates.Center.Texture = (short)RandomTexture(area.TextureIndex);
+                            _bitmapAreaColor[coord.Center] = CollectionAreaColor.FindByColor(area.ColorTopMountain);
                         }
-                    }
+                    //}
                 }
 
-            for (int x = MinX; x < _X; x++)
-                for (int y = MinY; y < _Y; y++)
-                {
-                    var location = CalculateZone(x, y, _stride);
-                    if (_mapObjects[location].Occupied != 30) continue;
+            //for (int x = MinX; x < _X; x++)
+            //    for (int y = MinY; y < _Y; y++)
+            //    {
+            //        var location = CalculateZone(x, y, _stride);
+            //        if (_mapObjects[location].Occupied != 30) continue;
 
-                    var mapobject = _mapObjects[location];
-                    //var area = CollectionAreaColor.FindByColor(_bitmap[location]);
-                    var area = _bitmapAreaColor[location];
-                    area = CollectionAreaColor.FindByIndex(area.IndexColorTopMountain);
-                    mapobject.Texture = (short)RandomTexture(area.TextureIndex);
+            //        var mapobject = _mapObjects[location];
+            //        var area = _bitmapAreaColor[location];
+            //        area = CollectionAreaColor.FindByIndex(area.IndexColorTopMountain);
+            //        mapobject.Texture = (short)RandomTexture(area.TextureIndex);
 
-                    //_bitmap[location] = area.ColorTopMountain;
-                    _bitmapAreaColor[location] = CollectionAreaColor.FindByColor(area.ColorTopMountain);
-                }
+            //        _bitmapAreaColor[location] = CollectionAreaColor.FindByColor(area.ColorTopMountain);
+            //    }
         }
 
         #endregion //mountains
@@ -1413,6 +1381,7 @@ namespace OpenUO.MapMaker.MapMaking
                 int a = 0;
                 a++;
             }
+            if(mapObjectCoordinates.Center.Items==null)
             mapObjectCoordinates.Center.Items = new List<ItemClone>();
 
             mapObjectCoordinates.Center.Items.Add(new ItemClone { Id = itemid, Z = zItem });
@@ -1582,9 +1551,9 @@ namespace OpenUO.MapMaker.MapMaking
 
         #region Edges
 
-        #region NEA
+        #region SouthWestEdge
 
-        private static bool PlaceObjectNEA(
+        private static bool PlaceObjectSouthWestEdge(
             AreaColorCoordinates areaColorCoordinates,
             MapObjectCoordinates mapObjectCoordinates,
             Coordinates coordinates,
@@ -1616,10 +1585,11 @@ namespace OpenUO.MapMaker.MapMaking
             return false;
         }
 
-        #endregion //NEA
+        #endregion //SouthWestEdge
 
-        #region SWA
-        private static bool PlaceObjectSWA(
+        #region NorthEastEdge
+
+        private static bool PlaceObjectNorthEastEdge(
             AreaColorCoordinates areaColorCoordinates,
             MapObjectCoordinates mapObjectCoordinates,
             Coordinates coordinates,
@@ -1637,8 +1607,8 @@ namespace OpenUO.MapMaker.MapMaking
                 if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthWest.Type != type || areaColorCoordinates.NorthEast.Type != type)
                 {
                     if (areaColorCoordinates.North.Type == type
-                        && areaColorCoordinates.NorthEast.Type == type
-                        && areaColorCoordinates.NorthEast.Type == type
+                        && areaColorCoordinates.NorthWest.Type == type
+                        && areaColorCoordinates.East.Type == type
                         && areaColorCoordinates.NorthEast.Type != type
                         && type != TypeColor.WaterCoast)
                     {
@@ -1662,11 +1632,11 @@ namespace OpenUO.MapMaker.MapMaking
             return false;
         }
 
-        #endregion //SWA
+        #endregion //NorthEastEdge
 
-        #region NWA
+        #region SouthEastEdge
 
-        private static bool PlaceObjectNWA(
+        private static bool PlaceObjectSouthEastEdge(
            AreaColorCoordinates areaColorCoordinates,
            MapObjectCoordinates mapObjectCoordinates,
            Coordinates coordinates,
@@ -1700,11 +1670,11 @@ namespace OpenUO.MapMaker.MapMaking
             return false;
         }
 
-        #endregion //NWA
+        #endregion //SouthEastEdge
 
-        #region SEA
+        #region NorthWestEdge
 
-        private static bool PlaceObjectSEA(
+        private static bool PlaceObjectNorthWestEdge(
             AreaColorCoordinates areaColorCoordinates,
             MapObjectCoordinates mapObjectCoordinates,
             Coordinates coordinates,
@@ -1727,7 +1697,7 @@ namespace OpenUO.MapMaker.MapMaking
             return false;
         }
 
-        #endregion // SEA
+        #endregion // NorthWestEdge
 
         #endregion //edges
 
@@ -1874,7 +1844,7 @@ namespace OpenUO.MapMaker.MapMaking
 
                 if
                 (
-                    PlaceObjectSEA
+                    PlaceObjectNorthWestEdge
                     (
                     areaColorCoordinates,
                     mapObjectCoordinates,
@@ -1889,23 +1859,7 @@ namespace OpenUO.MapMaker.MapMaking
 
                 if
                 (
-                    PlaceObjectNEA
-                    (
-                    areaColorCoordinates,
-                    mapObjectCoordinates,
-                    coordinates,
-                    areaColorCoordinates.Center.Type,
-                    -5,
-                    -15,
-                    areaColorCoordinates.Center.Coasts.Coast.Texture
-                    )
-                )
-                    return;
-
-
-                if
-                (
-                    PlaceObjectNWA
+                    PlaceObjectSouthWestEdge
                     (
                     areaColorCoordinates,
                     mapObjectCoordinates,
@@ -1921,7 +1875,23 @@ namespace OpenUO.MapMaker.MapMaking
 
                 if
                 (
-                    PlaceObjectSWA
+                    PlaceObjectSouthEastEdge
+                    (
+                    areaColorCoordinates,
+                    mapObjectCoordinates,
+                    coordinates,
+                    areaColorCoordinates.Center.Type,
+                    -5,
+                    -15,
+                    areaColorCoordinates.Center.Coasts.Coast.Texture
+                    )
+                )
+                    return;
+
+
+                if
+                (
+                    PlaceObjectNorthEastEdge
                     (
                     areaColorCoordinates,
                     mapObjectCoordinates,
@@ -2020,7 +1990,12 @@ namespace OpenUO.MapMaker.MapMaking
                                   areaColorCoordinates.Center.Coasts.Coast.Texture,
                                   areaColorCoordinates.NorthWest,
                                   RandomFromList(areaColorCoordinates.Center.Coasts.Ground.EdgeNorthWest.List)))
+            {
+                mapObjectCoordinates.East.Altitude = -5;
+                if (areaColorCoordinates.NorthEast.Type != TypeColor.WaterCoast)
+                    mapObjectCoordinates.NorthEast.Altitude = -5;
                 return;
+            }
             #endregion
 
             #region NEB
@@ -2032,7 +2007,7 @@ namespace OpenUO.MapMaker.MapMaking
                     coordinates,
                     areaColorCoordinates.Center.Type,
                     -5,
-                    -3,
+                    -15,
                     RandomFromList
                         (
                             areaColorCoordinates.Center.Coasts.Coast.EdgeNorthEast.List
@@ -2121,11 +2096,14 @@ namespace OpenUO.MapMaker.MapMaking
                               coordinates,
                               areaColorCoordinates.Center.Type,
                               -5,
-
                               -15,
                               areaColorCoordinates.Center.Coasts.Coast.Texture,
                               RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineNorth.List)))
+            {
+                mapObjectCoordinates.South.Altitude += (sbyte) Random.Next(areaColorCoordinates.South.Min-2, areaColorCoordinates.South.Max-2);
                 return;
+
+            }
             #endregion //SN
 
             #region EW
@@ -2136,11 +2114,13 @@ namespace OpenUO.MapMaker.MapMaking
                               coordinates,
                               areaColorCoordinates.Center.Type,
                               -5,
-                //test di verifica
                               -15,
                               areaColorCoordinates.Center.Coasts.Coast.Texture,
                               RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineWest.List)))
+            {
+
                 return;
+            }
 
             #endregion //EW
 
@@ -2152,12 +2132,13 @@ namespace OpenUO.MapMaker.MapMaking
                               coordinates,
                               areaColorCoordinates.Center.Type,
                               -5,
-                //test
-                //(sbyte)Random.Next(-5, 2),
                               (sbyte)Random.Next(areaColorCoordinates.Center.Min, areaColorCoordinates.Center.Max),
                               RandomFromList(areaColorCoordinates.Center.Coasts.Coast.LineEast.List),
                               RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineEast.List)))
+            {
                 return;
+
+            }
 
             #endregion //WE
 
@@ -2169,10 +2150,10 @@ namespace OpenUO.MapMaker.MapMaking
                               coordinates,
                               areaColorCoordinates.Center.Type,
                               -5,
-                //TEst di verifica
                               (sbyte)Random.Next(areaColorCoordinates.Center.Min, areaColorCoordinates.Center.Max),
                               RandomFromList(areaColorCoordinates.Center.Coasts.Coast.LineSouth.List),
                               RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineSouth.List)))
+
                 return;
 
             #endregion //NS
@@ -2182,9 +2163,9 @@ namespace OpenUO.MapMaker.MapMaking
 
             #region Edges
 
-            #region SWA
+            #region North East Edge
 
-            if (PlaceObjectSWA(
+            if (PlaceObjectNorthEastEdge(
                 areaColorCoordinates,
                 mapObjectCoordinates,
                 coordinates,
@@ -2193,13 +2174,22 @@ namespace OpenUO.MapMaker.MapMaking
                 -15,
                 areaColorCoordinates.Center.Coasts.Coast.Texture,
                 RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderNorthEast.List)))
+            {
+                if(areaColorCoordinates.NorthWest.Type!= TypeColor.WaterCoast)
+                    PlaceObject(mapObjectCoordinates, -15,
+                            RandomFromList(areaColorCoordinates.Center.Coasts.Coast.EdgeSouthWest.List), -5,-1);
+                 
+                mapObjectCoordinates.SouthEast.Altitude = -5;
+                
                 return;
 
-            #endregion //SWA
+            }
 
-            #region NEA
+            #endregion //North East Edge
 
-            if (PlaceObjectNEA(areaColorCoordinates,
+            #region South West Edge
+
+            if (PlaceObjectSouthWestEdge(areaColorCoordinates,
                                mapObjectCoordinates,
                                coordinates,
                                areaColorCoordinates.Center.Type,
@@ -2207,13 +2197,16 @@ namespace OpenUO.MapMaker.MapMaking
                                -15,
                                areaColorCoordinates.Center.Coasts.Coast.Texture,
                                RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthWest.List)))
+            {
                 return;
 
-            #endregion //NEA
+            }
 
-            #region SEA
+            #endregion // South West Edge
 
-            if (PlaceObjectSEA
+            #region North West Edge
+
+            if (PlaceObjectNorthWestEdge
                 (areaColorCoordinates
                  , mapObjectCoordinates,
                  coordinates,
@@ -2222,26 +2215,26 @@ namespace OpenUO.MapMaker.MapMaking
                  -15,
                  areaColorCoordinates.Center.Coasts.Coast.Texture,
                  RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderNorthWest.List)))
+            {
+                mapObjectCoordinates.SouthEast.Altitude = -5;
                 return;
+            }
 
-            #endregion //SEA
+            #endregion //North West Edge
 
-            #region NWA
+            #region South East Edge
 
-            if (PlaceObjectNWA(areaColorCoordinates,
+            if (PlaceObjectSouthEastEdge(areaColorCoordinates,
                                mapObjectCoordinates,
                                coordinates,
                                areaColorCoordinates.Center.Type,
                                -5,
-                //test di verifica
-
-                               //-5,
                                (sbyte)Random.Next(areaColorCoordinates.Center.Min, areaColorCoordinates.Center.Max),
                                RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderSouthEast.List),
                                RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthEast.List)))
                 return;
 
-            #endregion //NWA
+            #endregion //South East Edge
 
             #endregion //Edges
 
@@ -2612,15 +2605,13 @@ namespace OpenUO.MapMaker.MapMaking
                                 {
                                     var local = CalculateZone(x, y, _stride);
 
-                                    //var id = _MapID[CalculateZone(x,y)];
-                                    //var z = _MapAlt[CalculateZone(x,y)];
                                     var id = _mapObjects[local].Texture;
                                     var z = _mapObjects[local].Altitude;
                                     if ((id < 0) || (id >= 0x4000))
                                         id = 0;
 
-                                    map0.Write((short)id);//writes tid
-                                    map0.Write((sbyte)z);//writes Z
+                                    map0.Write(id);//writes tid
+                                    map0.Write(z);//writes Z
                                 }
                             }
                         }

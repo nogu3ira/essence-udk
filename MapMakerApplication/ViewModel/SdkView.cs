@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml;
 using EssenceUDK.Platform.DataTypes;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -15,9 +17,12 @@ using OpenUO.MapMaker.Elements.Items;
 using OpenUO.MapMaker.Elements.Items.ItemText;
 using OpenUO.MapMaker.Elements.Textures;
 using OpenUO.MapMaker.Elements.Textures.TextureArea;
+using OpenUO.MapMaker.Elements.Textures.TextureTransition;
 using OpenUO.MapMaker.Elements.Textures.TexureCliff;
 using Color = System.Windows.Media.Color;
 using GalaSoft.MvvmLight.Messaging;
+using CollectionItem = OpenUO.MapMaker.Elements.Items.ItemText.CollectionItem;
+
 namespace MapMakerApplication.ViewModel
 {
     /// <summary>
@@ -46,7 +51,7 @@ namespace MapMakerApplication.ViewModel
         #endregion
 
         #region Area Textures
-       
+
         private object _selectedAreaTexture;
         private object _selectedAreaTextureTile;
         private object _selectedAreaTextureTileInt;
@@ -76,7 +81,7 @@ namespace MapMakerApplication.ViewModel
         private Visibility _visibility = Visibility.Hidden;
 
         private string _textProgres;
-        
+
         private int _proressBarValue;
 
         private bool _busy;
@@ -93,7 +98,6 @@ namespace MapMakerApplication.ViewModel
 
         #endregion //cliffs
 
-        private WindowBusy _windowBusy;
 
         #endregion //Declarations
 
@@ -107,7 +111,7 @@ namespace MapMakerApplication.ViewModel
 
         #region Automatic Mode
 
-        public bool AutomaticMode { get { return _makeMapSDK.AutomaticMode; } set { _makeMapSDK.AutomaticMode = value; RaisePropertyChanged(()=>AutomaticMode); } }
+        public bool AutomaticMode { get { return _makeMapSDK.AutomaticMode; } set { _makeMapSDK.AutomaticMode = value; RaisePropertyChanged(() => AutomaticMode); } }
 
         #endregion //Automatic Mode
 
@@ -398,21 +402,21 @@ namespace MapMakerApplication.ViewModel
             }
         }
 
-        public int SelectedCoastType { get { return _selectedCoastType; } set { _selectedCoastType = value; RaisePropertyChanged(()=>SelectedCoastType); } }
+        public int SelectedCoastType { get { return _selectedCoastType; } set { _selectedCoastType = value; RaisePropertyChanged(() => SelectedCoastType); } }
 
-        public object SelectedCoastTileInt { get { return _selectedCoastTileInt; } set { _selectedCoastTileInt = value; RaisePropertyChanged(()=>SelectedCoastTileInt); } }
+        public object SelectedCoastTileInt { get { return _selectedCoastTileInt; } set { _selectedCoastTileInt = value; RaisePropertyChanged(() => SelectedCoastTileInt); } }
 
-        public object SelectedCoastTile { get { return _selectedCoastTile; } set { _selectedCoastTile = value; RaisePropertyChanged(()=>SelectedCoastTile); } }
+        public object SelectedCoastTile { get { return _selectedCoastTile; } set { _selectedCoastTile = value; RaisePropertyChanged(() => SelectedCoastTile); } }
 
         #endregion
 
         #region Cliffs
 
-        public object SelectedCliff { get { return _selectedCliff; } set { _selectedCliff = value; RaisePropertyChanged(()=>SelectedCliff);  RaisePropertyChanged(()=>CliffList);} }
+        public object SelectedCliff { get { return _selectedCliff; } set { _selectedCliff = value; RaisePropertyChanged(() => SelectedCliff); RaisePropertyChanged(() => CliffList); } }
 
-        public ObservableCollection<int> CliffList { get { return _selectedCliff != null?((AreaTransitionCliffTexture)SelectedCliff).List:null; } }
+        public ObservableCollection<int> CliffList { get { return _selectedCliff != null ? ((AreaTransitionCliffTexture)SelectedCliff).List : null; } }
 
-        public object SelectedTextureForCliff { get { return _selectedTextureForCliff; } set { _selectedTextureForCliff = value; RaisePropertyChanged(()=>SelectedTextureForCliff); } }
+        public object SelectedTextureForCliff { get { return _selectedTextureForCliff; } set { _selectedTextureForCliff = value; RaisePropertyChanged(() => SelectedTextureForCliff); } }
 
         public object SelectedTextureInCliffList { get { return _selectedTextureInListCliff; } set { _selectedTextureInListCliff = value; RaisePropertyChanged(() => SelectedTextureInCliffList); } }
 
@@ -494,7 +498,6 @@ namespace MapMakerApplication.ViewModel
 
         #endregion //Coasts
 
-
         #region CliffCommands
 
         public ICommand CommandAddCliff { get; private set; }
@@ -506,6 +509,12 @@ namespace MapMakerApplication.ViewModel
         public ICommand CommandRemoveCliffTexture { get; private set; }
 
         #endregion //Cliff Commands
+
+        #region Export to CentrED+ Commands
+
+        public ICommand CommandExportTransations { get; private set; }
+
+        #endregion //Export to Centred Commands
 
 
         public ICommand CommandOpenOptionWindow { get; private set; }
@@ -535,8 +544,8 @@ namespace MapMakerApplication.ViewModel
             }
             else
             {
-                if(_makeMapSDK== null)
-                _makeMapSDK = new MakeMapSDK();
+                if (_makeMapSDK == null)
+                    _makeMapSDK = new MakeMapSDK();
             }
             _transation = new TransationEditorViewModel();
 
@@ -567,7 +576,7 @@ namespace MapMakerApplication.ViewModel
             #endregion //Collection Area Textures
 
             #region Collection Area item
-            
+
             CommandAreaItemCollectionAdd = new RelayCommand(CommandAreaItemCollectionAddExecuted, CommandAreaItemCollectionAddCan);
 
             CommandAreaItemCollectionRemove = new RelayCommand(CommandAreaItemCollectionRemoveExecuted, CommandAreaItemCollectionRemoveCan);
@@ -579,7 +588,7 @@ namespace MapMakerApplication.ViewModel
             #endregion //Collection Area Item
 
             #region Coasts
-            
+
             CommandCoastRemoveTile = new RelayCommand(CommandCoastRemoveTileExecuted, CommandCoastRemoveTileCan);
 
             CommandCoastAddTile = new RelayCommand(CommandCoastAddTileExecuted, CommandCoastAddTileCan);
@@ -590,22 +599,22 @@ namespace MapMakerApplication.ViewModel
             #endregion //Commands
 
             #region Save Commands
-            CommandSaveAco = 
+            CommandSaveAco =
                 new RelayCommand
                     (
-                        ()=> AppMessages.DialogRequest.Send(new MessageDialogRequest("ACO")),
-                        ()=> CollectionColorArea.List.Count >0
+                        () => AppMessages.DialogRequest.Send(new MessageDialogRequest("ACO")),
+                        () => CollectionColorArea.List.Count > 0
                     );
-            CommandOpenScriptFolder = 
+            CommandOpenScriptFolder =
                 new RelayCommand(
-                ()=> AppMessages.DialogRequest.Send(new MessageDialogRequest("FOLDER"))
+                () => AppMessages.DialogRequest.Send(new MessageDialogRequest("FOLDER"))
                 );
 
             CommandSave = new RelayCommand(() => AppMessages.DialogRequest.Send(new MessageDialogRequest("SAVE")));
 
             CommandFileOpen = new RelayCommand(() => AppMessages.DialogRequest.Send(new MessageDialogRequest("LOAD")));
             #endregion //Save Commands
-            
+
             #region Cliffs Commands
             CommandAddCliff = new RelayCommand(() => CollectionAreaColorSelected.TransitionCliffTextures.Add(new AreaTransitionCliffTexture()));
 
@@ -638,11 +647,19 @@ namespace MapMakerApplication.ViewModel
             #endregion //Cliff Commands
 
 
-            CommandOpenOptionWindow = new RelayCommand(()=> AppMessages.DialogRequest.Send(new MessageDialogRequest("OpenOptionWindow")));
+            CommandExportTransations = new RelayCommand(() => AppMessages.DialogRequest.Send(new MessageDialogRequest("OpenFileXmlExport")),
+                () =>
+                {
+                    return _selectedAreaColor != null;
+                });
+
+            CommandOpenOptionWindow = new RelayCommand(() => AppMessages.DialogRequest.Send(new MessageDialogRequest("OpenOptionWindow")));
 
             AppMessages.OptionAnswer.Register(this, HandlerOptionResults);
             AppMessages.DialogAnwer.Register(this, HandlerDialogResults);
             AppMessages.MapGeneratorMessage.Register(this, HandlerGenerateMap);
+
+
 
         }
 
@@ -758,7 +775,7 @@ namespace MapMakerApplication.ViewModel
         #region Item Commands
         private void CommandAreaItemCollectionAddExecuted()
         {
-            var area=  CollectionAreaSelectedItem as AreaColor;
+            var area = CollectionAreaSelectedItem as AreaColor;
             area.Items.List.Add(new CollectionItem());
         }
 
@@ -796,7 +813,7 @@ namespace MapMakerApplication.ViewModel
 
         private bool CommandAreaItemTileAddCan()
         {
-            var selectedtile = SelectedAreaItemTile as IEntryTile  != null;
+            var selectedtile = SelectedAreaItemTile as IEntryTile != null;
             var selectedCollection = SelectedAreaItem as CollectionItem != null;
             return selectedtile && selectedCollection;
 
@@ -829,13 +846,13 @@ namespace MapMakerApplication.ViewModel
                 case 0:
                     {
 
-                        SelectedWater.Remove((int) SelectedCoastTileInt);
+                        SelectedWater.Remove((int)SelectedCoastTileInt);
                     }
                     break;
 
                 case 1:
                     {
-                        SelectedGround.Remove((int) SelectedCoastTileInt);
+                        SelectedGround.Remove((int)SelectedCoastTileInt);
                     }
                     break;
             }
@@ -903,16 +920,18 @@ namespace MapMakerApplication.ViewModel
         private void CommandCoastSetAsDefaultExecuted()
         {
             var area = CollectionAreaColorSelected;
-            area.Coasts.Coast.Texture = ((int) ((IEntryTile) SelectedCoastTile).TileId);
+            area.Coasts.Coast.Texture = ((int)((IEntryTile)SelectedCoastTile).TileId);
         }
 
         private bool CommandCoastSetAsDefaultCan()
         {
-            return SelectedCoastTile != null && CollectionAreaColorSelected!= null
+            return SelectedCoastTile != null && CollectionAreaColorSelected != null
                    && SelectedCoastType == 0;
         }
 
         #endregion //Coasts Commands
+
+
 
 
         #endregion //Command Methods
@@ -921,10 +940,10 @@ namespace MapMakerApplication.ViewModel
 
         private void HandlerDialogResults(MessageDialogResult result)
         {
-            if(result == null) return;
+            if (result == null) return;
             switch (result.Type)
             {
-               case DialogType.SaveAco:
+                case DialogType.SaveAco:
                     {
                         _makeMapSDK.MakeAco(result.Content);
                     }
@@ -947,13 +966,19 @@ namespace MapMakerApplication.ViewModel
                         RaisePropertyChanged(null);
                     }
                     break;
-               
+                case DialogType.SaveBrushFile:
+                    {
+                        ExportToCentredPlus(result.Content);
+                        ExportCentredPlusGroups(result.Content);
+                    }
+                    break;
+
             }
         }
 
         private void HandlerOptionResults(OptionMessage result)
         {
-            if(result.Success)
+            if (result.Success)
                 RaisePropertyChanged(null);
         }
 
@@ -966,17 +991,23 @@ namespace MapMakerApplication.ViewModel
             var xy = OpenUO.MapMaker.MapMaking.Globals.Dimentions[index];
             var indexes = OpenUO.MapMaker.MapMaking.Globals.Indexes[index];
             _makeMapSDK.EventMakingMapEnd += MakingMapEnd;
-            _windowBusy = new WindowBusy();
 
-            var thread= new System.Threading.Thread(()=>Start(xy,indexes));
+            var thread = new System.Threading.Thread(() => Start(xy, indexes));
             _makeMapSDK.EventMapMakingProgress += EventHandlerProgressMapCreation;
-            thread.Start();
+            try
+            {
+                thread.Start();
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
             Visibility = Visibility.Visible;
-            
+
 
         }
 
-        private void Start(int[] xy,int indexes)
+        private void Start(int[] xy, int indexes)
         {
             _makeMapSDK.MapMake(ApplicationController.OutputFolder, BitmapLocationMap, BitmapLocationMapZ, xy[0], xy[1],
                                 indexes);
@@ -992,7 +1023,7 @@ namespace MapMakerApplication.ViewModel
         private void EventHandlerProgressMapCreation(object sender, EventArgs args)
         {
             var arg = args as ProgressEventArgs;
-            if(args!=null)
+            if (args != null)
             {
                 TextProgress = arg.PayLoad;
                 ProgressBarValue = arg.Progress;
@@ -1000,13 +1031,186 @@ namespace MapMakerApplication.ViewModel
 
         }
 
-    
+
+        #region Export to CentrED+
+
+        private void ExportToCentredPlus(string directoryname)
+        {
+            var filename = directoryname + "/TilesBrush.xml";
+
+            var xml = new XmlDocument();
+            xml.Load(filename);
+            CollectionAreaTexture.InitializeSeaches();
+            var node = xml.SelectSingleNode("./TilesBrush");
+
+            foreach (var areaColorColor in CollectionColorArea.List)
+            {
+                ParseColorToXml(xml, areaColorColor, node, CollectionAreaTexture);
+            }
+            foreach (var area in CollectionColorArea.List)
+            {
+                ReParseColorToXml(xml, area, node, CollectionAreaTexture);
+            }
+
+            xml.Save(filename);
+
+        }
+
+        private static void ParseColorToXml(XmlDocument xml, AreaColor area, XmlNode root, CollectionAreaTexture collectionAreaTexture)
+        {
+
+            var texture = collectionAreaTexture.FindByIndex(area.TextureIndex);
+            if (texture == null) return;
+
+
+            var thisNode = xml.CreateNode(XmlNodeType.Element, "Brush", xml.NamespaceURI);
+            var Attribute = xml.CreateAttribute("Id");
+            Attribute.Value = String.Format("{0:0000}", area.Index);
+            thisNode.Attributes.Append(Attribute);
+
+            Attribute = xml.CreateAttribute("Name");
+            Attribute.Value = area.Name;
+            thisNode.Attributes.Append(Attribute);
+
+
+            foreach (var VARIABLE in texture.List)
+            {
+                var landNode = xml.CreateNode(XmlNodeType.Element, "Land", xml.NamespaceURI);
+                Attribute = xml.CreateAttribute("ID");
+                Attribute.Value = "0x" + VARIABLE.ToString("X4");
+                landNode.Attributes.Append(Attribute);
+                thisNode.AppendChild(landNode);
+            }
+
+            foreach (var transition in area.TextureTransitions)
+            {
+                var edgenode = xml.CreateNode(XmlNodeType.Element, "Edge", xml.NamespaceURI);
+                Attribute = xml.CreateAttribute("To");
+                Attribute.Value = String.Format("{0:0000}", transition.IndexTo);
+                edgenode.Attributes.Append(Attribute);
+
+                InsertEdgesToXml(xml, "DR", edgenode, transition.BorderSouthWest.List);
+                InsertEdgesToXml(xml, "DL", edgenode, transition.BorderSouthEast.List);
+
+                InsertEdgesToXml(xml, "UR", edgenode, transition.BorderNorthWest.List);
+                InsertEdgesToXml(xml, "UL", edgenode, transition.BorderNorthEast.List);
+
+                InsertEdgesToXml(xml, "LL", edgenode, transition.LineWest.List);
+                InsertEdgesToXml(xml, "UU", edgenode, transition.LineNorth.List);
+
+                thisNode.AppendChild(edgenode);
+            }
+
+
+            root.AppendChild(thisNode);
+        }
+
+        private void ReParseColorToXml(XmlDocument xml, AreaColor area, XmlNode root, CollectionAreaTexture collectionAreaTexture)
+        {
+
+            var texture = collectionAreaTexture.FindByIndex(area.TextureIndex);
+            if (texture == null) return;
+
+            foreach (var transition in area.TextureTransitions)
+            {
+                var xpathquery = "//Brush[@Id=" + "'" + String.Format("{0:0000}", transition.IndexTo) + "'" + "]";
+                var node = xml.SelectSingleNode(xpathquery);
+                if (node == null) continue;
+                var edgenode = xml.CreateNode(XmlNodeType.Element, "Edge", xml.NamespaceURI);
+                var Attribute = xml.CreateAttribute("To");
+                Attribute.Value = String.Format("{0:0000}", area.Index);
+                edgenode.Attributes.Append(Attribute);
+                
+                InsertEdgesToXml(xml, "DR", edgenode, transition.EdgeNorthEast.List);
+                InsertEdgesToXml(xml, "DL", edgenode, transition.EdgeNorthWest.List);
+
+                InsertEdgesToXml(xml, "UR", edgenode, transition.EdgeSouthEast.List);
+                InsertEdgesToXml(xml, "UL", edgenode, transition.EdgeSouthWest.List);
+
+                InsertEdgesToXml(xml, "LL", edgenode, transition.LineEast.List);
+                InsertEdgesToXml(xml, "UU", edgenode, transition.LineSouth.List);
+
+                node.AppendChild(edgenode);
+            }
+
+
+        }
+
+        private static void InsertEdgesToXml(XmlDocument xml, string type, XmlNode edge, IEnumerable<int> list)
+        {
+            foreach (var id in list)
+            {
+
+                var node = xml.CreateNode(XmlNodeType.Element, "Land", xml.NamespaceURI);
+                var Attribute = xml.CreateAttribute("Type");
+                Attribute.Value = type;
+                node.Attributes.Append(Attribute);
+                Attribute = xml.CreateAttribute("ID");
+                Attribute.Value = "0x" + id.ToString("X4");
+                node.Attributes.Append(Attribute);
+
+
+                edge.AppendChild(node);
+            }
+        }
+
+        private void ExportCentredPlusGroups(string directoryName)
+        {
+            var filename = directoryName + "/TilesGroup.xml";
+
+            var xml = new XmlDocument();
+            xml.Load(filename);
+
+            var root = xml.SelectSingleNode("/TilesGroup");
+            var node = xml.CreateNode(XmlNodeType.Element, "Group", xml.NamespaceURI);
+            root.AppendChild(node);
+
+            var attribute = xml.CreateAttribute("Name");
+            attribute.Value = "Brushes";
+            node.Attributes.Append(attribute);
+
+            attribute = xml.CreateAttribute("bold");
+            attribute.Value = "True";
+            node.Attributes.Append(attribute);
+
+            attribute = xml.CreateAttribute("Nodes");
+            attribute.Value = (-1).ToString();
+            node.Attributes.Append(attribute);
+
+            var parent = node;
+
+            foreach (var area in CollectionColorArea.List)
+            {
+                node = xml.CreateNode(XmlNodeType.Element, "Group", xml.NamespaceURI);
+                attribute = xml.CreateAttribute("color");
+                attribute.Value = area.Color.ToString();
+                node.Attributes.Append(attribute);
+                attribute = xml.CreateAttribute("Name");
+                attribute.Value = area.Name;
+                node.Attributes.Append(attribute);
+                attribute = xml.CreateAttribute("ital");
+                attribute.Value = "True";
+                node.Attributes.Append(attribute);
+                var innernode = xml.CreateNode(XmlNodeType.Element, "Brush", xml.NamespaceURI);
+                attribute = xml.CreateAttribute("ID");
+                attribute.Value = String.Format("{0:0000}", area.Index);
+                innernode.Attributes.Append(attribute);
+                node.AppendChild(innernode);
+
+                parent.AppendChild(node);
+            }
+
+            xml.Save(filename);
+        }
+
+        #endregion //Export to CentrED+
+
 
         #endregion
 
 
 
-        
+
 
 
 

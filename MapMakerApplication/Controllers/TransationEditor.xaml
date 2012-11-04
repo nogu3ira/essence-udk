@@ -7,11 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 	<UserControl.Resources>
-		<ItemsPanelTemplate x:Key="ItemsPanelTemplate1">
-			<MyWinCollection:VirtualizingWrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"
-				MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"
-                               />
-		</ItemsPanelTemplate>
+		
 		<ItemsPanelTemplate x:Key="ItemsPanelTemplate2">
 			<WrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"
 				MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"
@@ -182,12 +178,14 @@
                 <RowDefinition Height="21" />
                 <RowDefinition Height="21"/>
                 <RowDefinition Height="21"/>
-                <RowDefinition Height="60*" />
+                <RowDefinition Height="78*" />
                 <RowDefinition Height="20" />
                 <RowDefinition Height="21" />
                 <RowDefinition Height="20" />
                 <RowDefinition Height="21" />
-                <RowDefinition Height="60*" />
+                <RowDefinition Height="45*" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="16*" />
             </Grid.RowDefinitions>
             <ListBox 
                 Grid.ColumnSpan="6" 
@@ -202,9 +200,7 @@
         		x:Name="ListBoxSelect"
         		Style="{StaticResource LocalTransitionListbox}"
                 ItemsSource="{Binding Sdk.TransationEditorViewModel.SelectedLineTransition, Source={StaticResource Locator}}"
-                SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTileInt, Source={StaticResource Locator}}" ItemsPanel="{DynamicResource ItemsPanelTemplate2}"
-				
-                />
+                SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTileInt, Source={StaticResource Locator}}" ItemsPanel="{DynamicResource ItemsPanelTemplate2}" Grid.RowSpan="3" />
             <ComboBox 
                 Grid.Row="7" 
                 x:Name="comboBoxTypeLine" 
@@ -230,8 +226,7 @@
                 CommandRemove="{Binding Sdk.TransationEditorViewModel.TransitionRemove, Source={StaticResource Locator}}"
                 Style="{StaticResource TransitionGridLocal}"
                 SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTransition, Mode=TwoWay, Source={StaticResource Locator}}" 
-                Grid.Row="3" Grid.Column="7" Grid.RowSpan="6"
-                />
+                Grid.Row="2" Grid.Column="7" Grid.RowSpan="6" />
             <TextBlock Text="Name" TextWrapping="Wrap"/>
             <TextBox Grid.ColumnSpan="7" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Sdk.TransationEditorViewModel.SelectedTransition.Name}"/>
             <TextBlock TextWrapping="Wrap" Grid.Row="1"><Run Language="it-it" Text="Id"/></TextBlock>
@@ -241,7 +236,7 @@
                     <SolidColorBrush Color="{Binding Sdk.SelectedTransition.ColorTo, Source={StaticResource Locator}}"/>
                 </TextBlock.Background>
             </TextBlock>
-
+            <Button Content="Export to CentrED+" Grid.Column="7" Grid.Row="9" Name="button1" />
         </Grid>
     </Grid>
 </UserControl>

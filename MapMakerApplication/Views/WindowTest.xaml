@@ -6,14 +6,12 @@
         xmlns:MapMakerApplication="clr-namespace:MapMakerApplication"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" Title="Map Maker" Height="404.478" Width="1050.249">
 
-    <Grid DataContext="{Binding Source={StaticResource Locator},Path=Sdk}">
+    <Grid DataContext="{Binding Source={StaticResource Locator},Path=Sdk}" Background="{Binding ElementName=dockManager,Path=Background}">
         	<Grid.RowDefinitions>
-        		<RowDefinition Height="20.965"/>
+        		<RowDefinition Height="20.0"/>
         		<RowDefinition/>
         	</Grid.RowDefinitions>
-        <xctk:ChildWindow Visibility="{Binding Source={StaticResource Locator},Path=Sdk.Visibility}" Height="300" Width="400" Grid.Row="1">
-            <Grid>
-                <xctk:BusyIndicator IsBusy="{Binding Source={StaticResource Locator},Path=Sdk.Busy}" DisplayAfter="0">
+                <xctk:BusyIndicator Grid.Row="1" IsBusy="{Binding Source={StaticResource Locator},Path=Sdk.Busy}" Visibility="{Binding Source={StaticResource Locator},Path=Sdk.Visibility}" DisplayAfter="0">
                     <xctk:BusyIndicator.BusyContentTemplate>
                         <DataTemplate>
                             <StackPanel Margin="4">
@@ -30,7 +28,7 @@
                     </xctk:BusyIndicator.BusyContentTemplate>
                     <xctk:BusyIndicator.OverlayStyle>
                         <Style TargetType="Rectangle">
-                            <Setter Property="Fill" Value="#ffffeeee"/>
+                    <Setter Property="Fill" Value="{Binding ElementName=dockManager,Path=Background}"/>
                         </Style>
                     </xctk:BusyIndicator.OverlayStyle>
                     <xctk:BusyIndicator.ProgressBarStyle>
@@ -39,8 +37,6 @@
                         </Style>
                     </xctk:BusyIndicator.ProgressBarStyle>
                 </xctk:BusyIndicator>
-            </Grid>
-        </xctk:ChildWindow>
         <avalondock:DockingManager Grid.Row="1" x:Name="dockManager" AllowMixedOrientation="True" Visibility="{Binding Source={StaticResource Locator},Path=Sdk.Visibility,Converter={StaticResource VisibilityInverter}}">
             <avalondock:DockingManager.Theme>
                 <avalondock:AeroTheme/>
@@ -76,10 +72,10 @@
                     </avalondock:LayoutDocumentPaneGroup>
                     <avalondock:LayoutAnchorablePaneGroup DockWidth="150">
                         <avalondock:LayoutAnchorablePane>
-                            <avalondock:LayoutAnchorable ContentId="Colors" Title="Colors" CanClose="False">
+                            <avalondock:LayoutAnchorable ContentId="Colors" Title="Colors" CanClose="False" CanAutoHide="False">
                                 <CollectionManager:CollectionManager x:Name="CollectionAreaColor" CommandMoveUp="{Binding CommandCollectionAreaColorMoveDown}" CommandAdd="{Binding CommandCollectionAreaColorAdd}" CommandMoveDown="{Binding CommandCollectionAreaColorMoveUp}" CommandRemove="{Binding CommandCollectionAreaColorRemove}" DockPanel.Dock="Top" ItemsSource="{Binding CollectionColorArea.List, Mode=TwoWay}" Style="{StaticResource GeneralGridViewArea}" SelectedIndex="{Binding CollectionAreaSelectedIndex, Mode=TwoWay}" SelectedItem="{Binding CollectionAreaSelectedItem, Mode=TwoWay}"/>
                             </avalondock:LayoutAnchorable>
-                            <avalondock:LayoutAnchorable ContentId="Textures" Title="Textures" CanClose="False">
+                            <avalondock:LayoutAnchorable ContentId="Textures" Title="Textures" CanClose="False" CanAutoHide="False">
                                 <Grid DataContext="{Binding}">
                                     <CollectionManager:CollectionManager CommandAdd="{Binding Path=CommandTextureAdd}" CommandRemove="{Binding Path=CommandTextureRemove}" ItemsSource="{Binding CollectionAreaTexture.List, Mode=TwoWay}" Style="{StaticResource GeneralGridViewTexture}" SelectedItem="{Binding SelectedAreaTexture,Mode=TwoWay}"/>
                                 </Grid>
@@ -96,13 +92,15 @@
                 </avalondock:LayoutRoot.LeftSide>
             </avalondock:LayoutRoot>
         </avalondock:DockingManager>
-        <Menu>
+        <Menu Visibility="{Binding Source={StaticResource Locator},Path=Sdk.Visibility,Converter={StaticResource VisibilityInverter}}" Background="{Binding ElementName=dockManager,Path=Background}">
         	<MenuItem Header="Files">
         		<MenuItem Header="Load" Command="{Binding Path=CommandFileOpen}"/>
 				<MenuItem Header="Save" Command="{Binding Path=CommandSave}"/>
 				<Separator/>
 				<MenuItem Header="Export ACO" Command="{Binding Path=CommandSaveAco}"/>
                 <MenuItem Header="Script Folder" Command="{Binding CommandOpenScriptFolder}"/>
+                <Separator/>
+                <MenuItem Header="Export To CentrED+" Command="{Binding CommandExportTransations}"/>
         	</MenuItem>
 			<MenuItem Header="Options" Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandOpenOptionWindow}">
 			</MenuItem>

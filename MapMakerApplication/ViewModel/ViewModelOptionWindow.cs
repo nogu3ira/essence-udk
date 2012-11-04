@@ -64,10 +64,18 @@ namespace MapMakerApplication.ViewModel
 
             CommandApply = new RelayCommand(() =>
                                                 {
-                                                    ApplicationController.manager =
-                                                        new UODataManager(new Uri(SelectedFolder),
-                                                                          _data, Language.English);
-                                                    AppMessages.OptionAnswer.Send(new OptionMessage() { Success = true });
+                                                    try
+                                                    {
+                                                        ApplicationController.manager =
+                                                       new UODataManager(new Uri(SelectedFolder),
+                                                                         _data, Language.English);
+                                                        AppMessages.OptionAnswer.Send(new OptionMessage() { Success = true });
+                                                    }
+                                                    catch (Exception e)
+                                                    {
+                                                        AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+                                                    }
+                                                   
                                                 }, () =>
                                                        {
                                                            return !string.IsNullOrEmpty(SelectedFolder) &&
