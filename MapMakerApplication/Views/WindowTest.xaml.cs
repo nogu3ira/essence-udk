@@ -119,7 +119,7 @@ namespace MapMakerApplication.Views
 
                 default:
                     {
-                        MessageBox.Show(this, "Error",obj.Content,MessageBoxButton.OK,MessageBoxImage.Error,MessageBoxResult.OK);
+                        MessageBox.Show(this, obj.Content, "Error", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                     }
                     break;
             }

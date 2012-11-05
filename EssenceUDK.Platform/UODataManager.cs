@@ -216,7 +216,7 @@ namespace EssenceUDK.Platform
 
         public IList<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None, bool valid = true)
         {
-            return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
+            return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t!= null && t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
         }
 
         public ILandTile GetLandTile(int id)

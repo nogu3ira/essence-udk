@@ -288,6 +288,7 @@ namespace MapMakerApplication.ViewModel
             set
             {
                 _selectedAreaColor = value;
+                SelectedAreaTexture = CollectionAreaColorSelected != null ? CollectionAreaTexture.FindByIndex(CollectionAreaColorSelected.TextureIndex) : null;
                 RaisePropertyChanged(null);
             }
         }
@@ -1035,23 +1036,31 @@ namespace MapMakerApplication.ViewModel
 
         private void ExportToCentredPlus(string directoryname)
         {
-            var filename = directoryname + "/TilesBrush.xml";
-
-            var xml = new XmlDocument();
-            xml.Load(filename);
-            CollectionAreaTexture.InitializeSeaches();
-            var node = xml.SelectSingleNode("./TilesBrush");
-
-            foreach (var areaColorColor in CollectionColorArea.List)
+            try
             {
-                ParseColorToXml(xml, areaColorColor, node, CollectionAreaTexture);
-            }
-            foreach (var area in CollectionColorArea.List)
-            {
-                ReParseColorToXml(xml, area, node, CollectionAreaTexture);
-            }
+                var filename = directoryname + "/TilesBrush.xml";
 
-            xml.Save(filename);
+                var xml = new XmlDocument();
+                xml.Load(filename);
+                CollectionAreaTexture.InitializeSeaches();
+                var node = xml.SelectSingleNode("./TilesBrush");
+
+                foreach (var areaColorColor in CollectionColorArea.List)
+                {
+                    ParseColorToXml(xml, areaColorColor, node, CollectionAreaTexture);
+                }
+                foreach (var area in CollectionColorArea.List)
+                {
+                    ReParseColorToXml(xml, area, node, CollectionAreaTexture);
+                }
+
+                xml.Save(filename);
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+            
 
         }
 

@@ -493,6 +493,8 @@ namespace EssenceUDK.MapMaker
                
             }
 
+            CollectionAreaTexture.InitializeSeaches();
+
             #endregion //Textures
 
             #region Items
@@ -537,12 +539,7 @@ namespace EssenceUDK.MapMaker
 
         public void MapMake(string directory, string bitmaplocation, string bitmapZLocation,int x, int y, int index)
         {
-            //var bitmapMap = new BitmapReader(bitmaplocation, false).BitmapColors;
-            //var bitmapZ = new BitmapReader(bitmapZLocation, true).BitmapColors;
             CollectionColorArea.InitializeSeaches();
-            //Thread mapzThread = new Thread(() => BitmapReader.Altitude(bitmapZLocation));
-            //Thread mapThread = new Thread(() => BitmapReader.ProduceMap(CollectionColorArea, bitmaplocation));
-            //var taskZBitmap = Task<sbyte[]>(mapzThread);
 
 
             var taskMapBitmap =
@@ -669,13 +666,6 @@ namespace EssenceUDK.MapMaker
                               {
                                   CollectionAreaTexture,
                                   CollectionColorArea,
-                                  //CollectionColorCoast,
-                                  //CollectionColorMountains,
-                                  //CollectionAreaItems,
-                                  //CollectionAreaItemsCoasts,
-                                  //CollectionAreaTransitionItems,
-                                  //CollectionAreaTransitionTexture,
-                                  //CollectionAreaTransitionCliffTexture
                               };
 
             var formatter = new BinaryFormatter();
@@ -727,18 +717,6 @@ namespace EssenceUDK.MapMaker
             }
             CollectionAreaTransitionTexture = (CollectionAreaTransitionTexture)objectfrom[0];
             CollectionColorArea = (CollectionAreaColor)objectfrom[1];
-            //CollectionColorArea = (CollectionAreaColor)objectfrom[0];
-            //CollectionColorCoast = (CollectionAreaColor) objectfrom[1];
-            //CollectionColorMountains = (CollectionAreaColorMountains)objectfrom[2];
-
-            //CollectionAreaItems = (CollectionAreaItems) objectfrom[3];
-            //CollectionAreaItemsCoasts = (CollectionAreaTransitionItemCoast)objectfrom[4];
-            //CollectionAreaTransitionItems = (CollectionAreaTransitionItems) objectfrom[5];
-
-            //CollectionAreaTexture = (CollectionAreaTexture) objectfrom[6];
-            //CollectionAreaTransitionTexture = (CollectionAreaTransitionTexture) objectfrom[7];
-            //CollectionAreaTransitionCliffTexture = (CollectionAreaTransitionCliffTexture) objectfrom[8];
-
             MergingData();
         }
 
@@ -779,12 +757,16 @@ namespace EssenceUDK.MapMaker
             {
                 area.PropertyChanged += EventUpdateList;
             }
+
+            if(CollectionAreaTexture!= null)
+            CollectionAreaTexture.InitializeSeaches();
+            
             EventUpdateList(this, null);
-            //MergingData();
         }
 
         #endregion //Save/Load functions
 
+        #region Event Handlers
         public event EventHandler EventMapMakingProgress;
 
         public void OnEventMapMakingProgress(EventArgs e)
@@ -814,8 +796,10 @@ namespace EssenceUDK.MapMaker
             OnEventMapMakingProgress(args);
         }
 
+        #endregion //Event Handler
 
-        
+
+
 
 
 
