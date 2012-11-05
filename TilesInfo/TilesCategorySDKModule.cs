@@ -22,8 +22,6 @@ namespace EssenceUDK.TilesInfo
     {
         #region private fields
 
-        private UODataManager _data;
-        
         private bool _checkText;
 
         private ObservableCollection<Tile> _listTmpTile;
@@ -46,7 +44,7 @@ namespace EssenceUDK.TilesInfo
 
         #region static fields
         
-        public static UODataManager Install;
+        public static UODataManager DataManager;
         
         public static ObservableCollection<ObservableCollection<TileCategory>> Categories;
         
@@ -98,7 +96,7 @@ namespace EssenceUDK.TilesInfo
         public TilesCategorySDKModule(UODataManager install)
         {
             
-            Install = install;
+            DataManager = install;
             Factories = new List<Factory>();
             Supp = new SuppInfo(install);
             Supp.Populate();
@@ -139,13 +137,13 @@ namespace EssenceUDK.TilesInfo
             }
 
 
-            var walls = _data.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Height == 20 && !itemData.Name.Contains("arc")&&!itemData.Flags.HasFlag(TileFlag.Window)&& !itemData.Flags.HasFlag(TileFlag.Door)).ToList();
-            var windows = _data.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Height == 20 && itemData.Flags.HasFlag(TileFlag.Window)).ToList();
-            var halfWalls = _data.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Height == 10 && !itemData.Flags.HasFlag(TileFlag.Window)).ToList();
-            var quarterWalls = _data.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Height == 5 && !itemData.Flags.HasFlag(TileFlag.Window)).ToList();
-            var archs = _data.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Name.Contains("arc")).ToList();
-            var roof = _data.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Roof)).ToList();
-            var floors = _data.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Surface)).ToList();
+            var walls = DataManager.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Height >= 15 && !itemData.Name.Contains("arc")&&!itemData.Flags.HasFlag(TileFlag.Window)&& !itemData.Flags.HasFlag(TileFlag.Door)).ToList();
+            var windows = DataManager.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Height >= 15 && itemData.Flags.HasFlag(TileFlag.Window)).ToList();
+            var halfWalls = DataManager.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Height >= 10 && itemData.Height <15 && !itemData.Flags.HasFlag(TileFlag.Window)).ToList();
+            var quarterWalls = DataManager.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Height >= 5  && itemData.Height <10 && !itemData.Flags.HasFlag(TileFlag.Window)).ToList();
+            var archs = DataManager.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Wall) && itemData.Name.Contains("arc")).ToList();
+            var roof = DataManager.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Roof)).ToList();
+            var floors = DataManager.GetItemTile().Where(itemData => itemData.Flags.HasFlag(TileFlag.Surface)).ToList();
 
             var wallCategory = new TileCategory(){Name = "wall",TypeTile = TypeTile.Wall};
             var windowCategory = new TileCategory() {Name = "window", TypeTile = TypeTile.Wall};
@@ -422,7 +420,7 @@ namespace EssenceUDK.TilesInfo
         
         public void TakeFromTXTFile(string locationFile)
         {
-            _textFactory = new TxtFile(locationFile,_data);
+            _textFactory = new TxtFile(locationFile,DataManager);
             _textFactory.Populate();
             Multi = _textFactory._multi;
         }
