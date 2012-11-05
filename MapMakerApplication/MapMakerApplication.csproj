@@ -158,9 +158,6 @@
     <Compile Include="Views\OptionWindow.xaml.cs">
       <DependentUpon>OptionWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SdkView.xaml.cs">
-      <DependentUpon>SdkView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\WindowTest.xaml.cs">
       <DependentUpon>WindowTest.xaml</DependentUpon>
     </Compile>
@@ -223,10 +220,6 @@
     <Page Include="Views\OptionWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\SdkView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\WindowTest.xaml">
       <SubType>Designer</SubType>

@@ -218,19 +218,13 @@ namespace EssenceUDK.MapMaker.MapMaking
             TextureAreas.InitializeSeaches();
             #endregion
 
-            //if (AutomaticZMode)
-            //{
-            //    OnProgressText(new ProgressEventArgs(){PayLoad = "Making Mountains"});
-            //    Mountain();
-                
-            //}
             var count = Environment.ProcessorCount;
             var maptasks = new Task[count];
             OnProgressText(new ProgressEventArgs() { PayLoad = "Making Map" });
 
             for (int i = 0; i < count; i++)
             {
-                var minX = i == 0 ? MinX : (_X / count) * (i)-1;
+                var minX = /*i == 0 ? MinX :*/ (_X / count) * (i)-1;
                 var MaxX = i<count?(_X/count)*(i+1):_X;
                
                 maptasks[i]= new Task(()=>BuildMapThread(MaxX, _Y, minX, MinY));
@@ -245,7 +239,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (AutomaticZMode)
             {
                 OnProgressText(new ProgressEventArgs(){PayLoad = "Making Altitude"});
-                ProcessZ(AutomaticZMode, null, new Coordinates(0,0,0,0,0));
+                ProcessZ(AutomaticZMode, null, new Coordinates(0,0,0,0,0,0));
             }
             _bitmapZ = null;
 
@@ -274,6 +268,14 @@ namespace EssenceUDK.MapMaker.MapMaking
 
         #region MapInit
 
+
+        /// <summary>
+        /// Thread task to read the bmp file and generate the mapobject relatives
+        /// </summary>
+        /// <param name="X">max X coordinate</param>
+        /// <param name="Y">max Y coordinate</param>
+        /// <param name="minX">min X coordinate</param>
+        /// <param name="minY">min Y coordinate </param>
         private void BuildMapThread(int X, int Y, int minX, int minY)
         {
             for (var x = minX; x < X - 1; x++)
@@ -365,67 +367,42 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// </summary>
         private void Mountain(AreaColorCoordinates areacoord, MapObjectCoordinates mapObjectCoordinates, Coordinates coord)
         {
-            //byte chk = 1;
-            //rrggbb
+            if (areacoord.Center == null || areacoord.Center.Type != TypeColor.Moutains) return;
 
-            //for (int x = MinX; x < _X - 1; x++)
-            //    for (int y = MinY; y < _Y - 1; y++)
-            //    {
-                    //var coord = MakeIndexesDirections(x, y, 1, 1);
+            mapObjectCoordinates.Center.Altitude =
+                (sbyte)Random.Next(areacoord.Center.Min, areacoord.Center.Max);
+            if (!areacoord.Center.ModeAutomatic) return;
 
-                    //var areacoord = new AreaColorCoordinates(coord, _bitmapAreaColor);
+            for (int index = 0; index < areacoord.Center.List.Count; index++)
+            {
+                var cirlce = areacoord.Center.List[index];
 
-                    if (areacoord.Center == null || areacoord.Center.Type != TypeColor.Moutains) return;
+                var areacircles =
+                    new AreaColorCoordinates(new Coordinates(index, index, coord.X, coord.Y, _stride,_bitmapAreaColor.Length),
+                                                _bitmapAreaColor);
 
-                    //var mapcoord = new MapObjectCoordinates(coord, _mapObjects);
-
-                    mapObjectCoordinates.Center.Altitude =
-                        (sbyte)Random.Next(areacoord.Center.Min, areacoord.Center.Max);
-                    if (!areacoord.Center.ModeAutomatic) return;
-
-                    for (int index = 0; index < areacoord.Center.List.Count; index++)
-                    {
-                        var cirlce = areacoord.Center.List[index];
-
-                        var areacircles =
-                            new AreaColorCoordinates(new Coordinates(index, index, coord.X, coord.Y, _stride),
-                                                     _bitmapAreaColor);
-
-                        if (areacircles.List == null)
-                        {
-                            break;
-                        }
-                        if (areacircles.List.Any(c => c == null || c.Type != TypeColor.Moutains))
-                        {
-                            break;
-                        }
-
-                        mapObjectCoordinates.Center.Altitude = (sbyte)Random.Next(cirlce.From, cirlce.To);
-                        if (mapObjectCoordinates.Center.Altitude > 127)
-                            mapObjectCoordinates.Center.Altitude = (sbyte)(Random.Next(120, 125));
-                        if (index >= (areacoord.Center.List.Count / 3) * 2 && areacoord.Center.IndexColorTopMountain != 0)
-                        {
-                            var area = _bitmapAreaColor[coord.Center];
-                            area = CollectionAreaColor.FindByIndex(area.IndexColorTopMountain);
-                            mapObjectCoordinates.Center.Texture = (short)RandomTexture(area.TextureIndex);
-                            _bitmapAreaColor[coord.Center] = CollectionAreaColor.FindByColor(area.ColorTopMountain);
-                        }
-                    //}
+                if (areacircles.List == null)
+                {
+                    break;
+                }
+                if (areacircles.List.Any(c => c == null || c.Type != TypeColor.Moutains))
+                {
+                    break;
                 }
 
-            //for (int x = MinX; x < _X; x++)
-            //    for (int y = MinY; y < _Y; y++)
-            //    {
-            //        var location = CalculateZone(x, y, _stride);
-            //        if (_mapObjects[location].Occupied != 30) continue;
+                mapObjectCoordinates.Center.Altitude = (sbyte)Random.Next(cirlce.From, cirlce.To);
+                if (mapObjectCoordinates.Center.Altitude > 127)
+                    mapObjectCoordinates.Center.Altitude = (sbyte)(Random.Next(120, 125));
+                if (index >= (areacoord.Center.List.Count / 3) * 2 && areacoord.Center.IndexColorTopMountain != 0)
+                {
+                    var area = _bitmapAreaColor[coord.Center];
+                    area = CollectionAreaColor.FindByIndex(area.IndexColorTopMountain);
+                    mapObjectCoordinates.Center.Texture = (short)RandomTexture(area.TextureIndex);
+                    _bitmapAreaColor[coord.Center] = CollectionAreaColor.FindByColor(area.ColorTopMountain);
+                }
+            }
 
-            //        var mapobject = _mapObjects[location];
-            //        var area = _bitmapAreaColor[location];
-            //        area = CollectionAreaColor.FindByIndex(area.IndexColorTopMountain);
-            //        mapobject.Texture = (short)RandomTexture(area.TextureIndex);
-
-            //        _bitmapAreaColor[location] = CollectionAreaColor.FindByColor(area.ColorTopMountain);
-            //    }
+           
         }
 
         #endregion //mountains
@@ -2672,7 +2649,7 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// <returns>array of params</returns>
         private Coordinates MakeIndexesDirections(int x, int y, int shiftX, int shiftY)
         {
-            return new Coordinates(shiftX, shiftY, x, y, _stride);
+            return new Coordinates(shiftX, shiftY, x, y, _stride,_bitmapAreaColor.Length);
         }
 
 
@@ -2729,7 +2706,7 @@ namespace EssenceUDK.MapMaker.MapMaking
 
         public int[] List { get { return _array; } }
 
-        public Coordinates(int shiftX, int shiftY, int x, int y, int stride)
+        public Coordinates(int shiftX, int shiftY, int x, int y, int stride, int lenght)
         {
             _array = new int[11];
             _array[(int)Directions.Center] = MapMaker.CalculateZone(x, y, stride);
@@ -2743,18 +2720,11 @@ namespace EssenceUDK.MapMaker.MapMaking
             _array[(int)Directions.SouthEast] = MapMaker.CalculateZone(x + shiftX, y + shiftY, stride);
             _array[9] = x;
             _array[10] = y;
-            //_x = x;
-            //_y = y;
-            //_center = MapMaker.CalculateZone(x, y, stride);
-            //_north = MapMaker.CalculateZone(x, y - shiftY, stride);
-            //_south = MapMaker.CalculateZone(x, y + shiftY, stride);
-            //_east = MapMaker.CalculateZone(x + shiftX, y, stride);
-            //_west = MapMaker.CalculateZone(x - shiftX, y, stride);
-            //_northWest = MapMaker.CalculateZone(x - shiftX, y - shiftY, stride);
-            //_northEast = MapMaker.CalculateZone(x + shiftX, y - shiftY, stride);
-            //_southWest = MapMaker.CalculateZone(x - shiftX, y + shiftY, stride);
-            //_southEast = MapMaker.CalculateZone(x + shiftX, y + shiftY, stride);
-
+            for (int i = 0; i < List.Length; i++)
+            {
+                if (_array[i] < 0 || _array[i] > lenght)
+                    _array[i] = 0;
+            }
         }
     }
 
@@ -2782,20 +2752,7 @@ namespace EssenceUDK.MapMaker.MapMaking
 
         public AreaColor[] List { get; set; }
 
-        //public AreaColorCoordinates(CollectionAreaColor collection, Coordinates coordinates, Color[] map)
-        //{
-        //    _center = collection.FindByColor(map[coordinates.Center]);
-        //    _north = collection.FindByColor(map[coordinates.North]);
-        //    _south = collection.FindByColor(map[coordinates.South]);
-        //    _east = collection.FindByColor(map[coordinates.East]);
-        //    _west = collection.FindByColor(map[coordinates.West]);
-        //    _northWest = collection.FindByColor(map[coordinates.NorthWest]);
-        //    _northEast = collection.FindByColor(map[coordinates.NorthEast]);
-        //    _southWest = collection.FindByColor(map[coordinates.SouthWest]);
-        //    _southEast = collection.FindByColor(map[coordinates.SouthEast]);
-
-        //    List = new[] { _center, _north, _south, _east, _west, _northEast, _northWest, _southEast, _southWest };
-        //}
+        
         public AreaColorCoordinates(Coordinates coordinates, AreaColor[] map)
         {
             List = new AreaColor[9];

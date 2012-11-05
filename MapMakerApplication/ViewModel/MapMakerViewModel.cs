@@ -7,7 +7,6 @@ using EssenceUDK.MapMaker;
 using EssenceUDK.MapMaker.MapMaking;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using MapMakerApplication.Messages;
 
 namespace MapMakerApplication.ViewModel

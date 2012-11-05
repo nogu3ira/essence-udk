@@ -20,7 +20,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MapMakerApplication.Messages;
 using Color = System.Windows.Media.Color;
-using GalaSoft.MvvmLight.Messaging;
 using CollectionItem = EssenceUDK.MapMaker.Elements.Items.ItemText.CollectionItem;
 
 namespace MapMakerApplication.ViewModel
