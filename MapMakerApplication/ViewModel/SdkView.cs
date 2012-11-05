@@ -1089,11 +1089,10 @@ namespace MapMakerApplication.ViewModel
                 Attribute.Value = String.Format("{0:0000}", transition.IndexTo);
                 edgenode.Attributes.Append(Attribute);
 
-                InsertEdgesToXml(xml, "DR", edgenode, transition.BorderSouthWest.List);
-                InsertEdgesToXml(xml, "DL", edgenode, transition.BorderSouthEast.List);
-
-                InsertEdgesToXml(xml, "UR", edgenode, transition.BorderNorthWest.List);
-                InsertEdgesToXml(xml, "UL", edgenode, transition.BorderNorthEast.List);
+                InsertEdgesToXml(xml, "DR", edgenode, transition.BorderSouthEast.List);
+                InsertEdgesToXml(xml, "DL", edgenode, transition.BorderSouthWest.List);
+                InsertEdgesToXml(xml, "UL", edgenode, transition.BorderNorthWest.List);
+                InsertEdgesToXml(xml, "UR", edgenode, transition.BorderNorthEast.List);
 
                 InsertEdgesToXml(xml, "LL", edgenode, transition.LineWest.List);
                 InsertEdgesToXml(xml, "UU", edgenode, transition.LineNorth.List);
@@ -1121,11 +1120,10 @@ namespace MapMakerApplication.ViewModel
                 Attribute.Value = String.Format("{0:0000}", area.Index);
                 edgenode.Attributes.Append(Attribute);
                 
-                InsertEdgesToXml(xml, "DR", edgenode, transition.EdgeNorthEast.List);
-                InsertEdgesToXml(xml, "DL", edgenode, transition.EdgeNorthWest.List);
-
-                InsertEdgesToXml(xml, "UR", edgenode, transition.EdgeSouthEast.List);
-                InsertEdgesToXml(xml, "UL", edgenode, transition.EdgeSouthWest.List);
+                InsertEdgesToXml(xml, "DR", edgenode, transition.EdgeNorthWest.List);
+                InsertEdgesToXml(xml, "DL", edgenode, transition.EdgeNorthEast.List);
+                InsertEdgesToXml(xml, "UL", edgenode, transition.EdgeSouthEast.List);
+                InsertEdgesToXml(xml, "UR", edgenode, transition.EdgeSouthWest.List);
 
                 InsertEdgesToXml(xml, "LL", edgenode, transition.LineEast.List);
                 InsertEdgesToXml(xml, "UU", edgenode, transition.LineSouth.List);
