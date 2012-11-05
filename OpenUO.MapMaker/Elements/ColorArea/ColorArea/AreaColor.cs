@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using OpenUO.MapMaker.Elements.ColorArea.ColorMountains;
-using OpenUO.MapMaker.Elements.Items.ItemCoast;
-using OpenUO.MapMaker.Elements.Items.ItemText;
-using OpenUO.MapMaker.Elements.Items.ItemsTransition;
-using OpenUO.MapMaker.Elements.Textures.TextureArea;
-using OpenUO.MapMaker.Elements.Textures.TextureTransition;
-using OpenUO.MapMaker.Elements.Textures.TexureCliff;
-using System.Linq;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorMountains;
+using EssenceUDK.MapMaker.Elements.Items.ItemCoast;
+using EssenceUDK.MapMaker.Elements.Items.ItemText;
+using EssenceUDK.MapMaker.Elements.Items.ItemsTransition;
+using EssenceUDK.MapMaker.Elements.Textures.TextureTransition;
+using EssenceUDK.MapMaker.Elements.Textures.TexureCliff;
 
-namespace OpenUO.MapMaker.Elements.ColorArea.ColorArea
+namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
 {
     [Serializable]
     public class AreaColor : NotificationObject

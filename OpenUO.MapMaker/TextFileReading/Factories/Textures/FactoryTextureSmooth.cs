@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using OpenUO.MapMaker.Elements.Textures;
-using OpenUO.MapMaker.Elements.Textures.TextureTransition;
-using OpenUO.MapMaker.TextFileReading.Factories2;
+using EssenceUDK.MapMaker.Elements.Textures;
+using EssenceUDK.MapMaker.Elements.Textures.TextureTransition;
 
-namespace OpenUO.MapMaker.TextFileReading.Factories.Textures
+namespace EssenceUDK.MapMaker.TextFileReading.Factories.Textures
 {
     public class FactoryTextureSmooth : FactoryTransition
     {

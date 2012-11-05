@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
 
-namespace OpenUO.MapMaker.Elements.ColorArea.ColorMountains
+namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorMountains
 {
     [Serializable]
     public class AreaColorMountain : NotificationObject 

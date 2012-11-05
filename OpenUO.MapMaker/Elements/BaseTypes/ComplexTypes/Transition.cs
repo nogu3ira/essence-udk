@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes.Enum;
-using System.Linq;
+using EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes.Enum;
 
-namespace OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes
+namespace EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes
 {
     [Serializable]
     public class Transition : NotificationObject

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using OpenUO.MapMaker.Elements.Textures;
+using EssenceUDK.MapMaker.Elements.Textures;
 
-namespace OpenUO.MapMaker.TextFileReading.Factories.Textures
+namespace EssenceUDK.MapMaker.TextFileReading.Factories.Textures
 {
     public class FactoryTextureArea : Factory
     {

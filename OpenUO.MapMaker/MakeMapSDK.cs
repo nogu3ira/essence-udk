@@ -7,30 +7,27 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Formatters.Soap;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using System.Xml.Serialization;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
+using EssenceUDK.MapMaker.Elements.ColorArea;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
+using EssenceUDK.MapMaker.Elements.Items;
+using EssenceUDK.MapMaker.Elements.Items.ItemCoast;
+using EssenceUDK.MapMaker.Elements.Items.ItemText;
+using EssenceUDK.MapMaker.Elements.Items.ItemsTransition;
+using EssenceUDK.MapMaker.Elements.Textures;
+using EssenceUDK.MapMaker.Elements.Textures.TextureTransition;
+using EssenceUDK.MapMaker.Elements.Textures.TexureCliff;
+using EssenceUDK.MapMaker.MapMaking;
+using EssenceUDK.MapMaker.TextFileReading;
+using EssenceUDK.MapMaker.TextFileReading.Factories.Colors;
+using EssenceUDK.MapMaker.TextFileReading.Factories.Items;
+using EssenceUDK.MapMaker.TextFileReading.Factories.Textures;
 using MiscUtil.Conversion;
 using MiscUtil.IO;
-using OpenUO.MapMaker.Elements;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using OpenUO.MapMaker.Elements.ColorArea;
-using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
-using OpenUO.MapMaker.Elements.Items;
-using OpenUO.MapMaker.Elements.Items.ItemCoast;
-using OpenUO.MapMaker.Elements.Items.ItemText;
-using OpenUO.MapMaker.Elements.Items.ItemsTransition;
-using OpenUO.MapMaker.Elements.Textures;
-using OpenUO.MapMaker.Elements.Textures.TextureTransition;
-using OpenUO.MapMaker.Elements.Textures.TexureCliff;
-using OpenUO.MapMaker.MapMaking;
-using OpenUO.MapMaker.TextFileReading;
-using OpenUO.MapMaker.TextFileReading.Factories.Colors;
-using OpenUO.MapMaker.TextFileReading.Factories.Items;
-using OpenUO.MapMaker.TextFileReading.Factories.Textures;
 
-namespace OpenUO.MapMaker
+namespace EssenceUDK.MapMaker
 {
     public class MakeMapSDK 
     {

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Media;
-using System.Xml.Serialization;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using OpenUO.MapMaker.Elements.Items.ItemCoast;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
+using EssenceUDK.MapMaker.Elements.Items.ItemCoast;
 
-namespace OpenUO.MapMaker.Elements.Items
+namespace EssenceUDK.MapMaker.Elements.Items
 {
     [Serializable]
     public class CollectionAreaTransitionItemCoast : NotificationObject, IContainerSet

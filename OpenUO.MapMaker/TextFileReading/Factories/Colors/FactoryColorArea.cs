@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using OpenUO.MapMaker.Elements.ColorArea;
-using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
+using EssenceUDK.MapMaker.Elements.ColorArea;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
 
-namespace OpenUO.MapMaker.TextFileReading.Factories.Colors
+namespace EssenceUDK.MapMaker.TextFileReading.Factories.Colors
 {
     public class FactoryColorArea : Factory
     {

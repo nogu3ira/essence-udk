@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
-using OpenUO.MapMaker.Elements.ColorArea.ColorMountains;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
 
-namespace OpenUO.MapMaker.Elements.ColorArea
+namespace EssenceUDK.MapMaker.Elements.ColorArea
 {
     [Serializable]
     public class CollectionAreaColorMountains : IContainerSet

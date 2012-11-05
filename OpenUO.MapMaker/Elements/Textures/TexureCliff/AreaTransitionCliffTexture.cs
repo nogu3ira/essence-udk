@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using System.Linq;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
 
-namespace OpenUO.MapMaker.Elements.Textures.TexureCliff
+namespace EssenceUDK.MapMaker.Elements.Textures.TexureCliff
 {
     [Serializable]
     public class AreaTransitionCliffTexture : NotificationObject

@@ -17,12 +17,12 @@
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
+using EssenceUDK.MapMaker;
 using EssenceUDK.Platform;
 using EssenceUDK.Platform.DataTypes;
 using GalaSoft.MvvmLight;
 using MapMakerApplication.Messages;
 using MiscUtil.DataVirtualization;
-using OpenUO.MapMaker;
 
 namespace MapMakerApplication.ViewModel
 {

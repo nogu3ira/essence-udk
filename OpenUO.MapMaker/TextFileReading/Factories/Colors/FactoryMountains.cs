@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using OpenUO.MapMaker.Elements.ColorArea;
-using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
-using OpenUO.MapMaker.Elements.ColorArea.ColorMountains;
+using EssenceUDK.MapMaker.Elements.ColorArea;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorMountains;
 
-namespace OpenUO.MapMaker.TextFileReading.Factories.Colors
+namespace EssenceUDK.MapMaker.TextFileReading.Factories.Colors
 {
     public class FactoryMountains:Factory
     {

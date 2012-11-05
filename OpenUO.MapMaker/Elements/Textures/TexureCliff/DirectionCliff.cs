@@ -1,6 +1,4 @@
-using System.ComponentModel;
-
-namespace OpenUO.MapMaker.Elements.Textures.TexureCliff
+namespace EssenceUDK.MapMaker.Elements.Textures.TexureCliff
 {
     /// <summary>
     /// 

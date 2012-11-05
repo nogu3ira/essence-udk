@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml.Serialization;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using OpenUO.MapMaker.Elements.Textures.TextureArea;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
+using EssenceUDK.MapMaker.Elements.Textures.TextureArea;
 
-namespace OpenUO.MapMaker.Elements.Textures
+namespace EssenceUDK.MapMaker.Elements.Textures
 {
     [Serializable]
     public class CollectionAreaTexture : NotificationObject, IContainerSet

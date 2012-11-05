@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes.Enum
+namespace EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes.Enum
 {
     [Serializable]
     public enum LineType

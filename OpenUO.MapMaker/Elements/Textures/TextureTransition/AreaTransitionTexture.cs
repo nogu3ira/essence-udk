@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes;
-using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
-using OpenUO.MapMaker.Elements.Interfaces;
-using System.Xml;
+using EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes;
+using EssenceUDK.MapMaker.Elements.Interfaces;
 
-namespace OpenUO.MapMaker.Elements.Textures.TextureTransition
+namespace EssenceUDK.MapMaker.Elements.Textures.TextureTransition
 {
     [Serializable]
     public class AreaTransitionTexture : Transition, ITransition

@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq.Expressions;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows.Media;
-using System.Reflection;
-using System.Xml.Serialization;
-using OpenUO.MapMaker.Elements.ColorArea;
-using OpenUO.MapMaker.Elements.Textures;
 
-namespace OpenUO.MapMaker.Elements.BaseTypes
+namespace EssenceUDK.MapMaker.Elements.BaseTypes
 {
     [Serializable]
     public class NotificationObject : INotifyPropertyChanged, IDataErrorInfo,ISerializable
@@ -38,7 +32,7 @@ namespace OpenUO.MapMaker.Elements.BaseTypes
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        [field:NonSerializedAttribute]
+        [field:NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void EventUpdateHandler(object sender,EventArgs args)

@@ -5,23 +5,23 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml;
+using EssenceUDK.MapMaker;
+using EssenceUDK.MapMaker.Elements;
+using EssenceUDK.MapMaker.Elements.ColorArea;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
+using EssenceUDK.MapMaker.Elements.Items;
+using EssenceUDK.MapMaker.Elements.Items.ItemText;
+using EssenceUDK.MapMaker.Elements.Textures;
+using EssenceUDK.MapMaker.Elements.Textures.TextureArea;
+using EssenceUDK.MapMaker.Elements.Textures.TexureCliff;
+using EssenceUDK.MapMaker.MapMaking;
 using EssenceUDK.Platform.DataTypes;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MapMakerApplication.Messages;
-using OpenUO.MapMaker;
-using OpenUO.MapMaker.Elements;
-using OpenUO.MapMaker.Elements.ColorArea;
-using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
-using OpenUO.MapMaker.Elements.Items;
-using OpenUO.MapMaker.Elements.Items.ItemText;
-using OpenUO.MapMaker.Elements.Textures;
-using OpenUO.MapMaker.Elements.Textures.TextureArea;
-using OpenUO.MapMaker.Elements.Textures.TextureTransition;
-using OpenUO.MapMaker.Elements.Textures.TexureCliff;
 using Color = System.Windows.Media.Color;
 using GalaSoft.MvvmLight.Messaging;
-using CollectionItem = OpenUO.MapMaker.Elements.Items.ItemText.CollectionItem;
+using CollectionItem = EssenceUDK.MapMaker.Elements.Items.ItemText.CollectionItem;
 
 namespace MapMakerApplication.ViewModel
 {
@@ -988,8 +988,8 @@ namespace MapMakerApplication.ViewModel
             ProgressBarValue = 0;
             TextProgress = "";
             var index = message.Index;
-            var xy = OpenUO.MapMaker.MapMaking.Globals.Dimentions[index];
-            var indexes = OpenUO.MapMaker.MapMaking.Globals.Indexes[index];
+            var xy = Globals.Dimentions[index];
+            var indexes = Globals.Indexes[index];
             _makeMapSDK.EventMakingMapEnd += MakingMapEnd;
 
             var thread = new System.Threading.Thread(() => Start(xy, indexes));

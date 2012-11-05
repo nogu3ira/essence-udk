@@ -1,4 +1,4 @@
-namespace OpenUO.MapMaker.Elements
+namespace EssenceUDK.MapMaker.Elements
 {
     /// <summary>
     /// 

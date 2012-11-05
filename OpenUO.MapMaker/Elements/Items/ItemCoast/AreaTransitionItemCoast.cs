@@ -1,8 +1,7 @@
 ﻿using System;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
 
-namespace OpenUO.MapMaker.Elements.Items.ItemCoast
+namespace EssenceUDK.MapMaker.Elements.Items.ItemCoast
 {
     [Serializable]
     public class AreaTransitionItemCoast : NotificationObject

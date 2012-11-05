@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using OpenUO.MapMaker.Elements.Textures.TextureTransition;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
+using EssenceUDK.MapMaker.Elements.Textures.TextureTransition;
 
-namespace OpenUO.MapMaker.Elements.Textures
+namespace EssenceUDK.MapMaker.Elements.Textures
 {
     [Serializable]
     public class CollectionAreaTransitionTexture : NotificationObject, IContainerSet

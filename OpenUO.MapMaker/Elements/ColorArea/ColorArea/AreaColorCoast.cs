@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenUO.MapMaker.Elements.ColorArea.ColorArea
+namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
 {
     [Serializable]
     public class AreaColorCoast : AreaColor

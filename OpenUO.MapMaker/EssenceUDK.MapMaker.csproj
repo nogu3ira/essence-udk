@@ -8,8 +8,8 @@
     <ProjectGuid>{2F25DC15-7C8B-4C57-8C31-E33DEE517E7B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenUO.MapMaker</RootNamespace>
-    <AssemblyName>OpenUO.MapMaker</AssemblyName>
+    <RootNamespace>EssenceUDK.MapMaker</RootNamespace>
+    <AssemblyName>EssenceUDK.MapMaker</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

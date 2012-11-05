@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes;
-using OpenUO.MapMaker.Elements.Interfaces;
+using EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes;
+using EssenceUDK.MapMaker.Elements.Interfaces;
 
-namespace OpenUO.MapMaker.Elements.Items.ItemsTransition
+namespace EssenceUDK.MapMaker.Elements.Items.ItemsTransition
 {
     [Serializable]
     public class AreaTransitionItem : Transition, ITransition

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes;
+using EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes;
 
-namespace OpenUO.MapMaker.Elements.Items.ItemCoast
+namespace EssenceUDK.MapMaker.Elements.Items.ItemCoast
 {
     [Serializable]
     public class TransitionItemsCoast : Transition

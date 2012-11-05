@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using OpenUO.MapMaker.Elements.Textures.TexureCliff;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
+using EssenceUDK.MapMaker.Elements.Textures.TexureCliff;
 
-namespace OpenUO.MapMaker.Elements.Textures
+namespace EssenceUDK.MapMaker.Elements.Textures
 {
     [Serializable]
     public class CollectionAreaTransitionCliffTexture : NotificationObject, IContainerSet

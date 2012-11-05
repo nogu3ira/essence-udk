@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
+using EssenceUDK.MapMaker;
+using EssenceUDK.MapMaker.MapMaking;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using MapMakerApplication.Messages;
-using OpenUO.MapMaker;
 
 namespace MapMakerApplication.ViewModel
 {
@@ -22,7 +23,7 @@ namespace MapMakerApplication.ViewModel
 
         #region Props
 
-        public List<string> Names { get { return OpenUO.MapMaker.MapMaking.Globals.names; } }
+        public List<string> Names { get { return Globals.names; } }
 
         public string LocationBitmapZ { get { return _sdk.BitmapLocationMapZ; } set { _sdk.BitmapLocationMapZ = value; RaisePropertyChanged(()=>LocationBitmapZ); } }
 

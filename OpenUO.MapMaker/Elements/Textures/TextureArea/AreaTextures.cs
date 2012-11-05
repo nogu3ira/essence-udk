@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
 
-namespace OpenUO.MapMaker.Elements.Textures.TextureArea
+namespace EssenceUDK.MapMaker.Elements.Textures.TextureArea
 {
     [Serializable]
     public class AreaTextures : NotificationObject 

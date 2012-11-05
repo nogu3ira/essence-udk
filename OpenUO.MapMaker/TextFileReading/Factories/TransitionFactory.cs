@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes;
-using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes.Enum;
-using EdgeDirection = OpenUO.MapMaker.Elements.EdgeDirection;
+using EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes;
+using EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes.Enum;
 
-namespace OpenUO.MapMaker.TextFileReading.Factories2
+namespace EssenceUDK.MapMaker.TextFileReading.Factories
 {
     public class FactoryTransition : Factory
     {

@@ -2,12 +2,10 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using OpenUO.MapMaker.Elements.ColorArea;
-using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
-using Color = System.Windows.Media.Color;
-using PixelFormat = System.Drawing.Imaging.PixelFormat;
+using EssenceUDK.MapMaker.Elements.ColorArea;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
 
-namespace OpenUO.MapMaker.MapMaking
+namespace EssenceUDK.MapMaker.MapMaking
 {
     public class BitmapReader 
     {

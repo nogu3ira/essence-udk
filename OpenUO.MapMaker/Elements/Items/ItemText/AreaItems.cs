@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
 
-namespace OpenUO.MapMaker.Elements.Items.ItemText
+namespace EssenceUDK.MapMaker.Elements.Items.ItemText
 {
     [Serializable]
     public class AreaItems : NotificationObject

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
-using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes.Enum;
-using OpenUO.MapMaker.Elements.Items;
-using OpenUO.MapMaker.Elements.Items.ItemsTransition;
-using OpenUO.MapMaker.TextFileReading.Factories2;
+using EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes.Enum;
+using EssenceUDK.MapMaker.Elements.Items;
+using EssenceUDK.MapMaker.Elements.Items.ItemsTransition;
 
-namespace OpenUO.MapMaker.TextFileReading.Factories.Items
+namespace EssenceUDK.MapMaker.TextFileReading.Factories.Items
 {
     public class FactorySmoothItems : FactoryTransition
     {

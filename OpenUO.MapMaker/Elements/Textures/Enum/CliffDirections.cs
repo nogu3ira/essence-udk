@@ -1,6 +1,6 @@
 using System;
 
-namespace OpenUO.MapMaker.Elements.Textures.Enum
+namespace EssenceUDK.MapMaker.Elements.Textures.Enum
 {
     /// <summary>
     /// 

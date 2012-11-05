@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements;
-using OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes.Enum;
-using OpenUO.MapMaker.Elements.ColorArea;
-using OpenUO.MapMaker.Elements.ColorArea.ColorArea;
-using OpenUO.MapMaker.Elements.Items;
-using OpenUO.MapMaker.Elements.Items.ItemText;
-using OpenUO.MapMaker.Elements.Items.ItemsTransition;
-using OpenUO.MapMaker.Elements.Textures;
-using OpenUO.MapMaker.Elements.Textures.TextureTransition;
-using OpenUO.MapMaker.Elements.Textures.TexureCliff;
+using EssenceUDK.MapMaker.Elements;
+using EssenceUDK.MapMaker.Elements.ColorArea;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
+using EssenceUDK.MapMaker.Elements.Items.ItemText;
+using EssenceUDK.MapMaker.Elements.Items.ItemsTransition;
+using EssenceUDK.MapMaker.Elements.Textures;
+using EssenceUDK.MapMaker.Elements.Textures.TextureTransition;
+using EssenceUDK.MapMaker.Elements.Textures.TexureCliff;
 
-namespace OpenUO.MapMaker.MapMaking
+namespace EssenceUDK.MapMaker.MapMaking
 {
     public class MapMaker
     {

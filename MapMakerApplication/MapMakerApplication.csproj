@@ -299,9 +299,9 @@
       <Project>{4fc1d5f4-661f-48dc-b397-4cdcb7d61abe}</Project>
       <Name>MiscUtil</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OpenUO.MapMaker\OpenUO.MapMaker.csproj">
+    <ProjectReference Include="..\OpenUO.MapMaker\EssenceUDK.MapMaker.csproj">
       <Project>{2F25DC15-7C8B-4C57-8C31-E33DEE517E7B}</Project>
-      <Name>OpenUO.MapMaker</Name>
+      <Name>EssenceUDK.MapMaker</Name>
     </ProjectReference>
     <ProjectReference Include="..\wpftoolkit-94877\Release\v1.7.0\ExtendedWPFToolkitSolution\Src\WPFToolkit.Extended\WPFToolkit.Extended.csproj">
       <Project>{72e591d6-8f83-4d8c-8f67-9c325e623234}</Project>

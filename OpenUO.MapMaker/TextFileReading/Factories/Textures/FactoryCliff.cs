@@ -1,8 +1,8 @@
 ﻿using System;
-using OpenUO.MapMaker.Elements.Textures;
-using OpenUO.MapMaker.Elements.Textures.TexureCliff;
+using EssenceUDK.MapMaker.Elements.Textures;
+using EssenceUDK.MapMaker.Elements.Textures.TexureCliff;
 
-namespace OpenUO.MapMaker.TextFileReading.Factories.Textures
+namespace EssenceUDK.MapMaker.TextFileReading.Factories.Textures
 {
     public class FactoryCliff : Factory
     {

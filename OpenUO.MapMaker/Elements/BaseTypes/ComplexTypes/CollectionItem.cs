@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.Serialization;
 
-namespace OpenUO.MapMaker.Elements.BaseTypes.ComplexTypes
+namespace EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes
 {
     [Serializable]
     public class CollectionItem : NotificationObject

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Windows.Media;
-using OpenUO.MapMaker.Elements.BaseTypes;
-using OpenUO.MapMaker.Elements.Items.ItemText;
+using EssenceUDK.MapMaker.Elements.BaseTypes;
+using EssenceUDK.MapMaker.Elements.Items.ItemText;
 
-namespace OpenUO.MapMaker.Elements.Items
+namespace EssenceUDK.MapMaker.Elements.Items
 {
     [Serializable]
     public class CollectionAreaItems : NotificationObject , IContainerSet

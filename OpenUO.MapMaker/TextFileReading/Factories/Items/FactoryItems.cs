@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenUO.MapMaker.Elements.Items.ItemText;
+using EssenceUDK.MapMaker.Elements.Items.ItemText;
 
-namespace OpenUO.MapMaker.TextFileReading.Factories.Items
+namespace EssenceUDK.MapMaker.TextFileReading.Factories.Items
 {
     public class FactoryItems : Factory
     {
