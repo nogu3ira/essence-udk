@@ -225,8 +225,6 @@ namespace EssenceUDK.MapMaker.MapMaking
                 
             //}
             var count = Environment.ProcessorCount;
-            if (count > 3)
-                count -=2;
             var maptasks = new Task[count];
             OnProgressText(new ProgressEventArgs() { PayLoad = "Making Map" });
 
