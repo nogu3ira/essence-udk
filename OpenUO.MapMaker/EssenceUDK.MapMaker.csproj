@@ -53,6 +53,7 @@
     <Compile Include="Elements\Items\CollectionItem.cs" />
     <Compile Include="Elements\Items\Items\SingleItem.cs" />
     <Compile Include="Elements\ProgressEventArgs.cs" />
+    <Compile Include="MakeMapSDK.cs" />
     <Compile Include="MapMaking\BitmapReader.cs" />
     <Compile Include="Elements\BaseTypes\ComplexTypes\CollectionItem.cs" />
     <Compile Include="Elements\ColorArea\ColorArea\AreaColor.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="Elements\Direction.cs" />
     <Compile Include="MapMaking\Globals.cs" />
     <Compile Include="MapMaking\MapMaker.cs" />
-    <Compile Include="MakeMapSDK.cs" />
     <Compile Include="TextFileReading\Factories\Colors\FactoryCoast.cs" />
     <Compile Include="TextFileReading\Factories\Colors\FactoryColorArea.cs" />
     <Compile Include="TextFileReading\Factories\Colors\FactoryMountains.cs" />
