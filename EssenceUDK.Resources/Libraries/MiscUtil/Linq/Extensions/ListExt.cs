@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using MiscUtil.Collections;
-using MiscUtil.Collections.Extensions;
-namespace MiscUtil.Linq.Extensions
+using EssenceUDK.Resources.Libraries.MiscUtil.Collections;
+using EssenceUDK.Resources.Libraries.MiscUtil.Collections.Extensions;
+
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq.Extensions
 {
     /// <summary>
     /// Provides extension methods to List&lt;T&gt;
@@ -17,7 +18,7 @@ namespace MiscUtil.Linq.Extensions
         /// <param name="selector">The projection to use to obtain values for comparison</param>
         /// <param name="comparer">The comparer to use to compare projected values (on null to use the default comparer)</param>
         /// <param name="descending">Should the list be sorted ascending or descending?</param>
-        public static void Sort<T, TValue>(this List<T> source, Func<T, TValue> selector, IComparer<TValue> comparer, bool descending)
+        public static void Sort<T, TValue>(this List<T> source, DotNet20.Func<T, TValue> selector, IComparer<TValue> comparer, bool descending)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (comparer == null) comparer = Comparer<TValue>.Default;
@@ -32,7 +33,7 @@ namespace MiscUtil.Linq.Extensions
         /// </summary>
         /// <param name="source">Data source</param>
         /// <param name="selector">The projection to use to obtain values for comparison</param>
-        public static void Sort<T, TValue>(this List<T> source, Func<T, TValue> selector)
+        public static void Sort<T, TValue>(this List<T> source, DotNet20.Func<T, TValue> selector)
         {
             Sort<T, TValue>(source, selector, null, false);
         }

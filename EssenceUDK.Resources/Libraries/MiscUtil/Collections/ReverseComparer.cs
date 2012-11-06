@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
 
-using MiscUtil.Extensions;
-
-namespace MiscUtil.Collections
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Collections
 {
     /// <summary>
     /// Implementation of IComparer{T} based on another one;

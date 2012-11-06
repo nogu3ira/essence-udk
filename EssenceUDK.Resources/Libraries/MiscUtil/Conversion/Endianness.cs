@@ -1,5 +1,5 @@
 
-namespace MiscUtil.Conversion
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Conversion
 {
 	/// <summary>
 	/// Endianness of a converter

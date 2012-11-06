@@ -1,4 +1,4 @@
-﻿namespace MiscUtil.Linq
+﻿namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// Generic tuple for a key and a single value

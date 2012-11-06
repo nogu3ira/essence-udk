@@ -1,6 +1,6 @@
 using System;
 
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// Type of buffer returned by CachingBufferManager.

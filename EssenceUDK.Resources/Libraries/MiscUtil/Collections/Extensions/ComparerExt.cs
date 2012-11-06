@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using EssenceUDK.Resources.Libraries.MiscUtil.DotNet20;
 
-namespace MiscUtil.Collections.Extensions
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Collections.Extensions
 {
     /// <summary>
     /// Extensions to IComparer

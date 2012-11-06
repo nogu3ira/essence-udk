@@ -1,6 +1,6 @@
 using System;
 
-namespace MiscUtil.Threading
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Threading
 {
 	/// <summary>
 	/// Exception thrown when a Lock method on the SyncLock class times out.

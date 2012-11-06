@@ -1,6 +1,6 @@
 using System;
 
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// Interface encapsulating a byte array which may be managed

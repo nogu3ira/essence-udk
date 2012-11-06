@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// Class allowing a user to choose a console application to run, after

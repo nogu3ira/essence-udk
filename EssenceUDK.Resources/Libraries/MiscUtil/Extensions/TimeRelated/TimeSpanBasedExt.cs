@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MiscUtil.Extensions.TimeRelated
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Extensions.TimeRelated
 {
     /// <summary>
     /// Extension methods producing TimeSpan values. Note: Ticks should really

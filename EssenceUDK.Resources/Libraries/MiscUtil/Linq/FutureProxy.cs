@@ -1,6 +1,6 @@
-﻿using System;
+﻿using EssenceUDK.Resources.Libraries.MiscUtil.DotNet20;
 
-namespace MiscUtil.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// Implementation of IFuture which retrieves it value from a delegate.

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using EssenceUDK.Resources.Libraries.MiscUtil.DotNet20;
 
-namespace MiscUtil.IO
+namespace EssenceUDK.Resources.Libraries.MiscUtil.IO
 {
     /// <summary>
     /// Reads a data source line by line. The source can be a file, a stream,

@@ -10,7 +10,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace EssenceUDK.Resources.DataVirtualization
+namespace EssenceUDK.Controls.Common
 {
     public class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
     {

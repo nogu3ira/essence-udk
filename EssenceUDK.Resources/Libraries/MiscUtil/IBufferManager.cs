@@ -1,6 +1,6 @@
 using System;
 
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// Interface for classes which manage instances of

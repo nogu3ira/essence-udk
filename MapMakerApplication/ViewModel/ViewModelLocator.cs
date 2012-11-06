@@ -20,9 +20,9 @@ using System.Collections.Generic;
 using EssenceUDK.MapMaker;
 using EssenceUDK.Platform;
 using EssenceUDK.Platform.DataTypes;
+using EssenceUDK.Platform.MiscHelper;
 using GalaSoft.MvvmLight;
 using MapMakerApplication.Messages;
-using MiscUtil.DataVirtualization;
 
 namespace MapMakerApplication.ViewModel
 {
@@ -172,7 +172,7 @@ namespace MapMakerApplication.ViewModel
                 return null;
             return
                 new VirtualizingCollection<ModelItemData>(
-                    new ItemProviderModelItemData(ApplicationController.manager.GetItemTile(),100));
+                    new ItemProviderModelItemData( (IList<ModelItemData>) ApplicationController.manager.GetItemTile(),100));
         }
 
         private static IEnumerable _Lands()
@@ -181,7 +181,7 @@ namespace MapMakerApplication.ViewModel
                 return null;
             return
                 new VirtualizingCollection<ModelLandData>(
-                    new ItemProviderModelLandData(ApplicationController.manager.GetLandTile()),100);
+                    new ItemProviderModelLandData((IList<ModelLandData>) ApplicationController.manager.GetLandTile()),100);
         }
       
         public  IEnumerable Items

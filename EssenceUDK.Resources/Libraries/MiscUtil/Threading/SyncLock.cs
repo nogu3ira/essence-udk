@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 
-namespace MiscUtil.Threading
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Threading
 {
 	/// <summary>
 	/// Class used for locking, as an alternative to just locking on normal monitors.

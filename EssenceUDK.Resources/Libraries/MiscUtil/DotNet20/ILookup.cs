@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace System.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.DotNet20
 {
     /// <summary>
     /// LINQ interface representing a lookup. This is like a dictionary, but

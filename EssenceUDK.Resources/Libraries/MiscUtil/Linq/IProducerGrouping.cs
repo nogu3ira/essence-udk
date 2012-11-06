@@ -1,4 +1,4 @@
-﻿namespace MiscUtil.Linq
+﻿namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// IProducerGrouping is to IDataProducer as IGrouping is to IEnumerable:

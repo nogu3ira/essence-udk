@@ -1,5 +1,5 @@
 ﻿
-namespace MiscUtil.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// Class representing a value which will be available some time in the future.

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
 
-using MiscUtil.Extensions;
-
-namespace MiscUtil.Collections
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Collections
 {
     /// <summary>
     /// Represents a range of values. An IComparer{T} is used to compare specific
@@ -171,7 +170,7 @@ namespace MiscUtil.Collections
         /// or excluded according to this range.
         /// </summary>
         /// <param name="step">Delegate to apply to the "current value" on each iteration</param>
-        public RangeIterator<T> FromStart(Func<T, T> step)
+        public RangeIterator<T> FromStart(DotNet20.Func<T, T> step)
         {
             return new RangeIterator<T>(this, step);
         }
@@ -183,7 +182,7 @@ namespace MiscUtil.Collections
         /// or excluded according to this range.
         /// </summary>
         /// <param name="step">Delegate to apply to the "current value" on each iteration</param>
-        public RangeIterator<T> FromEnd(Func<T, T> step)
+        public RangeIterator<T> FromEnd(DotNet20.Func<T, T> step)
         {
             return new RangeIterator<T>(this, step, false);
         }
@@ -261,7 +260,7 @@ namespace MiscUtil.Collections
         /// it begins at the end point.
         /// </summary>
         /// <param name="step">Delegate to apply to the "current value" on each iteration</param>
-        public RangeIterator<T> Step(Func<T, T> step)
+        public RangeIterator<T> Step(DotNet20.Func<T, T> step)
         {
             step.ThrowIfNull("step");
             bool ascending = (comparer.Compare(start, step(start)) < 0);

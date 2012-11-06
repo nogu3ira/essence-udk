@@ -1,5 +1,5 @@
 ﻿
-namespace MiscUtil.Collections.Extensions
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Collections.Extensions
 {
     /// <summary>
     /// Extension methods to do with ranges.

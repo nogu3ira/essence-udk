@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using MiscUtil.Threading;
+using EssenceUDK.Resources.Libraries.MiscUtil.Threading;
 
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// An implementation of IBufferManager which keeps a cache of

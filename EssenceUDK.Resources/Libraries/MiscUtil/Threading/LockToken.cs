@@ -1,6 +1,6 @@
 using System;
 
-namespace MiscUtil.Threading
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Threading
 {
 	/// <summary>
 	/// A lock token returned by a Lock method call on a SyncLock.

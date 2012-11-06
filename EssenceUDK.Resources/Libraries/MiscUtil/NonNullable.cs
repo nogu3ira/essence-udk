@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// Encapsulates a reference compatible with the type parameter. The reference

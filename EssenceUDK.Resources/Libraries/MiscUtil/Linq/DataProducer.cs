@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Action = EssenceUDK.Resources.Libraries.MiscUtil.DotNet20.Action;
 
-namespace MiscUtil.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// Very simple implementation of IDataProducer.

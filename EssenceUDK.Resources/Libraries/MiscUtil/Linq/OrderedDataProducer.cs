@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
+using Action = EssenceUDK.Resources.Libraries.MiscUtil.DotNet20.Action;
 
-using MiscUtil.Extensions;
-
-namespace MiscUtil.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// A DataProducer with ordering capabilities

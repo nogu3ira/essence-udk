@@ -1,9 +1,8 @@
 using System;
 using System.IO;
+using EssenceUDK.Resources.Libraries.MiscUtil.Checksum;
 
-using MiscUtil.Checksum;
-
-namespace MiscUtil.Compression.Vcdiff
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Compression.Vcdiff
 {
 	/// <summary>
 	/// Decoder for VCDIFF (RFC 3284) streams.

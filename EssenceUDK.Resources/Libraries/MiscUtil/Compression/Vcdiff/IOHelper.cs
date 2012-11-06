@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace MiscUtil.Compression.Vcdiff
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Compression.Vcdiff
 {
 	/// <summary>
 	/// A few IO routines to make life easier. Most are basically available

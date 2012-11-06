@@ -14,11 +14,12 @@
  * 
  * 
  * 
+ */
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using EssenceUDK.Platform;
 
-namespace MiscUtil.DataVirtualization
+namespace EssenceUDK.Platform.MiscHelper
 {
     public class ItemProviderModelItemData : IItemsProvider<ModelItemData>
     {
@@ -92,7 +93,7 @@ namespace MiscUtil.DataVirtualization
         #region IItemsProvider
         public int FetchCount()
         {
-            //return _list.Count;
+            return _list.Count;
             return _list.Count;
         }
 
@@ -108,4 +109,3 @@ namespace MiscUtil.DataVirtualization
         #endregion
     }
 }
-*/

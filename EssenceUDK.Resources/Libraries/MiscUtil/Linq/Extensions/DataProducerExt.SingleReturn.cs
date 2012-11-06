@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using MiscUtil.Extensions;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
+using Action = EssenceUDK.Resources.Libraries.MiscUtil.DotNet20.Action;
 
-namespace MiscUtil.Linq.Extensions
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq.Extensions
 {
     /// <summary>
     /// Extensions on IDataProducer
@@ -42,7 +43,7 @@ namespace MiscUtil.Linq.Extensions
         /// The actual count can only be retrieved after the source has indicated the end
         /// of its data.
         /// </returns>
-        public static IFuture<int> Count<TSource>(this IDataProducer<TSource> source, Func<TSource,bool> predicate)
+        public static IFuture<int> Count<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource,bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -95,7 +96,7 @@ namespace MiscUtil.Linq.Extensions
         /// The actual count can only be retrieved after the source has indicated the end
         /// of its data.
         /// </returns>
-        public static IFuture<long> LongCount<TSource>(this IDataProducer<TSource> source, Func<TSource, bool> predicate)
+        public static IFuture<long> LongCount<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -140,7 +141,7 @@ namespace MiscUtil.Linq.Extensions
         /// The actual value can only be retrieved after the source has indicated the end
         /// of its data.
         /// </returns>
-        public static IFuture<TSource> First<TSource>(this IDataProducer<TSource> source, Func<TSource, bool> predicate)
+        public static IFuture<TSource> First<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -189,7 +190,7 @@ namespace MiscUtil.Linq.Extensions
         /// The actual value can only be retrieved after the source has indicated the end
         /// of its data.
         /// </returns>
-        public static IFuture<TSource> Last<TSource>(this IDataProducer<TSource> source, Func<TSource,bool> predicate)
+        public static IFuture<TSource> Last<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource,bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -233,7 +234,7 @@ namespace MiscUtil.Linq.Extensions
         /// </summary>
         /// <param name="source">The source data-producer.</param>
         /// <param name="predicate">The condition to be satisfied.</param>
-        public static IFuture<TSource> FirstOrDefault<TSource>(this IDataProducer<TSource> source, Func<TSource, bool> predicate)
+        public static IFuture<TSource> FirstOrDefault<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -271,7 +272,7 @@ namespace MiscUtil.Linq.Extensions
         /// </summary>
         /// <param name="source">The source data-producer.</param>
         /// <param name="predicate">The condition to be satisfied.</param>
-        public static IFuture<TSource> LastOrDefault<TSource>(this IDataProducer<TSource> source, Func<TSource,bool> predicate)
+        public static IFuture<TSource> LastOrDefault<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource,bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -313,7 +314,7 @@ namespace MiscUtil.Linq.Extensions
         /// <param name="source">The source data-producer.</param>
         /// <param name="predicate">The condition to be satisfied.</param>
         /// <exception cref="InvalidOperationException">Zero or multiple matching terms are encountered.</exception>
-        public static IFuture<TSource> Single<TSource>(this IDataProducer<TSource> source, Func<TSource,bool> predicate)
+        public static IFuture<TSource> Single<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource,bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -367,7 +368,7 @@ namespace MiscUtil.Linq.Extensions
         /// <param name="source">The source data-producer.</param>
         /// <param name="predicate">The condition to be satisfied.</param>
         /// <exception cref="InvalidOperationException">Multiple matching terms are encountered.</exception>
-        public static IFuture<TSource> SingleOrDefault<TSource>(this IDataProducer<TSource> source, Func<TSource, bool> predicate)
+        public static IFuture<TSource> SingleOrDefault<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -483,7 +484,7 @@ namespace MiscUtil.Linq.Extensions
         /// </summary>
         /// <param name="source">The data-producer to be monitored.</param>
         /// <param name="predicate">The condition that must be satisfied by all terms.</param>
-        public static IFuture<bool> All<TSource>(this IDataProducer<TSource> source, Func<TSource, bool> predicate)
+        public static IFuture<bool> All<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, bool> predicate)
         {
             predicate.ThrowIfNull("predicate");
 
@@ -522,7 +523,7 @@ namespace MiscUtil.Linq.Extensions
         /// </summary>
         /// <param name="source">The data-producer to be monitored.</param>
         /// <param name="predicate">The condition that must be satisfied.</param>
-        public static IFuture<bool> Any<TSource>(this IDataProducer<TSource> source, Func<TSource, bool> predicate)
+        public static IFuture<bool> Any<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -584,7 +585,7 @@ namespace MiscUtil.Linq.Extensions
         /// <param name="source">The data-source for the values</param>
         public static IFuture<TSource> Aggregate<TSource>
             (this IDataProducer<TSource> source,
-             Func<TSource, TSource, TSource> func)
+             DotNet20.Func<TSource, TSource, TSource> func)
         {
             source.ThrowIfNull("source");
             func.ThrowIfNull("func");
@@ -624,7 +625,7 @@ namespace MiscUtil.Linq.Extensions
         public static IFuture<TAccumulate> Aggregate<TSource, TAccumulate>
             (this IDataProducer<TSource> source,
 	         TAccumulate seed,
-	         Func<TAccumulate, TSource, TAccumulate> func)
+	         DotNet20.Func<TAccumulate, TSource, TAccumulate> func)
         {
             return source.Aggregate(seed, func, x => x);
         }
@@ -646,8 +647,8 @@ namespace MiscUtil.Linq.Extensions
         public static IFuture<TResult> Aggregate<TSource, TAccumulate, TResult>
             (this IDataProducer<TSource> source,
              TAccumulate seed,
-             Func<TAccumulate, TSource, TAccumulate> func,
-             Func<TAccumulate, TResult> resultSelector)
+             DotNet20.Func<TAccumulate, TSource, TAccumulate> func,
+             DotNet20.Func<TAccumulate, TResult> resultSelector)
         {
             source.ThrowIfNull("source");
             func.ThrowIfNull("func");

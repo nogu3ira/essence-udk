@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using MiscUtil.Extensions;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
 
-namespace MiscUtil.Collections
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Collections
 {
     /// <summary>
     /// Non-generic class to produce instances of the generic class,
@@ -17,7 +17,7 @@ namespace MiscUtil.Collections
         /// <typeparam name="TKey">Type parameter for the keys to be compared, after being projected from the elements</typeparam>
         /// <param name="projection">Projection to use when determining the key of an element</param>
         /// <returns>A comparer which will compare elements by projecting each element to its key, and comparing keys</returns>
-        public static ProjectionEqualityComparer<TSource, TKey> Create<TSource, TKey>(Func<TSource, TKey> projection)
+        public static ProjectionEqualityComparer<TSource, TKey> Create<TSource, TKey>(DotNet20.Func<TSource, TKey> projection)
         {
             return new ProjectionEqualityComparer<TSource, TKey>(projection);
         }
@@ -33,7 +33,7 @@ namespace MiscUtil.Collections
         /// <returns>A comparer which will compare elements by projecting each element to its key, and comparing keys</returns>
         public static ProjectionEqualityComparer<TSource, TKey> Create<TSource, TKey>
             (TSource ignored,
-             Func<TSource, TKey> projection)
+             DotNet20.Func<TSource, TKey> projection)
         {
             return new ProjectionEqualityComparer<TSource, TKey>(projection);
         }
@@ -52,7 +52,7 @@ namespace MiscUtil.Collections
         /// <typeparam name="TKey">Type parameter for the keys to be compared, after being projected from the elements</typeparam>
         /// <param name="projection">Projection to use when determining the key of an element</param>
         /// <returns>A comparer which will compare elements by projecting each element to its key, and comparing keys</returns>        
-        public static ProjectionEqualityComparer<TSource, TKey> Create<TKey>(Func<TSource, TKey> projection)
+        public static ProjectionEqualityComparer<TSource, TKey> Create<TKey>(DotNet20.Func<TSource, TKey> projection)
         {
             return new ProjectionEqualityComparer<TSource, TKey>(projection);
         }
@@ -66,7 +66,7 @@ namespace MiscUtil.Collections
     /// <typeparam name="TKey">Type of the key projected from the element</typeparam>
     public class ProjectionEqualityComparer<TSource, TKey> : IEqualityComparer<TSource>
     {
-        readonly Func<TSource, TKey> projection;
+        readonly DotNet20.Func<TSource, TKey> projection;
         readonly IEqualityComparer<TKey> comparer;
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace MiscUtil.Collections
         /// The default comparer for the projected type is used.
         /// </summary>
         /// <param name="projection">Projection to use during comparisons</param>
-        public ProjectionEqualityComparer(Func<TSource, TKey> projection)
+        public ProjectionEqualityComparer(DotNet20.Func<TSource, TKey> projection)
             : this(projection, null)
         {
         }
@@ -85,7 +85,7 @@ namespace MiscUtil.Collections
         /// <param name="projection">Projection to use during comparisons</param>
         /// <param name="comparer">The comparer to use on the keys. May be null, in
         /// which case the default comparer will be used.</param>
-        public ProjectionEqualityComparer(Func<TSource, TKey> projection, IEqualityComparer<TKey> comparer)
+        public ProjectionEqualityComparer(DotNet20.Func<TSource, TKey> projection, IEqualityComparer<TKey> comparer)
         {
             projection.ThrowIfNull("projection");
             this.comparer = comparer ?? EqualityComparer<TKey>.Default;

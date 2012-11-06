@@ -1,5 +1,5 @@
 ﻿#if !DOTNET35
-namespace System
+namespace EssenceUDK.Resources.Libraries.MiscUtil.DotNet20
 {
     /// <summary>
     /// Delegate taking no parameters and returning no value.

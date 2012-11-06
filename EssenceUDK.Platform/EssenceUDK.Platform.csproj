@@ -58,6 +58,9 @@
     <Compile Include="DataTypes\UOTypes.cs" />
     <Compile Include="DataTypes\Factories\ClassicFactory.cs" />
     <Compile Include="DataTypes\Factories\IDataFactory.cs" />
+    <Compile Include="MiscHelper\IItemsProvidercs.cs" />
+    <Compile Include="MiscHelper\ItemProviderIItemTile.cs" />
+    <Compile Include="MiscHelper\VirtualizingCollection.cs" />
     <Compile Include="UOViewModels.cs" />
     <Compile Include="DataTypes\FileFormat\Containers\MulContainer.cs" />
     <Compile Include="UODataManager.cs" />

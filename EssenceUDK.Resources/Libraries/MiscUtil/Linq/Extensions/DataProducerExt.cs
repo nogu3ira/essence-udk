@@ -1,5 +1,5 @@
 ﻿
-namespace MiscUtil.Linq.Extensions
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq.Extensions
 {
     /// <summary>
     /// Extensions on IDataProducer

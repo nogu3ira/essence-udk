@@ -1,5 +1,5 @@
 
-namespace MiscUtil.Compression.Vcdiff
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Compression.Vcdiff
 {
 	/// <summary>
 	/// Enumeration of the different instruction types.

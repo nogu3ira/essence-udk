@@ -1,6 +1,6 @@
 using GalaSoft.MvvmLight;
 
-namespace UDK.ViewModel
+namespace EssenceUDK.ViewModel
 {
     /// <summary>
     /// This class contains properties that the main View can data bind to.

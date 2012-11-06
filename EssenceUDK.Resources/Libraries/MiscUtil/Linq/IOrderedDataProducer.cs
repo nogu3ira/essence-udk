@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MiscUtil.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// Ordered variant of IDataProducer; note that generally

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using MiscUtil.Extensions;
-namespace MiscUtil.Linq.Extensions
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
+
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq.Extensions
 {
     public static partial class DataProducerExt
     {
@@ -163,7 +164,7 @@ namespace MiscUtil.Linq.Extensions
         /// <remarks>Null values are removed from the maximum</remarks>
         public static IFuture<TResult> Max<TSource, TResult>
             (this IDataProducer<TSource> source,
-             Func<TSource, TResult> selector)
+             DotNet20.Func<TSource, TResult> selector)
         {
             source.ThrowIfNull("source");
             selector.ThrowIfNull("selector");
@@ -219,7 +220,7 @@ namespace MiscUtil.Linq.Extensions
         /// <remarks>Null values are removed from the minimum</remarks>
         public static IFuture<TResult> Min<TSource, TResult>
            (this IDataProducer<TSource> source,
-            Func<TSource, TResult> selector)
+            DotNet20.Func<TSource, TResult> selector)
         {
             source.ThrowIfNull("source");
             selector.ThrowIfNull("selector");

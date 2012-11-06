@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using EssenceUDK.Resources.Libraries.MiscUtil.DotNet20;
 
-namespace MiscUtil.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     partial class EditableLookup<TKey, TElement>
 	{

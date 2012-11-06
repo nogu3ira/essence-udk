@@ -1,5 +1,5 @@
 ﻿
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// Generic event argument taking a single value

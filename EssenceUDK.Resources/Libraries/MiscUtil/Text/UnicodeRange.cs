@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using MiscUtil.Collections;
+using EssenceUDK.Resources.Libraries.MiscUtil.Collections;
 
-namespace MiscUtil.Text {
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Text {
 
     /// <summary>
     /// Utility class providing a number of singleton instances of

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using MiscUtil.Collections;
-using MiscUtil.Collections.Extensions;
-using MiscUtil.Extensions;
+using EssenceUDK.Resources.Libraries.MiscUtil.Collections;
+using EssenceUDK.Resources.Libraries.MiscUtil.Collections.Extensions;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
+using Action = EssenceUDK.Resources.Libraries.MiscUtil.DotNet20.Action;
 
-namespace MiscUtil.Linq.Extensions
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq.Extensions
 {
     public static partial class DataProducerExt
     {
@@ -16,7 +17,7 @@ namespace MiscUtil.Linq.Extensions
         /// <param name="predicate">The condition to be satisfied</param>
         /// <returns>A filtered data-producer; only matching values will raise the DataProduced event</returns>
         public static IDataProducer<TSource> Where<TSource>(this IDataProducer<TSource> source,
-            Func<TSource, bool> predicate)
+            DotNet20.Func<TSource, bool> predicate)
         {
             predicate.ThrowIfNull("predicate");
 
@@ -30,7 +31,7 @@ namespace MiscUtil.Linq.Extensions
         /// <param name="predicate">The condition to be satisfied</param>
         /// <returns>A filtered data-producer; only matching values will raise the DataProduced event</returns>
         public static IDataProducer<TSource> Where<TSource>(this IDataProducer<TSource> source,
-            Func<TSource, int, bool> predicate)
+            DotNet20.Func<TSource, int, bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -95,7 +96,7 @@ namespace MiscUtil.Linq.Extensions
         /// <param name="source">The source data-producer</param>
         /// <param name="projection">The transformation to apply to each element.</param>
         public static IDataProducer<TResult> Select<TSource, TResult>(this IDataProducer<TSource> source,
-                                                               Func<TSource, TResult> projection)
+                                                               DotNet20.Func<TSource, TResult> projection)
         {
             projection.ThrowIfNull("projection");
             return source.Select((t, index) => projection(t));
@@ -110,7 +111,7 @@ namespace MiscUtil.Linq.Extensions
         /// <param name="source">The source data-producer</param>
         /// <param name="projection">The transformation to apply to each element.</param>
         public static IDataProducer<TResult> Select<TSource, TResult>(this IDataProducer<TSource> source,
-                                                                      Func<TSource, int, TResult> projection)
+                                                                      DotNet20.Func<TSource, int, TResult> projection)
         {
             source.ThrowIfNull("source");
             projection.ThrowIfNull("projection");
@@ -192,7 +193,7 @@ namespace MiscUtil.Linq.Extensions
         /// </summary>
         /// <param name="source">The source data-producer</param>
         /// <param name="predicate">The condition to yield elements</param>
-        public static IDataProducer<TSource> TakeWhile<TSource>(this IDataProducer<TSource> source, Func<TSource, bool> predicate)
+        public static IDataProducer<TSource> TakeWhile<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, bool> predicate)
         {
             predicate.ThrowIfNull("predicate");
             return source.TakeWhile((x, index) => predicate(x));
@@ -206,7 +207,7 @@ namespace MiscUtil.Linq.Extensions
         /// </summary>
         /// <param name="source">The source data-producer</param>
         /// <param name="predicate">The condition to yield elements</param>        
-        public static IDataProducer<TSource> TakeWhile<TSource>(this IDataProducer<TSource> source, Func<TSource, int, bool> predicate)
+        public static IDataProducer<TSource> TakeWhile<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, int, bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -243,7 +244,7 @@ namespace MiscUtil.Linq.Extensions
         /// </summary>
         /// <param name="source">The source data-producer</param>
         /// <param name="predicate">The condition to skip elements</param>
-        public static IDataProducer<TSource> SkipWhile<TSource>(this IDataProducer<TSource> source, Func<TSource, bool> predicate)
+        public static IDataProducer<TSource> SkipWhile<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, bool> predicate)
         {
             predicate.ThrowIfNull("predicate");
 
@@ -258,7 +259,7 @@ namespace MiscUtil.Linq.Extensions
         /// </summary>
         /// <param name="source">The source data-producer</param>
         /// <param name="predicate">The condition to skip elements</param>
-        public static IDataProducer<TSource> SkipWhile<TSource>(this IDataProducer<TSource> source, Func<TSource, int, bool> predicate)
+        public static IDataProducer<TSource> SkipWhile<TSource>(this IDataProducer<TSource> source, DotNet20.Func<TSource, int, bool> predicate)
         {
             source.ThrowIfNull("source");
             predicate.ThrowIfNull("predicate");
@@ -357,7 +358,7 @@ namespace MiscUtil.Linq.Extensions
         /// <returns>A data-producer that yeilds the sequence ordered
         /// by the selected value</returns>
         /// <remarks>This will force all data to be buffered</remarks>
-        public static IOrderedDataProducer<TSource> ThenBy<TSource, TKey>(this IOrderedDataProducer<TSource> source, Func<TSource, TKey> selector)
+        public static IOrderedDataProducer<TSource> ThenBy<TSource, TKey>(this IOrderedDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector)
         {
             return ThenBy(source, selector, Comparer<TKey>.Default, false);
         }
@@ -371,7 +372,7 @@ namespace MiscUtil.Linq.Extensions
         /// <returns>A data-producer that yeilds the sequence ordered
         /// by the selected value</returns>
         /// <remarks>This will force all data to be buffered</remarks>
-        public static IOrderedDataProducer<TSource> ThenBy<TSource, TKey>(this IOrderedDataProducer<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer)
+        public static IOrderedDataProducer<TSource> ThenBy<TSource, TKey>(this IOrderedDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
             return ThenBy(source, selector, comparer, false);
         }
@@ -384,7 +385,7 @@ namespace MiscUtil.Linq.Extensions
         /// <returns>A data-producer that yeilds the sequence ordered
         /// by the selected value</returns>
         /// <remarks>This will force all data to be buffered</remarks>
-        public static IOrderedDataProducer<TSource> ThenByDescending<TSource, TKey>(this IOrderedDataProducer<TSource> source, Func<TSource, TKey> selector)
+        public static IOrderedDataProducer<TSource> ThenByDescending<TSource, TKey>(this IOrderedDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector)
         {
             return ThenBy(source, selector, Comparer<TKey>.Default, true);
         }
@@ -398,7 +399,7 @@ namespace MiscUtil.Linq.Extensions
         /// <returns>A data-producer that yeilds the sequence ordered
         /// by the selected value</returns>
         /// <remarks>This will force all data to be buffered</remarks>        
-        public static IOrderedDataProducer<TSource> ThenByDescending<TSource, TKey>(this IOrderedDataProducer<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer)
+        public static IOrderedDataProducer<TSource> ThenByDescending<TSource, TKey>(this IOrderedDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
             return ThenBy(source, selector, comparer, true);
         }
@@ -411,7 +412,7 @@ namespace MiscUtil.Linq.Extensions
         /// <returns>A data-producer that yeilds the sequence ordered
         /// by the selected value</returns>
         /// <remarks>This will force all data to be buffered</remarks>
-        public static IOrderedDataProducer<TSource> OrderBy<TSource, TKey>(this IDataProducer<TSource> source, Func<TSource, TKey> selector)
+        public static IOrderedDataProducer<TSource> OrderBy<TSource, TKey>(this IDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector)
         {
             return OrderBy(source, selector, Comparer<TKey>.Default, false);
         }
@@ -424,7 +425,7 @@ namespace MiscUtil.Linq.Extensions
         /// <returns>A data-producer that yeilds the sequence ordered
         /// by the selected value</returns>
         /// <remarks>This will force all data to be buffered</remarks>
-        public static IOrderedDataProducer<TSource> OrderBy<TSource, TKey>(this IDataProducer<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer)
+        public static IOrderedDataProducer<TSource> OrderBy<TSource, TKey>(this IDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
             return OrderBy(source, selector, comparer, false);
         }
@@ -436,7 +437,7 @@ namespace MiscUtil.Linq.Extensions
         /// <returns>A data-producer that yeilds the sequence ordered
         /// by the selected value</returns>
         /// <remarks>This will force all data to be buffered</remarks>
-        public static IOrderedDataProducer<TSource> OrderByDescending<TSource, TKey>(this IDataProducer<TSource> source, Func<TSource, TKey> selector)
+        public static IOrderedDataProducer<TSource> OrderByDescending<TSource, TKey>(this IDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector)
         {
             return OrderBy(source, selector, Comparer<TKey>.Default, true);
         }
@@ -449,12 +450,12 @@ namespace MiscUtil.Linq.Extensions
         /// <returns>A data-producer that yeilds the sequence ordered
         /// by the selected value</returns>
         /// <remarks>This will force all data to be buffered</remarks>
-        public static IOrderedDataProducer<TSource> OrderByDescending<TSource, TKey>(this IDataProducer<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer)
+        public static IOrderedDataProducer<TSource> OrderByDescending<TSource, TKey>(this IDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
             return OrderBy(source, selector, comparer, true);
         }
 
-        private static IOrderedDataProducer<TSource> OrderBy<TSource, TKey>(IDataProducer<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer, bool descending)
+        private static IOrderedDataProducer<TSource> OrderBy<TSource, TKey>(IDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector, IComparer<TKey> comparer, bool descending)
         {
             source.ThrowIfNull("source");
             comparer.ThrowIfNull("comparer");
@@ -477,7 +478,7 @@ namespace MiscUtil.Linq.Extensions
             return new OrderedDataProducer<TSource>(source, itemComparer);
         }
 
-        private static IOrderedDataProducer<TSource> ThenBy<TSource, TKey>(IOrderedDataProducer<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer, bool descending)
+        private static IOrderedDataProducer<TSource> ThenBy<TSource, TKey>(IOrderedDataProducer<TSource> source, DotNet20.Func<TSource, TKey> selector, IComparer<TKey> comparer, bool descending)
         {
             comparer.ThrowIfNull("comparer");
             IComparer<TSource> itemComparer = new ProjectionComparer<TSource, TKey>(selector, comparer);

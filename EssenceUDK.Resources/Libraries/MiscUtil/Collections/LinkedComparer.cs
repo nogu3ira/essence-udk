@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using MiscUtil.Extensions;
-namespace MiscUtil.Collections
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
+
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Collections
 {
     /// <summary>
     /// Comparer to daisy-chain two existing comparers and 

@@ -1,10 +1,10 @@
 ﻿
-using System;
+
 #if DOTNET35
 using System.Linq.Expressions;
 using MiscUtil.Linq;
 #endif
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// The Operator class provides easy access to the standard operators

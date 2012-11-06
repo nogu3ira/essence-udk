@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using MiscUtil.Extensions;
-namespace MiscUtil.Linq.Extensions
+﻿using System.Collections.Generic;
+using EssenceUDK.Resources.Libraries.MiscUtil.DotNet20;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
+
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq.Extensions
 {
     public static partial class DataProducerExt
     {

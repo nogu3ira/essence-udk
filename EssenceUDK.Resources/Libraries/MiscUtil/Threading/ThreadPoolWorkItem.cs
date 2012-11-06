@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 
-namespace MiscUtil.Threading
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Threading
 {
 	/// <summary>
 	/// Class encapsulating an item of work to be executed in a CustomThreadPool.

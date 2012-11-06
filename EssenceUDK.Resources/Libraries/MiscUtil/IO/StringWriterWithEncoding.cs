@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace MiscUtil.IO
+namespace EssenceUDK.Resources.Libraries.MiscUtil.IO
 {
 	/// <summary>
 	/// A simple class derived from StringWriter, but which allows

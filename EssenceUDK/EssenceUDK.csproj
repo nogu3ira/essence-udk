@@ -44,24 +44,24 @@
     <AssemblyOriginatorKeyFile>Properties\EssenceUDK.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GalaSoft.MvvmLight.WPF4">
+    <Reference Include="GalaSoft.MvvmLight.Extras.WPF4, Version=4.1.24.16313, Culture=neutral, PublicKeyToken=1673db7d5906b0ad, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\WPF4\GalaSoft.MvvmLight.WPF4.dll</HintPath>
+      <HintPath>..\Deploying\MvvmLight.4.1.23.0\lib\net40\GalaSoft.MvvmLight.Extras.WPF4.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Extras.WPF4">
+    <Reference Include="GalaSoft.MvvmLight.WPF4, Version=4.1.24.16313, Culture=neutral, PublicKeyToken=63eb5c012e0b3c1c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\WPF4\GalaSoft.MvvmLight.Extras.WPF4.dll</HintPath>
+      <HintPath>..\Deploying\MvvmLight.4.1.23.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=59d6d24383174ac4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\WPF4\Microsoft.Practices.ServiceLocation.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Interactivity">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\WPF4\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\Deploying\MvvmLight.4.1.23.0\lib\net40\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Deploying\MvvmLight.4.1.23.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -97,10 +97,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Skins\MainSkin.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -144,7 +140,7 @@
       <Project>{BF268AE6-1FC3-4A1B-A6D8-CCAD0BAB4833}</Project>
       <Name>EssenceUDK.Resources</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OpenUO.MapMaker\EssenceUDK.MapMaker.csproj">
+    <ProjectReference Include="..\EssenceUDK.MapMaker\EssenceUDK.MapMaker.csproj">
       <Project>{2F25DC15-7C8B-4C57-8C31-E33DEE517E7B}</Project>
       <Name>EssenceUDK.MapMaker</Name>
     </ProjectReference>
@@ -152,6 +148,7 @@
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Images\" />
+    <Folder Include="Skins\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="EssenceUDK.ico" />

@@ -1,6 +1,6 @@
 using System;
 
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// Exception thrown to indicate that a buffer of the

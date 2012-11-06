@@ -93,9 +93,6 @@
     <Compile Include="Libraries\MiscUtil\Conversion\EndianBitConverter.cs" />
     <Compile Include="Libraries\MiscUtil\Conversion\Endianness.cs" />
     <Compile Include="Libraries\MiscUtil\Conversion\LittleEndianBitConverter.cs" />
-    <Compile Include="Libraries\MiscUtil\DataVirtualization\IItemsProvidercs.cs" />
-    <Compile Include="Libraries\MiscUtil\DataVirtualization\ItemProviderIItemTile.cs" />
-    <Compile Include="Libraries\MiscUtil\DataVirtualization\VirtualizingCollection.cs" />
     <Compile Include="Libraries\MiscUtil\DotNet20\Delegates.cs" />
     <Compile Include="Libraries\MiscUtil\DotNet20\ExtensionAttribute.cs" />
     <Compile Include="Libraries\MiscUtil\DotNet20\IGrouping.cs" />
@@ -167,7 +164,6 @@
     <Compile Include="Libraries\WindowsShell\ThumbButtonInfoCollection.cs" />
     <Compile Include="Libraries\WindowsShell\WindowChrome.cs" />
     <Compile Include="Libraries\WindowsShell\WindowChromeWorker.cs" />
-    <Compile Include="Libraries\MiscUtil\DataVirtualization\VirtualizingWrapPanel.cs" />
     <Compile Include="Localization\BindingLocalizedValue.cs" />
     <Compile Include="Localization\FormattedLocalizedValue.cs" />
     <Compile Include="Localization\LocalizationCallback.cs" />
@@ -312,6 +308,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Icons\" />
+    <Folder Include="Libraries\MiscUtil\DataVirtualization\" />
     <Folder Include="Libraries\MiscUtil\Service References\" />
   </ItemGroup>
   <ItemGroup>

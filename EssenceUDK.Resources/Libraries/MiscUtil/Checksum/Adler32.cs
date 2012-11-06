@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace MiscUtil.Checksum
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Checksum
 {
 	/// <summary>
 	/// Implementation of the Adler32 checksum routine.

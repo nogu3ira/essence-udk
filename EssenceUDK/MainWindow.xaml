@@ -1,7 +1,6 @@
 ﻿<Window x:Class="EssenceUDK.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:EssenceUDK" 
         xmlns:contr="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls" 
         Title="Essence UDK (Ultima Developer Kit)" Height="385" Width="853"
         Icon="/EssenceUDK;component/EssenceUDK.ico">
@@ -17,7 +16,7 @@
                 <Grid />
             </TabItem>
             <TabItem Header="tabPreferences">
-                <local:Preferences x:Name="preferences" />
+                <!--<Preferences x:Name="preferences" />-->
             </TabItem>
             <TabItem Header="tabItemListTest">
                 <contr:TileItemView Name="tileItemView1" ItemHeight="192" ItemWidth="96" />

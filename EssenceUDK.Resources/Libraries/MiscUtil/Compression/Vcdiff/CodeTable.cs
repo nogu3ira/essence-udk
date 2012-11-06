@@ -1,6 +1,6 @@
 using System;
 
-namespace MiscUtil.Compression.Vcdiff
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Compression.Vcdiff
 {
 	/// <summary>
 	/// Table used to encode/decode instructions.

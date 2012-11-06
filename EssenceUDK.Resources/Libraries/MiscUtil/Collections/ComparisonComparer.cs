@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MiscUtil.Collections
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Collections
 {
     /// <summary>
     /// Utility to build an IComparer implementation from a Comparison delegate,

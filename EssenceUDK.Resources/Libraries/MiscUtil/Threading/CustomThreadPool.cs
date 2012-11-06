@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using MiscUtil.Collections;
+using EssenceUDK.Resources.Libraries.MiscUtil.Collections;
 
-namespace MiscUtil.Threading
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Threading
 {
 	/// <summary>
 	/// A thread pool implementation which allows policy decisions

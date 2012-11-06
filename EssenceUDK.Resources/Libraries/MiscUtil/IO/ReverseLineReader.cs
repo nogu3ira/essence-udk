@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace MiscUtil.IO
+namespace EssenceUDK.Resources.Libraries.MiscUtil.IO
 {
     /// <summary>
     /// Takes an encoding (defaulting to UTF-8) and a function which produces a seekable stream
@@ -23,7 +23,7 @@ namespace MiscUtil.IO
         /// <summary>
         /// Means of creating a Stream to read from.
         /// </summary>
-        private readonly Func<Stream> streamSource;
+        private readonly DotNet20.Func<Stream> streamSource;
 
         /// <summary>
         /// Encoding to use when converting bytes to text
@@ -41,7 +41,7 @@ namespace MiscUtil.IO
         /// Function which, when given a position within a file and a byte, states whether
         /// or not the byte represents the start of a character.
         /// </summary>
-        private Func<long,byte,bool> characterStartDetector;
+        private DotNet20.Func<long,byte,bool> characterStartDetector;
 
         /// <summary>
         /// Creates a LineReader from a stream source. The delegate is only
@@ -49,7 +49,7 @@ namespace MiscUtil.IO
         /// the stream into text.
         /// </summary>
         /// <param name="streamSource">Data source</param>
-        public ReverseLineReader(Func<Stream> streamSource)
+        public ReverseLineReader(DotNet20.Func<Stream> streamSource)
             : this(streamSource, Encoding.UTF8)
         {
         }
@@ -82,12 +82,12 @@ namespace MiscUtil.IO
         /// </summary>
         /// <param name="streamSource">Data source</param>
         /// <param name="encoding">Encoding to use to decode the stream into text</param>
-        public ReverseLineReader(Func<Stream> streamSource, Encoding encoding)
+        public ReverseLineReader(DotNet20.Func<Stream> streamSource, Encoding encoding)
             : this(streamSource, encoding, DefaultBufferSize)
         {
         }
 
-        internal ReverseLineReader(Func<Stream> streamSource, Encoding encoding, int bufferSize)
+        internal ReverseLineReader(DotNet20.Func<Stream> streamSource, Encoding encoding, int bufferSize)
         {
             this.streamSource = streamSource;
             this.encoding = encoding;

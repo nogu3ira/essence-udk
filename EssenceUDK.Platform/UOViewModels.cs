@@ -1,11 +1,6 @@
 ﻿﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
-using System;
 using System.Windows.Input;
 using EssenceUDK.Platform.DataTypes;
 

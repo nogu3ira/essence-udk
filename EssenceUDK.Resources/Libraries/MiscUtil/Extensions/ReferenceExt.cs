@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MiscUtil.Extensions
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Extensions
 {
     /// <summary>
     /// Extension methods on all reference types. 

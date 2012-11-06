@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MiscUtil.DataVirtualization
+namespace EssenceUDK.Platform.MiscHelper
 {
     /// <summary>
     /// Represents a provider of collection details.

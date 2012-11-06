@@ -63,7 +63,7 @@ namespace EssenceUDK.TilesInfo.Components.MultiStruct
 
             foreach (var oldtile in oldTiles)
             {
-                var oldIdDescription = _tileData.GetItemTile()[(int)oldtile.Id];
+                var oldIdDescription = _tileData.GetItemTile(oldtile.Id);
                 var tiles = categoryOutside.FindByPosition(oldtile.PositionString);
                 var tileDataTiles =
                     tiles.Where(

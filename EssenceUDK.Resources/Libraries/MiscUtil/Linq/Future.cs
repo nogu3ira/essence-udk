@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MiscUtil.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// Poor-man's version of a Future. This wraps a result which *will* be

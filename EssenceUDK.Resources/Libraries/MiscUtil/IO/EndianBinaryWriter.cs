@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using System.Text;
-using MiscUtil.Conversion;
+using EssenceUDK.Resources.Libraries.MiscUtil.Conversion;
 
-namespace MiscUtil.IO
+namespace EssenceUDK.Resources.Libraries.MiscUtil.IO
 {
 	/// <summary>
 	/// Equivalent of System.IO.BinaryWriter, but with either endianness, depending on

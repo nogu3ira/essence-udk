@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.Remoting;
 
-namespace MiscUtil.IO
+namespace EssenceUDK.Resources.Libraries.MiscUtil.IO
 {
 	/// <summary>
 	/// Wraps a stream for all operations except Close and Dispose, which

@@ -1,6 +1,6 @@
 using System;
 
-namespace MiscUtil.Threading
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Threading
 {
 	/// <summary>
 	/// Delegate for handling exceptions.

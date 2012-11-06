@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MiscUtil
+namespace EssenceUDK.Resources.Libraries.MiscUtil
 {
     /// <summary>
     /// Class to provide partial comparisons, which can be useful when

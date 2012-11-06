@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace MiscUtil.IO
+namespace EssenceUDK.Resources.Libraries.MiscUtil.IO
 {
     /// <summary>
     /// Collection of utility methods which operate on streams.

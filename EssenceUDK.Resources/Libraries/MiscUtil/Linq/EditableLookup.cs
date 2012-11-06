@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using MiscUtil.Extensions;
+using EssenceUDK.Resources.Libraries.MiscUtil.DotNet20;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
 
-namespace MiscUtil.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// Simple non-unique map wrapper

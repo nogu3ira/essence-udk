@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using EssenceUDK.Resources.Libraries.MiscUtil.DotNet20;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
 
-using MiscUtil.Extensions;
-
-namespace MiscUtil.Collections
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Collections
 {
     /// <summary>
     /// Non-generic class to produce instances of the generic class,

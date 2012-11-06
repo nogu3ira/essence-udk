@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:MyWinCollection1="clr-namespace:MyWinCollection"
                     xmlns:Converters="clr-namespace:EssenceUDK.Controls.Converters"
-                    xmlns:DataVirtualization="clr-namespace:EssenceUDK.Resources.DataVirtualization;assembly=EssenceUDK.Resources">
+                    xmlns:DataVirtualization="clr-namespace:EssenceUDK.Resources.DataVirtualization;assembly=EssenceUDK.Resources"
+                    xmlns:Common="clr-namespace:EssenceUDK.Controls.Common">
 
     <!--<Converters:ConverterImageSourceItemsLandsFromISourface x:Key="ImageFromISurface"/>-->
 
@@ -16,12 +17,12 @@
             		VirtualizingStackPanel.VirtualizationMode="Standard" Grid.Row="4" Grid.ColumnSpan="5"
             />-->
     
-    <DataTemplate x:Key="MyImagesItemTemplateStatic">
+    <!--<DataTemplate x:Key="MyImagesItemTemplateStatic">
         <Grid Width="44" Height="44" HorizontalAlignment="Center">
             <Image Source="{Binding Path=Surface,Converter={StaticResource ImageFromISurface}}" Stretch="Uniform" />
             <TextBlock Text="{Binding TileId}" Foreground="Gold" />
         </Grid>
-    </DataTemplate>
+    </DataTemplate>-->
     
     <Style TargetType="ListBox" x:Key="TileStyle">
         <Style.Triggers>
@@ -37,7 +38,7 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <DataVirtualization:VirtualizingWrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"
+                    <Common:VirtualizingWrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"
                                    MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"
                                />
                 </ItemsPanelTemplate>
@@ -48,7 +49,7 @@
     </Style>
 
 
-    <DataTemplate x:Key="MyImagesItemTemplateTextureFromInt">
+    <!--<DataTemplate x:Key="MyImagesItemTemplateTextureFromInt">
         <Grid Width="44" Height="44" HorizontalAlignment="Center">
             <Image Source="{Binding Converter={StaticResource ImageTextureFromIntConverter}}" Stretch="Uniform" />
             <TextBlock Text="{Binding}" Foreground="Gold" />
@@ -61,6 +62,6 @@
             <Image Source="{Binding Path=Texture,Converter={StaticResource ImageFromISurface}}" Stretch="Uniform" />
             <TextBlock Text="{Binding TileId}" Foreground="Gold" />
         </Grid>
-    </DataTemplate>
+    </DataTemplate>-->
 
 </ResourceDictionary>

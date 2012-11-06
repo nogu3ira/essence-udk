@@ -1,6 +1,7 @@
 ﻿using System;
+using Action = EssenceUDK.Resources.Libraries.MiscUtil.DotNet20.Action;
 
-namespace MiscUtil.Linq
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Linq
 {
     /// <summary>
     /// Interface to be implemented by sequences of data which have a "push"

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using MiscUtil.Collections.Extensions;
-using MiscUtil.Extensions;
+using EssenceUDK.Resources.Libraries.MiscUtil.Collections.Extensions;
+using EssenceUDK.Resources.Libraries.MiscUtil.Extensions;
 
-namespace MiscUtil.Collections
+namespace EssenceUDK.Resources.Libraries.MiscUtil.Collections
 {
     /// <summary>
     /// Iterates over a range. Despite its name, this implements IEnumerable{T} rather than
@@ -21,11 +21,11 @@ namespace MiscUtil.Collections
             get { return range; }
         }
 
-        readonly Func<T, T> step;
+        readonly DotNet20.Func<T, T> step;
         /// <summary>
         /// Returns the step function used for this range
         /// </summary>
-        public Func<T, T> Step
+        public DotNet20.Func<T, T> Step
         {
             get { return step; }
         }
@@ -43,7 +43,7 @@ namespace MiscUtil.Collections
         /// <summary>
         /// Creates an ascending iterator over the given range with the given step function
         /// </summary>
-        public RangeIterator(Range<T> range, Func<T, T> step)
+        public RangeIterator(Range<T> range, DotNet20.Func<T, T> step)
             : this(range, step, true)
         {
         }
@@ -52,7 +52,7 @@ namespace MiscUtil.Collections
         /// Creates an iterator over the given range with the given step function,
         /// with the specified direction.
         /// </summary>
-        public RangeIterator(Range<T> range, Func<T, T> step, bool ascending)
+        public RangeIterator(Range<T> range, DotNet20.Func<T, T> step, bool ascending)
         {
             step.ThrowIfNull("step");
 

@@ -24,8 +24,8 @@ using EssenceUDK.MapMaker.TextFileReading;
 using EssenceUDK.MapMaker.TextFileReading.Factories.Colors;
 using EssenceUDK.MapMaker.TextFileReading.Factories.Items;
 using EssenceUDK.MapMaker.TextFileReading.Factories.Textures;
-using MiscUtil.Conversion;
-using MiscUtil.IO;
+using EssenceUDK.Resources.Libraries.MiscUtil.Conversion;
+using EssenceUDK.Resources.Libraries.MiscUtil.IO;
 
 namespace EssenceUDK.MapMaker
 {
