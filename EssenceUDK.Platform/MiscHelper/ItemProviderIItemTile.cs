@@ -18,6 +18,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using EssenceUDK.Resources.Libraries.MiscUtil.DataVirtualization;
 
 namespace EssenceUDK.Platform.MiscHelper
 {

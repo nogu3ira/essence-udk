@@ -84,7 +84,6 @@
     <Compile Include="MiscHelper\Factories\Tile256.cs" />
     <Compile Include="MiscHelper\Factories\TxtFile.cs" />
     <Compile Include="MiscHelper\Factories\Walls.cs" />
-    <Compile Include="MiscHelper\IItemsProvidercs.cs" />
     <Compile Include="MiscHelper\Interfaces\IFactory.cs" />
     <Compile Include="MiscHelper\ItemProviderIItemTile.cs" />
     <Compile Include="MiscHelper\TilesCategorySDKModule.cs" />

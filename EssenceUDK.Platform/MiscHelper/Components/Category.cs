@@ -9,7 +9,6 @@ using EssenceUDK.Platform.MiscHelper.Components.Interface;
 namespace EssenceUDK.Platform.MiscHelper.Components
 {
     [Serializable()]
-    [DataContract]
     public class TileCategory : NotificationObject, IComponent
     {
 
@@ -87,13 +86,9 @@ namespace EssenceUDK.Platform.MiscHelper.Components
 
         #region Props
         
-        [DataMember]
         public int Id { get { return _index; } set { _index = value; RaisePropertyChanged(() => Id); } }
-        [DataMember]
         public string Name { get { return _name; } set { _name = value; RaisePropertyChanged(()=>Name); } }
-        [DataMember]
         public ObservableCollection<TileStyle> List { get { return _list; } set { _list = value; RaisePropertyChanged(()=>List); } }
-        [DataMember]
         public TypeTile TypeTile { get { return _typetile; } set { _typetile = value; RaisePropertyChanged(()=>TypeTile); } }
         
         #endregion //Props

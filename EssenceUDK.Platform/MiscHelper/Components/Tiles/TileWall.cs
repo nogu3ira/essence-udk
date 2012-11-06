@@ -4,7 +4,6 @@ using EssenceUDK.Platform.MiscHelper.Components.Enums;
 namespace EssenceUDK.Platform.MiscHelper.Components.Tiles
 {
     [Serializable()]
-    [DataContract]
     public class TileWall : Tile
     {
         #region Fields

@@ -10,7 +10,6 @@ using EssenceUDK.Platform.MiscHelper.Components.Tiles;
 namespace EssenceUDK.Platform.MiscHelper.Components
 {
     [Serializable()]
-    [DataContract]
     [XmlInclude(typeof(TileDoor))]
     [XmlInclude(typeof(TileWall))]
     [XmlInclude(typeof(TileMisc))]
@@ -33,13 +32,10 @@ namespace EssenceUDK.Platform.MiscHelper.Components
 
         #region Props
 
-        [DataMember]
         public int Id { get { return _index; } set { _index = value; RaisePropertyChanged(()=>Id); } }
         
-        [DataMember]
         public string Name { get { return _name; } set { _name = value ?? "";  RaisePropertyChanged(()=>Name);} }
         
-        [DataMember]
         public ObservableCollection<Tile> List
         {
             get { return _list; }

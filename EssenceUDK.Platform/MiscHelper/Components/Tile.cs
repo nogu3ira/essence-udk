@@ -7,7 +7,6 @@ using EssenceUDK.Platform.MiscHelper.Components.Interface;
 namespace EssenceUDK.Platform.MiscHelper.Components
 {
     [Serializable()]
-    [DataContract]
     public class Tile :  NotificationObject,IEquatable<Tile>, IEquatable<uint>, IComponent, ITile
     {
         private readonly static List<string> PList = new List<string>()
@@ -27,10 +26,8 @@ namespace EssenceUDK.Platform.MiscHelper.Components
         #endregion//Fields
 
         #region Props
-        [DataMember]
         public String Name { get { return _name; } set { _name = value; RaisePropertyChanged(()=>Name); } }
         private TileStyle _myStyle = new TileStyle();
-        [DataMember]
         public TypeTile Type { get { return _type; } set { _type = value; RaisePropertyChanged(()=>Type); } }
 
         public virtual List<String> PosList
@@ -58,14 +55,12 @@ namespace EssenceUDK.Platform.MiscHelper.Components
         #region props
         public string PositionString { get { return Pos; } set { Pos = value; RaisePropertyChanged(()=>PositionString);RaisePropertyChanged(()=>Position);} }
         
-        [DataMember]
         public virtual int Position
         {
             get { return PosList.IndexOf(Pos); }
             set { Pos = PosList[value]; RaisePropertyChanged(()=>Position); RaisePropertyChanged(()=>PositionString); RaisePropertyChanged(()=>Position);}
         }
 
-        [DataMember]
         public uint Id
         {
             get { return _id; }

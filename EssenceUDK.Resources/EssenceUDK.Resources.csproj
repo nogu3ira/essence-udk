@@ -60,6 +60,7 @@
     <Compile Include="Libraries\MiscUtil\Collections\Extensions\DictionaryExt.cs" />
     <Compile Include="Libraries\MiscUtil\Collections\Extensions\RangeBasedExt.cs" />
     <Compile Include="Libraries\MiscUtil\Collections\Extensions\SmartEnumerableExt.cs" />
+    <Compile Include="Libraries\MiscUtil\DataVirtualization\IItemsProvidercs.cs" />
     <Compile Include="Libraries\MiscUtil\DataVirtualization\VirtualizingCollection.cs" />
     <Compile Include="Libraries\MiscUtil\EventArgs.cs" />
     <Compile Include="Libraries\MiscUtil\GenericMath.cs" />
