@@ -21,6 +21,7 @@ using EssenceUDK.MapMaker;
 using EssenceUDK.Platform;
 using EssenceUDK.Platform.DataTypes;
 using EssenceUDK.Platform.MiscHelper;
+using EssenceUDK.Resources.Libraries.MiscUtil.DataVirtualization;
 using GalaSoft.MvvmLight;
 using MapMakerApplication.Messages;
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace EssenceUDK.Platform.MiscHelper
+namespace EssenceUDK.Resources.Libraries.MiscUtil.DataVirtualization
 {
     /// <summary>
     /// Specialized list implementation that provides data virtualization. The collection is divided up into pages,
