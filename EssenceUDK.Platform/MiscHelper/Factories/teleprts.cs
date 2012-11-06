@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using EssenceUDK.Platform;
-using EssenceUDK.TilesInfo.Interfaces;
+using EssenceUDK.Platform.MiscHelper.Interfaces;
 
-namespace EssenceUDK.TilesInfo.Factories
+namespace EssenceUDK.Platform.MiscHelper.Factories
 {
     public class Teleprts : Factory,  IFactory
     {

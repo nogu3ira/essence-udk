@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EssenceUDK.TilesInfo.Components.Enums
+namespace EssenceUDK.Platform.MiscHelper.Components.Enums
 {
     [Serializable]
     public enum TypeTile 

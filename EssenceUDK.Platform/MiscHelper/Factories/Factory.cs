@@ -1,9 +1,8 @@
 ﻿using System.Collections.ObjectModel;
-using EssenceUDK.Platform;
-using EssenceUDK.TilesInfo.Components;
-using EssenceUDK.TilesInfo.Interfaces;
+using EssenceUDK.Platform.MiscHelper.Components;
+using EssenceUDK.Platform.MiscHelper.Interfaces;
 
-namespace EssenceUDK.TilesInfo.Factories
+namespace EssenceUDK.Platform.MiscHelper.Factories
 {
     public abstract class Factory : IFactory 
     {

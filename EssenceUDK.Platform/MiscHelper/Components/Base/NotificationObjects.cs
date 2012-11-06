@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace EssenceUDK.TilesInfo.Components.Base
+namespace EssenceUDK.Platform.MiscHelper.Components.Base
 {
     [Serializable]
     public class NotificationObject : INotifyPropertyChanged

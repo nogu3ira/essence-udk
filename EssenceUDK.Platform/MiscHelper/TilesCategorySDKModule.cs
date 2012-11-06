@@ -8,15 +8,14 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using EssenceUDK.Platform.DataTypes;
-using EssenceUDK.Platform;
-using EssenceUDK.TilesInfo.Components;
-using EssenceUDK.TilesInfo.Components.Base;
-using EssenceUDK.TilesInfo.Components.Enums;
-using EssenceUDK.TilesInfo.Components.MultiStruct;
-using EssenceUDK.TilesInfo.Components.Tiles;
-using EssenceUDK.TilesInfo.Factories;
+using EssenceUDK.Platform.MiscHelper.Components;
+using EssenceUDK.Platform.MiscHelper.Components.Base;
+using EssenceUDK.Platform.MiscHelper.Components.Enums;
+using EssenceUDK.Platform.MiscHelper.Components.MultiStruct;
+using EssenceUDK.Platform.MiscHelper.Components.Tiles;
+using EssenceUDK.Platform.MiscHelper.Factories;
 
-namespace EssenceUDK.TilesInfo
+namespace EssenceUDK.Platform.MiscHelper
 {
     public class TilesCategorySDKModule : NotificationObject
     {

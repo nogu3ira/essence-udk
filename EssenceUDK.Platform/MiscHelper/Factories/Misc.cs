@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using EssenceUDK.Platform;
-using EssenceUDK.TilesInfo.Components;
-using EssenceUDK.TilesInfo.Components.Enums;
-using EssenceUDK.TilesInfo.Components.Tiles;
-using EssenceUDK.TilesInfo.Interfaces;
+using EssenceUDK.Platform.MiscHelper.Components;
+using EssenceUDK.Platform.MiscHelper.Components.Enums;
+using EssenceUDK.Platform.MiscHelper.Components.Tiles;
+using EssenceUDK.Platform.MiscHelper.Interfaces;
 
-namespace EssenceUDK.TilesInfo.Factories
+namespace EssenceUDK.Platform.MiscHelper.Factories
 {
     public class Misc : Factory , IFactory
     {

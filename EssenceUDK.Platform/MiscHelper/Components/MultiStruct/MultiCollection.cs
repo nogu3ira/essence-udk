@@ -4,12 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using EssenceUDK.Platform.DataTypes;
-using EssenceUDK.Platform;
-using EssenceUDK.TilesInfo.Components.Base;
-using EssenceUDK.TilesInfo.Components.Interface;
-using EssenceUDK.TilesInfo.Components.Tiles;
+using EssenceUDK.Platform.MiscHelper.Components.Base;
+using EssenceUDK.Platform.MiscHelper.Components.Interface;
+using EssenceUDK.Platform.MiscHelper.Components.Tiles;
 
-namespace EssenceUDK.TilesInfo.Components.MultiStruct
+namespace EssenceUDK.Platform.MiscHelper.Components.MultiStruct
 {
     [Serializable]
     public class MultiCollection : NotificationObject

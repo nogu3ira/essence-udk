@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
-using System.Runtime.Serialization;
-using EssenceUDK.TilesInfo.Components.Base;
-using EssenceUDK.TilesInfo.Components.Interface;
-using EssenceUDK.TilesInfo.Components.Tiles;
+using EssenceUDK.Platform.MiscHelper.Components.Base;
+using EssenceUDK.Platform.MiscHelper.Components.Interface;
+using EssenceUDK.Platform.MiscHelper.Components.Tiles;
 
-namespace EssenceUDK.TilesInfo.Components
+namespace EssenceUDK.Platform.MiscHelper.Components
 {
     [Serializable()]
     [DataContract]

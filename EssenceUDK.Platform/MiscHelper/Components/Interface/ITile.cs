@@ -1,4 +1,4 @@
-﻿namespace EssenceUDK.TilesInfo.Components.Interface
+﻿namespace EssenceUDK.Platform.MiscHelper.Components.Interface
 {
     public interface ITile
     {

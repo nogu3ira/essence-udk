@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using EssenceUDK.Platform;
-using EssenceUDK.TilesInfo.Components;
-using EssenceUDK.TilesInfo.Components.Enums;
+using EssenceUDK.Platform.MiscHelper.Components;
+using EssenceUDK.Platform.MiscHelper.Components.Enums;
 
-namespace EssenceUDK.TilesInfo.Factories
+namespace EssenceUDK.Platform.MiscHelper.Factories
 {
     public class SuppInfo
     {

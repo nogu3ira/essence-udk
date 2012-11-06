@@ -1,7 +1,7 @@
 ﻿using System;
-using EssenceUDK.TilesInfo.Components.Enums;
+using EssenceUDK.Platform.MiscHelper.Components.Enums;
 
-namespace EssenceUDK.TilesInfo.Components.Tiles
+namespace EssenceUDK.Platform.MiscHelper.Components.Tiles
 {
     [Serializable()]
     public class TileStairs : Tile

@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using EssenceUDK.TilesInfo.Components;
+using EssenceUDK.Platform.MiscHelper.Components;
 
-namespace EssenceUDK.TilesInfo.Interfaces
+namespace EssenceUDK.Platform.MiscHelper.Interfaces
 {
     public interface IFactory
     {

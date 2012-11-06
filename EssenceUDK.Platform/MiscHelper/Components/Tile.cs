@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using EssenceUDK.TilesInfo.Components.Base;
-using EssenceUDK.TilesInfo.Components.Enums;
-using EssenceUDK.TilesInfo.Components.Interface;
-using IComponent = EssenceUDK.TilesInfo.Components.Interface.IComponent;
+using EssenceUDK.Platform.MiscHelper.Components.Base;
+using EssenceUDK.Platform.MiscHelper.Components.Enums;
+using EssenceUDK.Platform.MiscHelper.Components.Interface;
 
-namespace EssenceUDK.TilesInfo.Components
+namespace EssenceUDK.Platform.MiscHelper.Components
 {
     [Serializable()]
     [DataContract]

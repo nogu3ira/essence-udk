@@ -1,8 +1,8 @@
 using System;
-using EssenceUDK.TilesInfo.Components.Base;
-using EssenceUDK.TilesInfo.Components.Interface;
+using EssenceUDK.Platform.MiscHelper.Components.Base;
+using EssenceUDK.Platform.MiscHelper.Components.Interface;
 
-namespace EssenceUDK.TilesInfo.Components.MultiStruct
+namespace EssenceUDK.Platform.MiscHelper.Components.MultiStruct
 {
     [Serializable]
     public class MultiTile : NotificationObject,ITile

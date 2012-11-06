@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EssenceUDK.TilesInfo.Components.Tiles
+namespace EssenceUDK.Platform.MiscHelper.Components.Tiles
 {
     [Serializable()]
     public class TileDoor : Tile
