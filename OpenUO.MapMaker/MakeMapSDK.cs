@@ -669,18 +669,6 @@ namespace EssenceUDK.MapMaker
                               };
 
             var formatter = new BinaryFormatter();
-            var ss = new SurrogateSelector();
-            ss.AddSurrogate(typeof(ObservableCollection<string>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<string>());
-            ss.AddSurrogate(typeof(ObservableCollection<int>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<int>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaColor>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaColor>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaItems>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaItems>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaTransitionItemCoast>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaTransitionItemCoast>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaTransitionItem>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaTransitionItem>());
-            ss.AddSurrogate(typeof(ObservableCollection<SingleItem>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<SingleItem>());
-            ss.AddSurrogate(typeof(ObservableCollection<CollectionItem>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<CollectionItem>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaTransitionCliffTexture>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaTransitionCliffTexture>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaTransitionTexture>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaTransitionTexture>());
-            formatter.SurrogateSelector = ss;
             var ms = new MemoryStream();
             using (ms)
             {
@@ -698,16 +686,6 @@ namespace EssenceUDK.MapMaker
             //var formatter = new BinaryFormatter();
             var ss = new SurrogateSelector();
             
-            ss.AddSurrogate(typeof(ObservableCollection<string>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<string>());
-            ss.AddSurrogate(typeof(ObservableCollection<int>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<int>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaColor>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaColor>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaItems>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaItems>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaTransitionItemCoast>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaTransitionItemCoast>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaTransitionItem>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaTransitionItem>());
-            ss.AddSurrogate(typeof(ObservableCollection<SingleItem>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<SingleItem>());
-            ss.AddSurrogate(typeof(ObservableCollection<CollectionItem>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<CollectionItem>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaTransitionCliffTexture>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaTransitionCliffTexture>());
-            ss.AddSurrogate(typeof(ObservableCollection<AreaTransitionTexture>), new StreamingContext(StreamingContextStates.All), new ObservableCollectionSerializationSurrogate<AreaTransitionTexture>());
             var formatter = new BinaryFormatter();
             formatter.SurrogateSelector = ss;
             object[] objectfrom;

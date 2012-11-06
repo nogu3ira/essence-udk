@@ -94,8 +94,6 @@
             ShowAdvancedOptions="False"
             ShowSearchBox="False"
             ShowSortOptions="False"
-            ShowSummary="False"
-            ShowTitle="False"
             SelectedObject="{Binding ElementName=ListItems,Path=SelectedItem}" Grid.RowSpan="2"
             />
         <Button Content="Add from Txt" Grid.Column="2" Grid.ColumnSpan="2"/>

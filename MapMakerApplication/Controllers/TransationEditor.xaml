@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:CollectionManager="clr-namespace:MapMakerApplication.Controllers.CollectionManager" xmlns:MyWinCollection="clr-namespace:MyWinCollection;assembly=EssenceUDK.Controls" x:Class="MapMakerApplication.Controllers.TransationEditor"
+             xmlns:CollectionManager="clr-namespace:MapMakerApplication.Controllers.CollectionManager"  x:Class="MapMakerApplication.Controllers.TransationEditor"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 	<UserControl.Resources>

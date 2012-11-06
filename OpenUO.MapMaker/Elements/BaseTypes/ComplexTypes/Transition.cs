@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes.Enum;
+using EssenceUDK.MapMaker.Elements.Interfaces;
 
 namespace EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes
 {
     [Serializable]
-    public class Transition : NotificationObject
+    public class Transition :  NotificationObject,ITransition
     {
         private ObservableCollection<CollectionLine> _lines;
 

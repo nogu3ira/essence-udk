@@ -4,8 +4,6 @@
                     xmlns:CollectionManager="clr-namespace:MapMakerApplication.Controllers.CollectionManager"
                     xmlns:Converters="clr-namespace:MapMakerApplication.Converters"
                     xmlns:Controllers="clr-namespace:MapMakerApplication.Controllers"
-                    xmlns:MyWinCollection1="clr-namespace:MyWinCollection;assembly=EssenceUDK.Controls"
-                    xmlns:System="clr-namespace:System;assembly=mscorlib"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
 
     <ResourceDictionary.MergedDictionaries>

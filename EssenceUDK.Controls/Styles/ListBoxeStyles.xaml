@@ -1,9 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:MyWinCollection1="clr-namespace:MyWinCollection"
-                    xmlns:Converters="clr-namespace:EssenceUDK.Controls.Converters">
+                    xmlns:Converters="clr-namespace:EssenceUDK.Controls.Converters"
+                    xmlns:DataVirtualization="clr-namespace:EssenceUDK.Resources.DataVirtualization;assembly=EssenceUDK.Resources">
 
-    <Converters:ConverterImageSourceItemsLandsFromISourface x:Key="ImageFromISurface"/>
+    <!--<Converters:ConverterImageSourceItemsLandsFromISourface x:Key="ImageFromISurface"/>-->
 
     <!-- EXAMPLE
     <ListBox 
@@ -36,7 +37,7 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <MyWinCollection1:VirtualizingWrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"
+                    <DataVirtualization:VirtualizingWrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"
                                    MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"
                                />
                 </ItemsPanelTemplate>

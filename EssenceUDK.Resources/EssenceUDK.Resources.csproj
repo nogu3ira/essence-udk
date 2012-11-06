@@ -47,6 +47,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataVirtualization\IItemsProvider.cs" />
+    <Compile Include="DataVirtualization\VirtualizingCollection.cs" />
+    <Compile Include="DataVirtualization\VirtualizingWrapPanel.cs" />
     <Compile Include="Localization\BindingLocalizedValue.cs" />
     <Compile Include="Localization\FormattedLocalizedValue.cs" />
     <Compile Include="Localization\LocalizationCallback.cs" />

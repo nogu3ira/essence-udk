@@ -8,6 +8,7 @@ using EssenceUDK.MapMaker.Elements;
 using EssenceUDK.MapMaker.Elements.ColorArea;
 using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
 using EssenceUDK.MapMaker.Elements.Items.ItemText;
+using EssenceUDK.MapMaker.Elements.Items.Items;
 using EssenceUDK.MapMaker.Elements.Items.ItemsTransition;
 using EssenceUDK.MapMaker.Elements.Textures;
 using EssenceUDK.MapMaker.Elements.Textures.TextureTransition;

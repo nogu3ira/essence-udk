@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EssenceUDK.MapMaker.Elements.Items.ItemText;
+using EssenceUDK.MapMaker.Elements.Items.Items;
 
 namespace EssenceUDK.MapMaker.TextFileReading.Factories.Items
 {

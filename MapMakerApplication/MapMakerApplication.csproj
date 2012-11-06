@@ -69,34 +69,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\WPF35SP1\GalaSoft.MvvmLight.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Extras">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\WPF35SP1\GalaSoft.MvvmLight.Extras.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\WPF35SP1\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationProvider">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -105,6 +84,9 @@
     </Reference>
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WPFToolkit.Extended">
+      <HintPath>..\..\EssenceUDK\Deploying\WPFToolkit.Extended.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -260,25 +242,13 @@
     <Folder Include="Utilities\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\avalondock-96190\Version2.0\AvalonDock\AvalonDock.Theme.VS2010\AvalonDock.Themes.VS2010.csproj">
-      <Project>{b3fc3e21-5f2d-4581-aea2-59f671cffc21}</Project>
-      <Name>AvalonDock.Themes.VS2010</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\avalondock-96190\Version2.0\AvalonDock\AvalonDock.Themes.Aero\AvalonDock.Themes.Aero.csproj">
-      <Project>{ba72cce0-a9fb-4995-b496-7fec5c87b85b}</Project>
+    <ProjectReference Include="..\..\EssenceUDK\Deploying\AvalonDock\AvalonDock.Themes.Aero\AvalonDock.Themes.Aero.csproj">
+      <Project>{BA72CCE0-A9FB-4995-B496-7FEC5C87B85B}</Project>
       <Name>AvalonDock.Themes.Aero</Name>
     </ProjectReference>
-    <ProjectReference Include="..\avalondock-96190\Version2.0\AvalonDock\AvalonDock\AvalonDock.csproj">
-      <Project>{db81988f-e0f2-45a0-a1fd-8c37f3d35244}</Project>
+    <ProjectReference Include="..\..\EssenceUDK\Deploying\AvalonDock\AvalonDock\AvalonDock.csproj">
+      <Project>{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}</Project>
       <Name>AvalonDock</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EssenceUDK.Add-ins\EssenceUDK.Add-ins.csproj">
-      <Project>{51793a49-891e-469d-a216-331d7aa7b480}</Project>
-      <Name>EssenceUDK.Add-ins</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EssenceUDK.Controls\EssenceUDK.Controls.csproj">
-      <Project>{65f4f53b-dd6d-497c-9fd0-c9b2f48ab74c}</Project>
-      <Name>EssenceUDK.Controls</Name>
     </ProjectReference>
     <ProjectReference Include="..\EssenceUDK.Platform\EssenceUDK.Platform.csproj">
       <Project>{e3c136fb-fb5c-4b65-81ed-697157f46cc1}</Project>
@@ -295,10 +265,6 @@
     <ProjectReference Include="..\OpenUO.MapMaker\EssenceUDK.MapMaker.csproj">
       <Project>{2F25DC15-7C8B-4C57-8C31-E33DEE517E7B}</Project>
       <Name>EssenceUDK.MapMaker</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\wpftoolkit-94877\Release\v1.7.0\ExtendedWPFToolkitSolution\Src\WPFToolkit.Extended\WPFToolkit.Extended.csproj">
-      <Project>{72e591d6-8f83-4d8c-8f67-9c325e623234}</Project>
-      <Name>WPFToolkit.Extended</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

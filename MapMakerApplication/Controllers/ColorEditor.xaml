@@ -72,7 +72,7 @@
                 <SolidColorBrush Color="{Binding ColorTopMountain}"/>
             </TextBlock.Background>
         </TextBlock>
-        <xctk:PropertyGrid Grid.ColumnSpan="4" SelectedObject="{Binding}" Grid.Row="11" Grid.RowSpan="2" Style="{StaticResource vis}" AutoGenerateProperties="False" ShowSearchBox="False" ShowTitle="False" ShowSortOptions="False" IsCategorized="False">
+        <xctk:PropertyGrid Grid.ColumnSpan="4" SelectedObject="{Binding}" Grid.Row="11" Grid.RowSpan="2" Style="{StaticResource vis}" AutoGenerateProperties="False" ShowSearchBox="False" ShowSortOptions="False" IsCategorized="False">
             <xctk:PropertyGrid.PropertyDefinitions>
                 <xctk:PropertyDefinition Name="List"/>
             </xctk:PropertyGrid.PropertyDefinitions>

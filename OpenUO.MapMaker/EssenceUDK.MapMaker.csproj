@@ -46,10 +46,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Elements\BaseTypes\ObservableCollectionSerializationSurrogate.cs" />
     <Compile Include="Elements\BaseTypes\NotificationObject.cs" />
     <Compile Include="Elements\IContainerSet.cs" />
     <Compile Include="Elements\Interfaces\ITransition.cs" />
+    <Compile Include="Elements\Items\Items\AreaItems.cs" />
+    <Compile Include="Elements\Items\CollectionItem.cs" />
+    <Compile Include="Elements\Items\Items\SingleItem.cs" />
     <Compile Include="Elements\ProgressEventArgs.cs" />
     <Compile Include="MapMaking\BitmapReader.cs" />
     <Compile Include="Elements\BaseTypes\ComplexTypes\CollectionItem.cs" />
@@ -64,14 +66,11 @@
     <Compile Include="Elements\BaseTypes\ComplexTypes\Enum\LineType.cs" />
     <Compile Include="Elements\BaseTypes\ComplexTypes\CollectionLine.cs" />
     <Compile Include="Elements\BaseTypes\ComplexTypes\Transition.cs" />
-    <Compile Include="Elements\Items\CollectionAreaItems.cs" />
+    <Compile Include="Elements\Items\Items\CollectionAreaItems.cs" />
     <Compile Include="Elements\Items\CollectionAreaTransitionItemCoast.cs" />
     <Compile Include="Elements\Items\ItemCoast\TransitionItemsCoast.cs" />
     <Compile Include="Elements\Items\ItemCoast\AreaTransitionItemCoast.cs" />
     <Compile Include="Elements\Items\ItemsTransition\AreaTransitionItem.cs" />
-    <Compile Include="Elements\Items\ItemText\SingleItem.cs" />
-    <Compile Include="Elements\Items\ItemText\CollectionItem.cs" />
-    <Compile Include="Elements\Items\ItemText\AreaItems.cs" />
     <Compile Include="Elements\Items\CollectionAreaTransitionItems.cs" />
     <Compile Include="Elements\Textures\CollectionAreaTransitionCliffTexture.cs" />
     <Compile Include="Elements\Textures\Enum\CliffDirections.cs" />
