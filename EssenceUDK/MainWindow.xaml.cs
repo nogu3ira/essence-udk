@@ -17,6 +17,7 @@ using System.Windows.Threading;
 using EssenceUDK.Platform;
 ﻿using EssenceUDK.Platform.DataTypes;
 using EssenceUDK.Platform.UtilHelpers;
+﻿using EssenceUDK.Resources;
 ﻿using UOLang = EssenceUDK.Platform.UtilHelpers.Language;
 
 namespace EssenceUDK
@@ -29,6 +30,7 @@ namespace EssenceUDK
         public MainWindow()
         {
             InitializeComponent();
+            Application.Current.ApplyTheme("ExpressionDark"); // ThemeManager.GetThemes()[0];
 
             //// test - lets switch to our tab at startup
             //tabControl1.SelectedIndex = 2;

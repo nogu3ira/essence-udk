@@ -28,9 +28,9 @@ namespace EssenceUDK.Platform
         /// </summary>
         UseUopFiles = 0x0004,
         /// <summary>
-        /// Use *.qup files from HDD as DataSource.
+        /// Use *.emp files from HDD as DataSource.
         /// </summary>
-        UseQupFiles = 0x0008,
+        UseEmpFiles = 0x0008,
 
         /// <summary>
         /// Use verdata.mul for patching data from DataSource.
@@ -45,9 +45,9 @@ namespace EssenceUDK.Platform
         /// </summary>
         UseDifPatch = 0x0040,
         /// <summary>
-        /// Reserved for future porporse
+        /// Use "_x" versions of map/statics
         /// </summary>
-        UseReserve1 = 0x0080,
+        UseExtFacet = 0x0080,
 
         /// <summary>
         /// Sets use of an old format of the files art.mul, artidx.mul, staidx#.mul, statics#.mul. 
@@ -88,7 +88,7 @@ namespace EssenceUDK.Platform
         /// <summary>
         /// For future purporse....
         /// </summary>
-        EssenceInfinityClient               = UseQupFiles | UseInfDatas,
+        EssenceInfinityClient               = UseEmpFiles | UseInfDatas,
 
         /// <summary>
         /// Classic Client (UO: Pre Alpha Client)
@@ -147,6 +147,38 @@ namespace EssenceUDK.Platform
         ClassicAdventuresOnHighSeasUpdated  = UseUopFiles | UseDifPatch | UseNewDatas,
     }
 
+    public class UODataOptions
+    {
+        public FacetDesc[] majorFacet = new[] { FacetDesc.NewFelucca, FacetDesc.NewFelucca, FacetDesc.Ilshenar, FacetDesc.Malas, FacetDesc.Tokuno, FacetDesc.TerMur };
+        public FacetDesc[] minorFacet = new[] { FacetDesc.ExtFelucca, FacetDesc.ExtTrammel, FacetDesc.Ilshenar, FacetDesc.Malas, FacetDesc.Tokuno, FacetDesc.TerMur };
+
+        /// <summary>
+        /// Optimize UODataManager work for speedup rending. Reserved for future purporse.
+        /// Recomended to enable only in hard applications like UO Client or map editor, otherwise
+        /// it can get reverse effect and slows work, espesialy with GDI\WPF based applications.
+        /// </summary>
+        public bool OptimizeForEngine = false;
+
+        /// <summary>
+        /// Use local cache for read and write extended files, otherwise manager will work with them 
+        /// as they are common client files. If this option enable it make extension files virtual
+        /// and hidden from user. Manager will save them in hidden temp folder using hash of client 
+        /// uri addres to detect them. This option is good to enable for viewer mode to protect for
+        /// creating new files and to disable for client on which you works.
+        /// Requires UODataType.UseExtFiles flag option.
+        /// </summary>
+        public bool LocalWorkExtFiles = false;
+
+        public UODataOptions()
+        {
+        }
+
+        internal UODataOptions(Uri uri)
+        {
+            // TODO: auto detect for default values ...
+        }
+    }
+
     public sealed class UODataManager
     {
         public readonly UODataType DataType;
@@ -154,12 +186,24 @@ namespace EssenceUDK.Platform
         public readonly Uri        Location;
         public readonly bool       RealTime;
 
-        private readonly IDataFactory dataFactory;
+        public UODataOptions DataOptions { get { return dataOptions; } }
+        private          UODataOptions dataOptions;
+        private readonly IDataFactory  dataFactory;
 
         //public static UODataManager[] Instanes { get { return m_Instanes.Values; } }
         private static Hashtable m_Instanes = new Hashtable(2);
 
-        public UODataManager(Uri uri, UODataType type, Language language, bool realtime = true)
+        /// <summary>
+        /// Create and initialized UODataManager object, wich represent viewmodel and logic of UO data.
+        /// </summary>
+        /// <param name="uri">Folder path to client data or data-server address. At this momment only local path are supported.</param>
+        /// <param name="type">Combination of flags to specify general behavior of UOEngine. 
+        /// * if you want to use _x version of maps and statics use UseExtFacet flag (only for SA and HS),
+        /// * to use special abilities of UOEngine you need additional files, to do it use UseExtFiles flag.</param>
+        /// <param name="language">Specify language that used in data files and server.</param>
+        /// <param name="dataoptions">Additional options. Set it 'null' for autodetect.</param>
+        /// <param name="realtime">If true, engine will save all data at realtime, otherwise it will caching them and save changes in local folder.</param>
+        public UODataManager(Uri uri, UODataType type, Language language, UODataOptions dataoptions = null, bool realtime = true)
         {
             if (uri == null || type == 0 || language == null)
                 throw new ArgumentException("Bad parametre values");
@@ -172,6 +216,7 @@ namespace EssenceUDK.Platform
             RealTime = realtime;
             m_Instanes[uri] = this;
 
+            dataOptions = dataoptions ?? new UODataOptions(Location);
             dataFactory = type.HasFlag(UODataType.UseMulFiles) || type.HasFlag(UODataType.UseUopFiles) ? new ClassicFactory(this) : null;
 
             // Initialize data... its loading, wait, wait

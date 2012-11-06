@@ -8,6 +8,36 @@ using EssenceUDK.Platform.Factories;
 
 namespace EssenceUDK.Platform.DataTypes
 {
+    public struct FacetDesc
+    {
+        public readonly string Name;
+        public readonly ushort Width;
+        public readonly ushort Height;
+        public readonly ushort RealWidth;
+        public readonly ushort RealHeight;
+        
+        public FacetDesc(string name, ushort width, ushort height, ushort rwidth, ushort rheight)
+        {
+            Name       = name;
+            Width      = width;
+            Height     = height;
+            RealWidth  = rwidth;
+            RealHeight = rheight;
+        }
+
+        public static FacetDesc PreAlpha    = new FacetDesc("Britania", 128, 128, 128, 128);
+        public static FacetDesc OldFelucca  = new FacetDesc("Felucca",  768, 512, 640, 512);
+        public static FacetDesc NewFelucca  = new FacetDesc("Felucca",  896, 512, 640, 512);
+        public static FacetDesc ExtFelucca  = new FacetDesc("Felucca",  896, 512, 640, 512);
+        public static FacetDesc OldTrammel  = new FacetDesc("Trammel",  768, 512, 640, 512);
+        public static FacetDesc NewTrammel  = new FacetDesc("Trammel",  896, 512, 640, 512);
+        public static FacetDesc ExtTrammel  = new FacetDesc("Trammel",  896, 512, 640, 512); 
+        public static FacetDesc Ilshenar    = new FacetDesc("Ilshenar", 288, 200, 288, 200);
+        public static FacetDesc Malas       = new FacetDesc("Malas",    320, 256, 320, 256);
+        public static FacetDesc Tokuno      = new FacetDesc("Tokuno",   181, 181, 181, 181);
+        public static FacetDesc TerMur      = new FacetDesc("TerMur",   160, 512, 160, 512);
+    }
+
     /// <summary>
     /// An enumeration of 64 different tile flags.
     /// </summary>
