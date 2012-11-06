@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿﻿﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -209,14 +209,14 @@ namespace EssenceUDK.Platform
             return StorageItem[id];
         }
 
-        public IList<ModelItemData> GetItemTile()
+        public IEnumerable<ModelItemData> GetItemTile()
         {
             return new ObservableCollection<ModelItemData>(StorageItem.Select(t => new ModelItemData(t)));
         }
 
-        public IList<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None, bool valid = true)
+        public IEnumerable<ModelItemData> GetItemTile(TileFlag flags = TileFlag.None, bool valid = true)
         {
-            return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t!= null && t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
+            return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
         }
 
         public ILandTile GetLandTile(int id)
@@ -239,7 +239,7 @@ namespace EssenceUDK.Platform
             return StorageLand[id];
         }
 
-        public IList<ModelLandData> GetLandTile()
+        public IEnumerable<ModelLandData> GetLandTile()
         {
             return new ObservableCollection<ModelLandData>(StorageLand.Select(t => new ModelLandData(t)));
         }

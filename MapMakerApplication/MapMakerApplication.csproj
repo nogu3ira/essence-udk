@@ -258,10 +258,6 @@
       <Project>{bf268ae6-1fc3-4a1b-a6d8-ccad0bab4833}</Project>
       <Name>EssenceUDK.Resources</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MiscUtil\MiscUtil.csproj">
-      <Project>{4fc1d5f4-661f-48dc-b397-4cdcb7d61abe}</Project>
-      <Name>MiscUtil</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OpenUO.MapMaker\EssenceUDK.MapMaker.csproj">
       <Project>{2F25DC15-7C8B-4C57-8C31-E33DEE517E7B}</Project>
       <Name>EssenceUDK.MapMaker</Name>

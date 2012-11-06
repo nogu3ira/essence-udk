@@ -1,44 +1,20 @@
-﻿using System;
+﻿﻿using System;
 using System.IO;
 //using System.Windows.Forms;
 using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using ICSharpCode.SharpZipLib.Checksums;
 using Microsoft.Win32.SafeHandles;
-//using ICSharpCode.SharpZipLib.Core;
-//using ICSharpCode.SharpZipLib.Zip;
-//using ICSharpCode.SharpZipLib.Zip.Compression;
-//using ICSharpCode.SharpZipLib.BZip2;
-//using ICSharpCode.SharpZipLib.Checksums;
+using ICSharpCode.SharpZipLib.Core;
+using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.Zip.Compression;
+using ICSharpCode.SharpZipLib.BZip2;
+using ICSharpCode.SharpZipLib.Checksums;
 
 namespace EssenceUDK.Platform.UtilHelpers
 {
-    internal static class Checksum
-    {
-        /// <summary>
-        /// The checksum algorithm md5
-        /// </Summary>
-        /// <param Name="bytes">Data because an array of bytes</param>
-        /// <returns>Array of 16 bytes containing the checksum</returns>
-        public static byte[] GetMD5Hash(byte[] bytes)
-        {
-            byte[] bytesHash = new MD5CryptoServiceProvider().ComputeHash(bytes);
-                
-            byte[] binHash = new byte[16];
-            Array.Clear(binHash, 0, binHash.Length);
-            Array.Copy(bytesHash, binHash, bytesHash.Length >= 16 ? 16 : bytesHash.Length);
-
-            #if DEBUG
-            string strHash = string.Empty;
-            foreach (byte b in bytesHash)
-                strHash += b.ToString("X2");
-            #endif
-
-            return binHash;
-        }
-    }
-
-    internal enum  CompressorType : byte 
+    public enum CompressorType : byte 
     {
         None         = 0x00,
         Zip          = 0x01,
@@ -49,7 +25,7 @@ namespace EssenceUDK.Platform.UtilHelpers
         ManagedBZip2 = 0x20 | BZip2
     }
 
-    internal interface ICompressor
+    public interface ICompressor
     {
         /// <summary>
         /// Library Version
@@ -81,25 +57,25 @@ namespace EssenceUDK.Platform.UtilHelpers
     /// <summary>
     /// Compresarator (wrapper comperosorov)
     /// </summary>
-    internal class Compressor : ICompressor
+    public class Compressor : ICompressor
     {
         private readonly ICompressor _Compressor;
 
-        public CompressorType TypeId { get { return _Compressor.TypeId; } }
+        CompressorType ICompressor.TypeId { get { return _Compressor.TypeId; } }
 
-        public string Version { get { return _Compressor.Version; } }
+        string ICompressor.Version { get { return _Compressor.Version; } }
 
-        public byte[] Compress(byte[] data, UInt32 size)
+        byte[] ICompressor.Compress(byte[] data, UInt32 size)
         {
             return _Compressor.Compress(data, size);
         }
 
-        public byte[] Decompress(byte[] data, UInt32 size)
+        byte[] ICompressor.Decompress(byte[] data, UInt32 size)
         {
             return _Compressor.Decompress(data, size);
         }
 
-        public static ICompressor New(Type compressorType)
+        internal static ICompressor New(Type compressorType)
         {
             return Activator.CreateInstance(compressorType) as ICompressor;
         }
@@ -108,15 +84,15 @@ namespace EssenceUDK.Platform.UtilHelpers
         {
             ICompressor compressor = null;
             switch (typeId) {
-                //case CompressorType.None        : compressor = new NoneCompressor();        break;
-                //case CompressorType.Zip         : try { compressor = new ZipNativeCompressor();  } 
-                //                                catch { compressor = new ZipManagedCompressor(); }   break;
-                //case CompressorType.BZip2       : try { compressor = new BZ2NativeCompressor();  } 
-                //                                catch { compressor = new BZ2ManagedCompressor(); }   break;
-                //case CompressorType.NativeZip   : compressor = new ZipNativeCompressor();   break;
-                //case CompressorType.ManagedZip  : compressor = new ZipManagedCompressor();  break;
-                //case CompressorType.NativeBZip2 : compressor = new BZ2NativeCompressor();   break;
-                //case CompressorType.ManagedBZip2: compressor = new BZ2ManagedCompressor();  break;
+                case CompressorType.None        : compressor = new NoneCompressor();        break;
+                case CompressorType.Zip         : try { compressor = new ZipNativeCompressor();  } 
+                                                catch { compressor = new ZipManagedCompressor(); }   break;
+                case CompressorType.BZip2       : try { compressor = new BZ2NativeCompressor();  } 
+                                                catch { compressor = new BZ2ManagedCompressor(); }   break;
+                case CompressorType.NativeZip   : compressor = new ZipNativeCompressor();   break;
+                case CompressorType.ManagedZip  : compressor = new ZipManagedCompressor();  break;
+                case CompressorType.NativeBZip2 : compressor = new BZ2NativeCompressor();   break;
+                case CompressorType.ManagedBZip2: compressor = new BZ2ManagedCompressor();  break;
                 default: throw new ArgumentOutOfRangeException("Unknown compressor typeId.");
             } return compressor;
         }
@@ -125,7 +101,7 @@ namespace EssenceUDK.Platform.UtilHelpers
         {
         }
 
-        public Compressor(CompressorType typeId)
+        internal Compressor(CompressorType typeId)
         {
             _Compressor = Compressor.New(typeId);
         }      
@@ -164,7 +140,7 @@ namespace EssenceUDK.Platform.UtilHelpers
             return data;
         }
     }
-/*
+
     /// <summary>
     /// Built compressors SharpZipLib (http://sharpdevelop.net/OpenSource/SharpZipLib/) does not require third-party libraries, and does not use native code
     /// </summary>
@@ -247,7 +223,7 @@ namespace EssenceUDK.Platform.UtilHelpers
             return result;
         }
     }
-*/
+
     /// <summary>
     /// External native compressors zLib (http://zlib.net/), slightly faster but less compression quality
     /// </summary>
@@ -467,7 +443,7 @@ namespace EssenceUDK.Platform.UtilHelpers
             }
         }
     }
-/*
+
     /// <summary>
     /// Built compressors SharpZipLib (http://sharpdevelop.net/OpenSource/SharpZipLib/) does not require third-party libraries, and does not use native code
     /// </summary>
@@ -523,5 +499,5 @@ namespace EssenceUDK.Platform.UtilHelpers
             return result;
         }
     }
-*/
+
 }

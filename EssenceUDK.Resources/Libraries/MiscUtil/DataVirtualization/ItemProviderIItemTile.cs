@@ -1,4 +1,20 @@
-﻿using System.Collections.Generic;
+﻿/*
+ * ===============================================================================
+ * ===============================================================================
+ * 
+ * !! This file is part of ULTIMA logic and cant be containd in this general library !!!!
+ * 
+ * ===============================================================================
+ * ===============================================================================
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using EssenceUDK.Platform;
 
@@ -92,3 +108,4 @@ namespace MiscUtil.DataVirtualization
         #endregion
     }
 }
+*/

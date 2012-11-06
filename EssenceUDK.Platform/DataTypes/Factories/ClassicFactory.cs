@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -707,6 +707,19 @@ map5.mul
         private static unsafe void ConvertTexmSurface(ImageSource bmp, out byte[] rawdata)
         {
             rawdata = null;
+        }
+
+        // gumps convertors       --------------------------------------------------------------
+
+        private static unsafe void ConvertGumpSurface(byte[] rawdata, out Bitmap bmp)
+        {
+            bmp = null;
+            if (rawdata == null || rawdata.Length < 8) {
+                bmp = null;
+                return;
+            }
+
+
         }
 
         // animation convertors   --------------------------------------------------------------

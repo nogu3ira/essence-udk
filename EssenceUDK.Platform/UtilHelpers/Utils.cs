@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -14,6 +14,33 @@ namespace EssenceUDK.Platform.UtilHelpers
     public static class Utils
     {
         #region Arrays and Structures Helpers
+
+        public static bool ArrayIdentical<T>(T[] a1, T[] a2) where T : struct
+        {
+            if (a1.Length != a2.Length)
+                return false;
+
+            for (int i = 0; i < a1.Length; i++)
+                if (!a1[i].Equals(a2[i]))
+                    return false;
+
+            return true;
+        }
+
+        public unsafe static bool ArrayIdentical(byte* a1, byte* a2, int count, bool nullterminate = true)
+        {
+            for (int c = 0; c < count; ++c)
+            {
+                if ((*a1 == 0 && *a2 != 0) || (*a1 != 0 && *a2 == 0))
+                    return false;
+                if (nullterminate && *a1 == 0 && *a2 == 0)
+                    break;
+                if (*a1++ != *a2++)
+                    return false;
+            }
+
+            return true;
+        }
 
         public static T[] BuffToStruct<T>(byte[] arr, int offset = 0, int count = 1) where T : struct
         {
@@ -39,13 +66,13 @@ namespace EssenceUDK.Platform.UtilHelpers
 
         public static byte[] StructToBuff<T>(T[] value) where T : struct
         {
-            int sizeOfT = Marshal.SizeOf(value);
+            int sizeOfT = Marshal.SizeOf(typeof(T));
             byte[] arr = new byte[sizeOfT * value.Length];
             GCHandle gch = GCHandle.Alloc(arr, GCHandleType.Pinned);
             IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
 
             int count = 0;
-            while (count++ < value.Length)
+            while (++count < value.Length)
                 Marshal.StructureToPtr(value[count], ptr + sizeOfT * count, true);
             gch.Free();
             return arr;

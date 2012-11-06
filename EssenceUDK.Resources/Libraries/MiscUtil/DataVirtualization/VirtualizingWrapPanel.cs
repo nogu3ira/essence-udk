@@ -6,7 +6,28 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
+/*
+ * ===============================================================================
+ * ===============================================================================
+ * 
+ * !! WHO is Auther ??? !!!!
+ * 
+ * ===============================================================================
+ * ===============================================================================
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ 
+ using System.Windows.Controls.Primitives;
+
+
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -906,3 +927,4 @@ namespace EssenceUDK.Resources.DataVirtualization
         #endregion
     }
 }
+*/

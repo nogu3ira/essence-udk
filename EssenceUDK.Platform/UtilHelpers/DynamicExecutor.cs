@@ -1,11 +1,11 @@
-﻿using System;
+﻿﻿using System;
 using System.IO;
 using System.Threading;
 using System.Reflection;
 
 namespace EssenceUDK.Platform.UtilHelpers
 {
-	internal static class DynamicExecutor 
+	public static class DynamicExecutor 
     {
 	    public static string ExecutablePath {
             get { return _ExecutablePath ?? (_ExecutablePath = Assembly.GetExecutingAssembly().Location); }

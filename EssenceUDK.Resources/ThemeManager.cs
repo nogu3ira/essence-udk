@@ -1,4 +1,4 @@
-﻿// This is based on project WPF Themes. WPF Themes is a collection of free themes to be used in WPF projects
+﻿﻿// This is based on project WPF Themes. WPF Themes is a collection of free themes to be used in WPF projects
 // For updates and addition information look at http://wpfthemes.codeplex.com/SourceControl/list/changesets
 
 namespace EssenceUDK.Resources
@@ -23,7 +23,7 @@ namespace EssenceUDK.Resources
         public static string[] GetThemes()
         {
             return new [] { 
-                "ExpressionDark", "ExpressionLight", 
+                "ExpressionDark", "ExpressionDarkCommon", "ExpressionLight", 
                 //"RainierOrange", "RainierPurple", "RainierRadialBlue", 
                 "ShinyBlue", "ShinyRed", 
                 //"ShinyDarkTeal", "ShinyDarkGreen", "ShinyDarkPurple",

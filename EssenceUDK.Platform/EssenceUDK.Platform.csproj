@@ -32,6 +32,12 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Properties\EssenceUDK.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -47,6 +53,7 @@
   <ItemGroup>
     <Compile Include="DataTypes\FileFormat\Containers\UopContainer.cs" />
     <Compile Include="DataTypes\FileFormat\DefTable.cs" />
+    <Compile Include="DataTypes\FileFormat\IniFile.cs" />
     <Compile Include="DataTypes\Surfaces.cs" />
     <Compile Include="DataTypes\UOTypes.cs" />
     <Compile Include="DataTypes\Factories\ClassicFactory.cs" />
@@ -68,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GenaralDiagram.cd" />
+    <None Include="Properties\EssenceUDK.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EssenceUDK.Resources\EssenceUDK.Resources.csproj">
