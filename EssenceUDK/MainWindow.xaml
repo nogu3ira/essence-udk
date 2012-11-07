@@ -16,7 +16,7 @@
                 <Grid />
             </TabItem>
             <TabItem Header="tabPreferences">
-                <EssenceUDK:Preferences/>
+                <EssenceUDK:PreferencesNew/>
             </TabItem>
             <TabItem Header="tabItemListTest">
                 <contr:TileItemView Name="tileItemView1" ItemHeight="192" ItemWidth="96" />

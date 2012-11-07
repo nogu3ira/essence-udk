@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows;
+using EssenceUDK.Resources;
 
 namespace EssenceUDK
 {
@@ -16,9 +17,6 @@ namespace EssenceUDK
         //private ApplicationController _applicationController;
         public App()
         {
-            //_applicationController = new ApplicationController();
-            //ShutdownMode = ShutdownMode.OnMainWindowClose;
-            //MainWindow = _applicationController.MainWindow;
             
         }
         

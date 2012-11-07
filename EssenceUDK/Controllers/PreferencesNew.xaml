@@ -1,0 +1,80 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+	mc:Ignorable="d"
+	x:Class="EssenceUDK.PreferencesNew"
+	x:Name="UserControl"
+	d:DesignWidth="640" d:DesignHeight="480">
+
+	<Grid x:Name="LayoutRoot">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="{StaticResource Normal Lenght Empty Grid}"/>
+            <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
+            <RowDefinition Height="{StaticResource RightHeightRow}"/>
+            <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
+            <RowDefinition Height="{StaticResource RightHeightRow}"/>
+            <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
+            <RowDefinition Height="{StaticResource RightHeightRow}"/>
+            <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
+            <RowDefinition Height="{StaticResource RightHeightRow}"/>
+            <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
+            <RowDefinition Height="{StaticResource LargeColumnWidth}"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
+            <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+            <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
+            <ColumnDefinition Width="{StaticResource HalfColumnWidth}"/>
+            <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
+            <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+            <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
+            <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+            <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+            <ColumnDefinition Width="{StaticResource LargeColumnWidth}"/>
+            <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
+		</Grid.ColumnDefinitions>
+		<xctk:PropertyGrid Grid.Column="9" Grid.RowSpan="11"/>
+		<Image Source="/EssenceUDK;component/EssenceUDK.ico" Grid.ColumnSpan="9"/>
+		<xctk:CheckComboBox Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="6"/>
+		<TextBox Grid.Column="2" Grid.Row="4" TextWrapping="Wrap" Text="TextBox" Grid.ColumnSpan="6"/>
+		<ComboBox Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="1"/>
+		<TextBox Grid.ColumnSpan="2" Grid.Column="4" Grid.Row="6" TextWrapping="Wrap" Text="TextBox"/>
+		<TextBox Grid.Column="7" Grid.Row="6" TextWrapping="Wrap" Text="TextBox"/>
+		<GroupBox Grid.ColumnSpan="7" Header="GroupBox" Grid.Row="10" Grid.Column="1">
+			<Grid>
+				<Grid.RowDefinitions>
+                    <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
+					<RowDefinition Height="{StaticResource Normal Lenght Empty Grid}"/>
+                    <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
+                    <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+                    <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+                    <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+                    <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
+				</Grid.ColumnDefinitions>
+				<ListView Grid.Column="1" Grid.Row="1">
+					<ListView.View>
+						<GridView>
+							<GridViewColumn/>
+						</GridView>
+					</ListView.View>
+				</ListView>
+				<ListView Grid.Column="3" Grid.Row="1">
+					<ListView.View>
+						<GridView>
+							<GridViewColumn/>
+						</GridView>
+					</ListView.View>
+				</ListView>
+			</Grid>
+		</GroupBox>
+		<TextBox Grid.ColumnSpan="2" Grid.Row="8" TextWrapping="Wrap" Text="TextBox" Grid.Column="1"/>
+		<TextBox Grid.ColumnSpan="2" Grid.Column="4" Grid.Row="8" TextWrapping="Wrap" Text="TextBox"/>
+		<TextBox Grid.Column="7" Grid.Row="8" TextWrapping="Wrap" Text="TextBox"/>
+	</Grid>
+</UserControl>

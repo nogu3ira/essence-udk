@@ -30,7 +30,8 @@ namespace EssenceUDK
         public MainWindow()
         {
             InitializeComponent();
-            Application.Current.ApplyTheme("ExpressionDark"); // ThemeManager.GetThemes()[0];
+            Application.Current.ApplyTheme("ExpressionDark"); 
+            // ThemeManager.GetThemes()[0];
 
             //// test - lets switch to our tab at startup
             //tabControl1.SelectedIndex = 2;
