@@ -11,7 +11,7 @@
     <GridLength x:Key="RightHeightRow">20</GridLength>
     <System:Double x:Key="Text General Options">14.667</System:Double>
     <TextAlignment x:Key="Text General Allignment">Center</TextAlignment>
-    <FontFamily x:Key="General Font">Segoe UI Semibold</FontFamily>
+    <FontFamily x:Key="General Font">/EssenceUDK;component/Fonts/#Segoe UI Semibold</FontFamily>
     <GridLength x:Key="Grid Width">160</GridLength>
     <GridLength x:Key="Normal Lenght Empty Grid">*</GridLength>
     <GridLength x:Key="LimiterMinimumWidth">5</GridLength>
