@@ -30,7 +30,6 @@ using System.Windows;
 
 //[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
 
-
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //где расположены словари ресурсов по конкретным тематикам
     //(используется, если ресурс не найден на странице 
@@ -40,6 +39,8 @@ using System.Windows;
     // в приложении или в каких-либо словарях ресурсов для конкретной темы)
 )]
 
+
+[assembly: AssemblyKeyFileAttribute(@"..\..\..\EssenceUDK.snk")]
 
 // Сведения о версии сборки состоят из следующих четырех значений:
 //

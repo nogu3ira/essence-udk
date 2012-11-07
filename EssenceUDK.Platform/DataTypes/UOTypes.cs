@@ -25,17 +25,17 @@ namespace EssenceUDK.Platform.DataTypes
             RealHeight = rheight;
         }
 
-        public static FacetDesc PreAlpha    = new FacetDesc("Britania", 128, 128, 128, 128);
-        public static FacetDesc OldFelucca  = new FacetDesc("Felucca",  768, 512, 640, 512);
-        public static FacetDesc NewFelucca  = new FacetDesc("Felucca",  896, 512, 640, 512);
-        public static FacetDesc ExtFelucca  = new FacetDesc("Felucca",  896, 512, 640, 512);
-        public static FacetDesc OldTrammel  = new FacetDesc("Trammel",  768, 512, 640, 512);
-        public static FacetDesc NewTrammel  = new FacetDesc("Trammel",  896, 512, 640, 512);
-        public static FacetDesc ExtTrammel  = new FacetDesc("Trammel",  896, 512, 640, 512); 
-        public static FacetDesc Ilshenar    = new FacetDesc("Ilshenar", 288, 200, 288, 200);
-        public static FacetDesc Malas       = new FacetDesc("Malas",    320, 256, 320, 256);
-        public static FacetDesc Tokuno      = new FacetDesc("Tokuno",   181, 181, 181, 181);
-        public static FacetDesc TerMur      = new FacetDesc("TerMur",   160, 512, 160, 512);
+        public static readonly FacetDesc PreAlpha   = new FacetDesc("Britania", 128, 128, 128, 128);
+        public static readonly FacetDesc OldFelucca = new FacetDesc("Felucca",  768, 512, 640, 512);
+        public static readonly FacetDesc NewFelucca = new FacetDesc("Felucca",  896, 512, 640, 512);
+        public static readonly FacetDesc ExtFelucca = new FacetDesc("Felucca",  896, 512, 640, 512);
+        public static readonly FacetDesc OldTrammel = new FacetDesc("Trammel",  768, 512, 640, 512);
+        public static readonly FacetDesc NewTrammel = new FacetDesc("Trammel",  896, 512, 640, 512);
+        public static readonly FacetDesc ExtTrammel = new FacetDesc("Trammel",  896, 512, 640, 512);
+        public static readonly FacetDesc Ilshenar   = new FacetDesc("Ilshenar", 288, 200, 288, 200);
+        public static readonly FacetDesc Malas      = new FacetDesc("Malas",    320, 256, 320, 256);
+        public static readonly FacetDesc Tokuno     = new FacetDesc("Tokuno",   181, 181, 181, 181);
+        public static readonly FacetDesc TerMur     = new FacetDesc("TerMur",   160, 512, 160, 512);
     }
 
     /// <summary>

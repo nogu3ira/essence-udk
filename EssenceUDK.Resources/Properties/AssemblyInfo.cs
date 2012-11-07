@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
 [assembly: Guid("f6d50ece-f802-43b0-9de6-469cf1a46b9c")]
+[assembly: AssemblyKeyFileAttribute(@"..\..\..\EssenceUDK.snk")]
 
 // Сведения о версии сборки состоят из следующих четырех значений:
 //

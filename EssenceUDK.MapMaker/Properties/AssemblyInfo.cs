@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("7507efb9-fbab-4d53-bcae-f14b67bba391")]
+[assembly: AssemblyKeyFileAttribute(@"..\..\..\EssenceUDK.snk")]
 
 // Version information for an assembly consists of the following four values:
 //

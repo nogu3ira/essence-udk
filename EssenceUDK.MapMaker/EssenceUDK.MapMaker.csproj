@@ -36,7 +36,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Properties\EssenceUDK.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -103,9 +104,6 @@
     <Compile Include="TextFileReading\Factory.cs" />
     <Compile Include="Elements\EdgeDirection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\EssenceUDK.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EssenceUDK.Resources\EssenceUDK.Resources.csproj">
