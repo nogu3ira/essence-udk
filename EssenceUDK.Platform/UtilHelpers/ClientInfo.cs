@@ -180,7 +180,21 @@ namespace EssenceUDK.Platform.UtilHelpers
             return UODataType.Inavalide;
         }
 
+        /// <summary>
+        /// Try to detect using data type version.
+        /// </summary>
+        public UODataTypeVersion DetectDataVersion()
+        {
+            return (UODataTypeVersion)(DetectDataType() & (UODataType)UODataTypeVersion._DataTypeMask);
+        }
 
+        /// <summary>
+        /// Try to detect using data type feautures.
+        /// </summary>
+        public UODataTypeOptions DetectDataFeautures()
+        {
+            return (UODataTypeOptions)(DetectDataType() & (UODataType)UODataTypeOptions._DataTypeMask);
+        }
     }
 
 

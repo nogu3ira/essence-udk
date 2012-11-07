@@ -11,6 +11,63 @@ using EssenceUDK.Platform.Factories;
 namespace EssenceUDK.Platform
 {
     [Flags]
+    public enum UODataTypeVersion : ushort
+    {
+        /// <summary>
+        /// SL client (experemental support)
+        /// </summary>
+        PreAlpha        = UODataType.UseMulFiles | UODataType.UseOldDatas,
+        /// <summary>
+        /// Old clients (off not support, pre AoS clients may have much more problems)
+        /// </summary>
+        OldClassic      = UODataType.UseMulFiles | UODataType.UseVerPatch,
+        /// <summary>
+        /// ML client
+        /// </summary>
+        Classic         = UODataType.UseMulFiles | UODataType.UseDefPatch,
+        /// <summary>
+        /// SA and HS up to 7.0.23.1
+        /// </summary>
+        NewClassic      = UODataType.UseMulFiles | UODataType.UseDefPatch | UODataType.UseNewDatas,
+        /// <summary>
+        /// Latest HS clients (only latest is off suported)
+        /// </summary>
+        LegacyClassic   = UODataType.UseUopFiles | UODataType.UseDefPatch | UODataType.UseNewDatas,
+        /// <summary>
+        /// not implemented yet, cant say about flags.....
+        /// </summary>
+        Enchanced       = 0,
+        /// <summary>
+        /// Custom client based on UDK (reserved for future)
+        /// </summary>
+        Essence         = UODataType.UseMulFiles | UODataType.UseExtFiles,
+        _DataTypeMask   = PreAlpha | OldClassic | Classic | NewClassic | LegacyClassic | Enchanced | Essence
+    }
+
+    [Flags]
+    public enum UODataTypeOptions : ushort
+    {
+        None            = 0x0000,
+        /// <summary>
+        /// Use separated files from HDD as DataSource.
+        /// </summary>
+        UseExtFiles     = UODataType.UseExtFiles,
+        /// <summary>
+        /// Use verdata.mul for patching data from DataSource.
+        /// </summary>
+        UseVerPatch     = UODataType.UseVerPatch,
+        /// <summary>
+        /// Use *.dif for patching data from DataSource.
+        /// </summary>
+        UseDifPatch     = UODataType.UseDifPatch,
+        /// <summary>
+        /// Use "_x" versions of map/statics
+        /// </summary>
+        UseExtFacet     = UODataType.UseExtFacet,
+        _DataTypeMask   = UseExtFiles | UseVerPatch | UseDifPatch | UseExtFacet
+    }
+
+    [Flags]
     public enum UODataType : ushort
     {
         Inavalide   = 0x0000,
@@ -173,13 +230,18 @@ namespace EssenceUDK.Platform
         {
         }
 
+        internal UODataOptions(FacetDesc[] facets)
+        {
+            majorFacet = minorFacet = facets;
+        }
+
         internal UODataOptions(Uri uri)
         {
             // TODO: auto detect for default values ...
         }
     }
 
-    public sealed class UODataManager
+    public sealed class UODataManager : IDisposable
     {
         public readonly UODataType DataType;
         public readonly Language   Language;
@@ -192,6 +254,20 @@ namespace EssenceUDK.Platform
 
         //public static UODataManager[] Instanes { get { return m_Instanes.Values; } }
         private static Hashtable m_Instanes = new Hashtable(2);
+
+        /// <summary>
+        /// Create and initialized UODataManager object, wich represent viewmodel and logic of UO data.
+        /// For extended variant with more options see another declaration.
+        /// </summary>
+        /// <param name="uri">Folder path to client data or data-server address. At this momment only local path are supported.</param>
+        /// <param name="version">UO Data version</param>
+        /// <param name="features">UO Additional features/</param>
+        /// <param name="language">Specify language that used in data files and server. If null Default Language will be used/</param>
+        /// <param name="facets">Descrition of maps, use null for auto detecting.</param>
+        public UODataManager(Uri uri, UODataTypeVersion version, UODataTypeOptions options = UODataTypeOptions.None, Language language = null, FacetDesc[] facets = null)
+            : this(uri, (UODataType)version | (UODataType)options, language ?? Language.English, facets != null ? new UODataOptions(facets) : null)
+        {
+        }
 
         /// <summary>
         /// Create and initialized UODataManager object, wich represent viewmodel and logic of UO data.
@@ -224,6 +300,14 @@ namespace EssenceUDK.Platform
             StorageLand = dataFactory.GetLandTiles();
             StorageItem = dataFactory.GetItemTiles();
             StorageAnim = dataFactory.GetAnimations();
+        }
+
+        public void Dispose()
+        {
+            m_Instanes.Remove(Location);
+            StorageLand = null;
+            StorageItem = null;
+            StorageAnim = null;
         }
 
         // Cached storages (always using caching)
