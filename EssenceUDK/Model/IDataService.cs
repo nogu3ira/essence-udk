@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace UDK.Model
+namespace EssenceUDK.Model
 {
     public interface IDataService
     {

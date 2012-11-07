@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UDK.Model
+namespace EssenceUDK.Model
 {
     public class DataService : IDataService
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-using UDK.Model;
+using EssenceUDK.Model;
 
-namespace UDK.Design
+namespace EssenceUDK.Design
 {
     public class DesignDataService : IDataService
     {
