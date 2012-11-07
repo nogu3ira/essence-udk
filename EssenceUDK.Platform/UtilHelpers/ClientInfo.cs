@@ -91,7 +91,22 @@ namespace EssenceUDK.Platform.UtilHelpers
             Evrywere    = 0xFFFF
         }
 
-        public static ClientInfo[] Get(LookFor look = LookFor.Evrywere)
+        public static string[] GetDataPath(LookFor look = LookFor.Evrywere)
+        {
+            var cinf = GetInSystem(look);
+            return cinf.Select(i => i.DirectoryPath).Distinct().ToArray();
+        }
+
+        public static ClientInfo[] GetInFolder(string path)
+        {
+            var inf = new List<ClientInfo>(8);
+            if (Directory.Exists(path))
+                foreach (var file in Directory.GetFiles(path, "*.exe"))
+                    inf.Add(Get(file));
+            return inf.ToArray();
+        }
+
+        public static ClientInfo[] GetInSystem(LookFor look = LookFor.Evrywere)
         {
             var inf = new Hashtable(32);
             string dir;
@@ -118,7 +133,7 @@ namespace EssenceUDK.Platform.UtilHelpers
             }
 
             return inf.Values.OfType<ClientInfo>().Where(t => t != null).Distinct().ToArray();
-        }
+        }  
 
         static readonly string[] _KnownRegkeys = new [] {
             @"Origin Worlds Online\Ultima Online\1.0", 
@@ -143,6 +158,29 @@ namespace EssenceUDK.Platform.UtilHelpers
             "InstallDir",
             "Install Dir"
         };
+
+        /// <summary>
+        /// Try to detect using data type.
+        /// </summary>
+        /// <returns>If failed return UODataType.Inavalide, otherwise returns UODataType value.</returns>
+        public UODataType DetectDataType()
+        {
+            var ver = ProductVersion;
+            if (ver != null && CompanyName == "Electronics Art" && FileDescription == "Ultima Online Client") {
+                if (ver >= new Version(7, 0, 23,  2))
+                    return UODataType.ClassicAdventuresOnHighSeasUpdated;
+                if (ver >= new Version(7, 0,  8, 44))
+                    return UODataType.ClassicAdventuresOnHighSeas;
+                if (ver >= new Version(6, 0, 14,  3))
+                    return UODataType.ClassicStygianAbyss;
+                if (ver >= new Version(6, 0,  0,  0))
+                    return UODataType.ClassicMondainsLegacy;
+            }      
+
+            return UODataType.Inavalide;
+        }
+
+
     }
 
 
