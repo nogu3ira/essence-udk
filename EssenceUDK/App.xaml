@@ -8,6 +8,7 @@
     	<TextAlignment x:Key="Text General Allignment">Center</TextAlignment>
     	<FontFamily x:Key="General Font">Segoe UI Semibold</FontFamily>
     	<GridLength x:Key="Grid Width">160</GridLength>
+    	<GridLength x:Key="Normal Lenght Empty Grid">*</GridLength>
     </ResourceDictionary>
   </Application.Resources>
 </Application>
