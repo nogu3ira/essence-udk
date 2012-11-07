@@ -27,12 +27,12 @@
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
             <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
-            <ColumnDefinition Width="{StaticResource HalfColumnWidth}"/>
-            <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
             <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
             <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+            <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
             <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+            <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
             <ColumnDefinition Width="{StaticResource LargeColumnWidth}"/>
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
 		</Grid.ColumnDefinitions>
