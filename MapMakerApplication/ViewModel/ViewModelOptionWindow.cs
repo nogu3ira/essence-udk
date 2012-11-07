@@ -49,7 +49,7 @@ namespace MapMakerApplication.ViewModel
             }
         }
 
-        public IList<ClientInfo> ClientInfoSources { get { return Sorter(ClientInfo.Get()); } }
+        public IList<ClientInfo> ClientInfoSources { get { return Sorter(ClientInfo.GetInSystem()); } }
 
         #endregion //Props
 
