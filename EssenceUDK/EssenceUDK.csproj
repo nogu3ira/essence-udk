@@ -85,11 +85,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Controllers\Preferences.xaml.cs">
-      <DependentUpon>Preferences.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controllers\PreferencesNew.xaml.cs">
       <DependentUpon>PreferencesNew.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\PreferencesPage.xaml.cs">
+      <DependentUpon>PreferencesPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Design\DesignDataService.cs" />
     <Compile Include="Model\DataItem.cs" />
@@ -97,11 +97,11 @@
     <Compile Include="Model\IDataService.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Page Include="Controllers\Preferences.xaml">
+    <Page Include="Controllers\PreferencesNew.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controllers\PreferencesNew.xaml">
+    <Page Include="Controllers\PreferencesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

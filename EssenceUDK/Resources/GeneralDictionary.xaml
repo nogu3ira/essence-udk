@@ -15,5 +15,8 @@
     <GridLength x:Key="Grid Width">160</GridLength>
     <GridLength x:Key="Normal Lenght Empty Grid">*</GridLength>
     <GridLength x:Key="LimiterMinimumWidth">5</GridLength>
+    <GridLength x:Key="HalfColumnWidth">0.2*</GridLength>
+    <GridLength x:Key="LargeColumnWidth">3*</GridLength>
+    <Color x:Key="WritingColor">#FFEFF4F8</Color>
 
 </ResourceDictionary>
