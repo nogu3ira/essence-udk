@@ -540,8 +540,8 @@ namespace MapMakerApplication.ViewModel
         {
             if (IsInDesignMode)
             {
-                _makeMapSDK = new MakeMapSDK(@"C:\Users\Xen\Desktop\scripts-08-06-10");
-                _makeMapSDK.Populate();
+                //_makeMapSDK = new MakeMapSDK(@"C:\Users\Xen\Desktop\scripts-08-06-10");
+                //_makeMapSDK.Populate();
             }
             else
             {
