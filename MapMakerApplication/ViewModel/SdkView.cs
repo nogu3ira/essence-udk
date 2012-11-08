@@ -277,7 +277,7 @@ namespace MapMakerApplication.ViewModel
         #endregion
 
         #region AreaColorColors
-        public IEnumerable<Color> AreaColorColors { get { return AreaColorColors; } }
+        public IEnumerable<Color> AreaColorColors { get { return _makeMapSDK.AreaColorColors; } }
         #endregion
         #endregion //Inherited Props
 
@@ -621,28 +621,53 @@ namespace MapMakerApplication.ViewModel
 
             CommandDeleteCliff = new RelayCommand(() =>
             {
-                var cliff = SelectedCliff as AreaTransitionCliffTexture;
-                CollectionAreaColorSelected.TransitionCliffTextures.Remove(cliff);
+                try
+                {
+                    var cliff = SelectedCliff as AreaTransitionCliffTexture;
+                    CollectionAreaColorSelected.TransitionCliffTextures.Remove(cliff);
+                }
+                catch (Exception e)
+                {
+                    AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+                }
+
             }, () => SelectedCliff != null);
 
             CommandAddCliffTexture = new RelayCommand(() =>
             {
-                var tile = SelectedTextureForCliff as IEntryTile;
-                var collection =
-                    SelectedCliff as AreaTransitionCliffTexture;
+                try
+                {
+                    var tile = SelectedTextureForCliff as IEntryTile;
+                    var collection =
+                        SelectedCliff as AreaTransitionCliffTexture;
 
-                if (tile != null)
-                    if (collection != null)
-                        collection.List.Add((int)tile.TileId);
+                    if (tile != null)
+                        if (collection != null)
+                            collection.List.Add((int)tile.TileId);
+                }
+                catch (Exception e)
+                {
+                    AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+                }
+            
             }, () => SelectedTextureForCliff != null &&
                                                                  SelectedCliff != null && CollectionAreaColorSelected != null);
 
             CommandRemoveCliffTexture = new RelayCommand(() =>
             {
-                var number = (int)SelectedTextureInCliffList;
-                var collection =
-                  SelectedCliff as AreaTransitionCliffTexture;
-                if (collection != null) collection.List.Remove(number);
+                try
+                {
+                    var number = (int)SelectedTextureInCliffList;
+                    var collection =
+                      SelectedCliff as AreaTransitionCliffTexture;
+                    if (collection != null) collection.List.Remove(number);
+                }
+                catch (Exception e)
+                {
+                    AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+                }
+                
+               
             }, () => SelectedCliff != null && SelectedTextureInCliffList != null && CollectionAreaColorSelected != null);
 
             #endregion //Cliff Commands
@@ -672,12 +697,20 @@ namespace MapMakerApplication.ViewModel
 
         private void CollectionAreaColorCommandRemoveExecuted()
         {
-            var area = CollectionAreaSelectedItem as AreaColor;
+            try
+            {
+                var area = CollectionAreaSelectedItem as AreaColor;
 
-            if (area == null)
-                return;
+                if (area == null)
+                    return;
 
-            CollectionColorArea.List.Remove(area);
+                CollectionColorArea.List.Remove(area);
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+           
 
         }
 
@@ -711,10 +744,19 @@ namespace MapMakerApplication.ViewModel
 
         private void CollectionAreaMoveCommandExecuted(int increase)
         {
-            var area = (AreaColor)CollectionAreaSelectedItem;
-            CollectionColorArea.List.Remove(area);
-            CollectionColorArea.List.Insert(tmp + increase, area);
-            RaisePropertyChanged("CollectionColorArea");
+            try
+            {
+                var area = (AreaColor)CollectionAreaSelectedItem;
+                CollectionColorArea.List.Remove(area);
+                CollectionColorArea.List.Insert(tmp + increase, area);
+                RaisePropertyChanged("CollectionColorArea");
+
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+           
 
         }
 
@@ -724,16 +766,32 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandAreaTextureAddExecuted()
         {
-            CollectionAreaTexture.List.Add(new AreaTextures());
-            RaisePropertyChanged(null);
+            try
+            {
+                CollectionAreaTexture.List.Add(new AreaTextures());
+                RaisePropertyChanged(null);
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+           
         }
 
         private void CommandAreaTextureRemoveExecuted()
         {
-            var selected = SelectedAreaTexture as AreaTextures;
+            try
+            {
+                var selected = SelectedAreaTexture as AreaTextures;
 
-            CollectionAreaTexture.List.Remove(selected);
-            RaisePropertyChanged(null);
+                CollectionAreaTexture.List.Remove(selected);
+                RaisePropertyChanged(null);
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+         
         }
 
         private bool CommandAreaTextureRemoveCan()
@@ -743,9 +801,17 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandAreaTextureTileAddExecuted()
         {
-            var selected = SelectedAreaTexture as AreaTextures;
-            var tile = SelectedAreaTextureTile as IEntryTile;
-            selected.List.Add((int)tile.TileId);
+            try
+            {
+                var selected = SelectedAreaTexture as AreaTextures;
+                var tile = SelectedAreaTextureTile as IEntryTile;
+                selected.List.Add((int)tile.TileId);
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+            
         }
 
         private bool CommandAreaTextureTileAddCan()
@@ -761,8 +827,16 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandAreaTextureTileRemove()
         {
-            var selected = SelectedAreaTexture as AreaTextures;
-            selected.List.Remove((int)SelectedAreaTextureTileInt);
+            try
+            {
+                var selected = SelectedAreaTexture as AreaTextures;
+                selected.List.Remove((int)SelectedAreaTextureTileInt);
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+          
         }
 
         private bool CommandAreaTextureTileRemoveCan()
@@ -774,10 +848,20 @@ namespace MapMakerApplication.ViewModel
         #endregion //Area Texture Commands
 
         #region Item Commands
+        
         private void CommandAreaItemCollectionAddExecuted()
         {
-            var area = CollectionAreaSelectedItem as AreaColor;
-            area.Items.List.Add(new CollectionItem());
+            try
+            {
+                var area = CollectionAreaSelectedItem as AreaColor;
+                area.Items.List.Add(new CollectionItem());
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+            
+    
         }
 
         private bool CommandAreaItemCollectionAddCan()
@@ -788,11 +872,19 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandAreaItemCollectionRemoveExecuted()
         {
-            var area = CollectionAreaSelectedItem as AreaColor;
-            var selected = SelectedAreaItem as CollectionItem;
+            try
+            {
+                var area = CollectionAreaSelectedItem as AreaColor;
+                var selected = SelectedAreaItem as CollectionItem;
 
-            area.Items.List.Remove(selected);
+                area.Items.List.Remove(selected);
 
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+     
         }
 
         private bool CommandAreaItemCollectionRemoveCan()
@@ -805,11 +897,19 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandAreaItemTileAddExecuted()
         {
-            var selectedtile = SelectedAreaItemTile as IEntryTile;
-            var selectedCollection = SelectedAreaItem as CollectionItem;
+            try
+            {
+                var selectedtile = SelectedAreaItemTile as IEntryTile;
+                var selectedCollection = SelectedAreaItem as CollectionItem;
 
-            selectedCollection.List.Add(new SingleItem() { Id = (int)selectedtile.TileId });
+                selectedCollection.List.Add(new SingleItem() { Id = (int)selectedtile.TileId });
 
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+           
         }
 
         private bool CommandAreaItemTileAddCan()
@@ -823,9 +923,17 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandAreaItemTileRemoveExecuted()
         {
-            var selected = _selectedAreaItemTileInt as SingleItem;
-            var selectedCollection = SelectedAreaItem as CollectionItem;
-            selectedCollection.List.Remove(selected);
+            try
+            {
+                var selected = _selectedAreaItemTileInt as SingleItem;
+                var selectedCollection = SelectedAreaItem as CollectionItem;
+                selectedCollection.List.Remove(selected);
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+         
 
         }
 
@@ -842,25 +950,34 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandCoastRemoveTileExecuted()
         {
-            switch (SelectedCoastType)
+            try
             {
-                case 0:
-                    {
+                switch (SelectedCoastType)
+                {
+                    case 0:
+                        {
 
-                        SelectedWater.Remove((int)SelectedCoastTileInt);
-                    }
-                    break;
+                            SelectedWater.Remove((int)SelectedCoastTileInt);
+                        }
+                        break;
 
-                case 1:
-                    {
-                        SelectedGround.Remove((int)SelectedCoastTileInt);
-                    }
-                    break;
+                    case 1:
+                        {
+                            SelectedGround.Remove((int)SelectedCoastTileInt);
+                        }
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+           
         }
 
         private bool CommandCoastRemoveTileCan()
         {
+
             switch (SelectedCoastType)
             {
                 case 0:
@@ -883,24 +1000,34 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandCoastAddTileExecuted()
         {
-            switch (SelectedCoastType)
+            try
             {
-                case 0:
-                    {
-                        SelectedWater.Add((int)((IEntryTile)SelectedCoastTile).TileId);
-                    }
-                    break;
+                switch (SelectedCoastType)
+                {
+                    case 0:
+                        {
+                            SelectedWater.Add((int)((IEntryTile)SelectedCoastTile).TileId);
+                        }
+                        break;
 
-                case 1:
-                    {
-                        SelectedGround.Add((int)((IEntryTile)SelectedCoastTile).TileId);
-                    }
-                    break;
+                    case 1:
+                        {
+                            SelectedGround.Add((int)((IEntryTile)SelectedCoastTile).TileId);
+                        }
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+            
         }
 
         private bool CommandCoastAddTileCan()
         {
+
+
             switch (SelectedCoastType)
             {
                 case 0:
@@ -920,8 +1047,16 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandCoastSetAsDefaultExecuted()
         {
-            var area = CollectionAreaColorSelected;
-            area.Coasts.Coast.Texture = ((int)((IEntryTile)SelectedCoastTile).TileId);
+            try
+            {
+                var area = CollectionAreaColorSelected;
+                area.Coasts.Coast.Texture = ((int)((IEntryTile)SelectedCoastTile).TileId);
+            }
+            catch (Exception e)
+            {
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+
         }
 
         private bool CommandCoastSetAsDefaultCan()
@@ -942,39 +1077,48 @@ namespace MapMakerApplication.ViewModel
         private void HandlerDialogResults(MessageDialogResult result)
         {
             if (result == null) return;
-            switch (result.Type)
+            try
             {
-                case DialogType.SaveAco:
-                    {
-                        _makeMapSDK.MakeAco(result.Content);
-                    }
-                    break;
-                case DialogType.SaveFile:
-                    {
-                        _makeMapSDK.SaveXML(result.Content);
-                    }
-                    break;
-                case DialogType.OpenFile:
-                    {
-                        _makeMapSDK.LoadFromXML(result.Content);
-                        RaisePropertyChanged(null);
-                    }
-                    break;
-                case DialogType.OpenFolder:
-                    {
-                        _makeMapSDK.InitializeFactories(result.Content);
-                        _makeMapSDK.Populate();
-                        RaisePropertyChanged(null);
-                    }
-                    break;
-                case DialogType.SaveBrushFile:
-                    {
-                        ExportToCentredPlus(result.Content);
-                        ExportCentredPlusGroups(result.Content);
-                    }
-                    break;
+                switch (result.Type)
+                {
+                    case DialogType.SaveAco:
+                        {
+                            _makeMapSDK.MakeAco(result.Content);
+                        }
+                        break;
+                    case DialogType.SaveFile:
+                        {
+                            _makeMapSDK.SaveXML(result.Content);
+                        }
+                        break;
+                    case DialogType.OpenFile:
+                        {
+                            _makeMapSDK.LoadFromXML(result.Content);
+                            RaisePropertyChanged(null);
+                        }
+                        break;
+                    case DialogType.OpenFolder:
+                        {
+                            _makeMapSDK.InitializeFactories(result.Content);
+                            _makeMapSDK.Populate();
+                            RaisePropertyChanged(null);
+                        }
+                        break;
+                    case DialogType.SaveBrushFile:
+                        {
+                            ExportToCentredPlus(result.Content);
+                            ExportCentredPlusGroups(result.Content);
+                        }
+                        break;
 
+                }
             }
+            catch (Exception e)
+            {
+                
+                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
+            }
+            
         }
 
         private void HandlerOptionResults(OptionMessage result)
@@ -1214,12 +1358,6 @@ namespace MapMakerApplication.ViewModel
 
 
         #endregion
-
-
-
-
-
-
 
     }
 }

@@ -22,9 +22,10 @@ namespace EssenceUDK.MapMaker.Elements.Textures
 
         #region Search Methods
 
-        public TextureArea.AreaTextures FindByIndex(int id )
+        public AreaTextures FindByIndex(int id )
         {
-            TextureArea.AreaTextures text;
+            AreaTextures text = null;
+            if(_fast!=null)
             _fast.TryGetValue(id,out text);
             return text;
         }
