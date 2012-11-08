@@ -15,6 +15,7 @@
             <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
             <GridLength x:Key="HalfColumnWidth">0.2*</GridLength>
             <GridLength x:Key="LargeColumnWidth">3*</GridLength>
+            <Color x:Key="WritingColor">#FFEFF4F8</Color>
 
         </ResourceDictionary>
   </Application.Resources>

@@ -11,7 +11,7 @@
 
 	<Grid x:Name="LayoutRoot">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="0.293*"/>
+			<RowDefinition Height="{StaticResource Normal Lenght Empty Grid}"/>
             <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
             <RowDefinition Height="{StaticResource RightHeightRow}"/>
             <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
@@ -21,69 +21,70 @@
             <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
             <RowDefinition Height="{StaticResource RightHeightRow}"/>
             <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
-            <RowDefinition Height="21.402"/>
-            <RowDefinition Height="6.375"/>
-            <RowDefinition Height="19.812"/>
-            <RowDefinition Height="6.876"/>
-            <RowDefinition Height="0.707*"/>
+            <RowDefinition Height="{StaticResource RightHeightRow}"/>
+            <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
+            <RowDefinition Height="{StaticResource RightHeightRow}"/>
+            <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
+            <RowDefinition Height="{StaticResource LargeColumnWidth}"/>
+            <RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
             <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
             <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
-            <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
-            <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
             <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
             <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
-            <ColumnDefinition Width="{StaticResource LargeColumnWidth}"/>
+            <ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
+            <ColumnDefinition Width="{StaticResource RightHeightRow}"/>
+            <ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
 		</Grid.ColumnDefinitions>
-		<xctk:PropertyGrid Grid.Column="11" Grid.RowSpan="15"/>
 		<Image Source="/EssenceUDK;component/EssenceUDK.ico" Grid.ColumnSpan="11"/>
 		<TextBox Grid.Column="3" Grid.Row="4" TextWrapping="Wrap" Text="TextBox" Grid.ColumnSpan="7"/>
 		<ComboBox Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="3"/>
 		<TextBox Grid.Column="3" Grid.Row="10" TextWrapping="Wrap" Text="TextBox" Grid.ColumnSpan="3"/>
-		<TextBox Grid.Column="7" Grid.Row="10" TextWrapping="Wrap" Text="TextBox" Grid.ColumnSpan="3"/>
+		<TextBox Grid.Column="7" Grid.Row="10" TextWrapping="Wrap" Text="TextBox" Grid.ColumnSpan="4"/>
 		<TextBox Grid.Column="3" Grid.Row="8" TextWrapping="Wrap" Text="TextBox" Grid.ColumnSpan="5"/>
-		<TextBox Grid.Column="9" Grid.Row="8" TextWrapping="Wrap" Text="TextBox"/>
-		<ComboBox Grid.ColumnSpan="7" Grid.Column="3" Grid.Row="2"/>
-		<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="6"/>
+		<TextBox Grid.Column="9" Grid.Row="8" TextWrapping="Wrap" Text="TextBox" Grid.ColumnSpan="2"/>
+		<ComboBox Grid.ColumnSpan="8" Grid.Column="3" Grid.Row="2"/>
+		<ComboBox Grid.ColumnSpan="2" Grid.Column="6" Grid.Row="6"/>
 		<ComboBox Grid.ColumnSpan="2" Grid.Column="3" Grid.Row="12"/>
-		<ComboBox Grid.ColumnSpan="3" Grid.Column="7" Grid.Row="12"/>
-		<TextBlock Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" FontSize="{DynamicResource Text General Options}" FontFamily="{DynamicResource General Font}" TextAlignment="{DynamicResource Text General Allignment}" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"><Run Language="it-it" Text="Client List"/></TextBlock>
-		<TextBlock Grid.Column="1" Grid.Row="4" TextWrapping="Wrap" TextAlignment="{DynamicResource Text General Allignment}" FontSize="{DynamicResource Text General Options}" FontFamily="{DynamicResource General Font}" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"><Run Language="it-it" Text="Client Folder"/></TextBlock>
-		<TextBlock Grid.Column="1" Grid.Row="8" TextWrapping="Wrap" TextAlignment="{DynamicResource Text General Allignment}" FontSize="{DynamicResource Text General Options}" FontFamily="{DynamicResource General Font}">
+		<ComboBox Grid.Column="7" Grid.Row="12"/>
+		<TextBlock Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" FontSize="{StaticResource Text General Options}" FontFamily="{StaticResource General Font}" TextAlignment="{StaticResource Text General Allignment}" Foreground="{StaticResource {x:Static SystemColors.ActiveBorderBrushKey}}"><Run Language="it-it" Text="Client List"/></TextBlock>
+		<TextBlock Grid.Column="1" Grid.Row="4" TextWrapping="Wrap" TextAlignment="{StaticResource Text General Allignment}" FontSize="{StaticResource Text General Options}" FontFamily="{StaticResource General Font}" Foreground="{StaticResource {x:Static SystemColors.ActiveBorderBrushKey}}"><Run Language="it-it" Text="Client Folder"/></TextBlock>
+		<TextBlock Grid.Column="1" Grid.Row="8" TextWrapping="Wrap" TextAlignment="{StaticResource Text General Allignment}" FontSize="{StaticResource Text General Options}" FontFamily="{StaticResource General Font}">
 			<TextBlock.Foreground>
-				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
+				<SolidColorBrush Color="{StaticResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
 			</TextBlock.Foreground><Run Language="it-it" Text="Server Address"/></TextBlock>
-		<TextBlock Grid.Column="1" Grid.Row="10" TextWrapping="Wrap" FontSize="{DynamicResource Text General Options}" FontFamily="{DynamicResource General Font}" TextAlignment="{DynamicResource Text General Allignment}">
+		<TextBlock Grid.Column="1" Grid.Row="10" TextWrapping="Wrap" FontSize="{StaticResource Text General Options}" FontFamily="{StaticResource General Font}" TextAlignment="{StaticResource Text General Allignment}">
 			<TextBlock.Foreground>
-				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
+				<SolidColorBrush Color="{StaticResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
 			</TextBlock.Foreground><Run Language="it-it" Text="Username"/></TextBlock>
-		<TextBlock Grid.Column="1" Grid.Row="12" TextWrapping="Wrap" TextAlignment="{DynamicResource Text General Allignment}" FontSize="{DynamicResource Text General Options}" FontFamily="{DynamicResource General Font}">
+		<TextBlock Grid.Column="1" Grid.Row="12" TextWrapping="Wrap" TextAlignment="{StaticResource Text General Allignment}" FontSize="{StaticResource Text General Options}" FontFamily="{StaticResource General Font}">
 			<TextBlock.Foreground>
-				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
+				<SolidColorBrush Color="{StaticResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
 			</TextBlock.Foreground><Run Language="it-it" Text="User Interface"/></TextBlock>
-		<TextBlock Grid.Column="1" Grid.Row="6" TextWrapping="Wrap" FontSize="{DynamicResource Text General Options}" FontFamily="{DynamicResource General Font}" TextAlignment="{DynamicResource Text General Allignment}">
+		<TextBlock Grid.Column="1" Grid.Row="6" TextWrapping="Wrap" FontSize="{StaticResource Text General Options}" FontFamily="{StaticResource General Font}" TextAlignment="{StaticResource Text General Allignment}">
 			<TextBlock.Foreground>
-				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
+				<SolidColorBrush Color="{StaticResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
 			</TextBlock.Foreground><Run Language="it-it" Text="Data Info."/></TextBlock>
-		<ListView Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="14">
+		<ListView Grid.Column="1" Grid.Row="14">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn/>
 				</GridView>
 			</ListView.View>
 		</ListView>
-		<ListView Grid.ColumnSpan="3" Grid.Column="7" Grid.Row="14">
+		<ListView Grid.ColumnSpan="7" Grid.Column="4" Grid.Row="14">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn/>
 				</GridView>
 			</ListView.View>
 		</ListView>
+		<Button Content=". . ." Grid.Column="10" Grid.Row="4" FontSize="{StaticResource {x:Static SystemParameters.BorderWidthKey}}" FontFamily="{StaticResource General Font}"/>
 	</Grid>
 </UserControl>
