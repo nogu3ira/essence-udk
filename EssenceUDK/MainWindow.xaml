@@ -13,11 +13,11 @@
         </Grid.ColumnDefinitions>
         <TabControl Grid.Column="1" Height="Auto" HorizontalAlignment="Stretch" Name="tabControl1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" TabStripPlacement="Left" Opacity="1">
             <TabItem Header="tabMain" Name="tabItem1">
-                <Grid >
-                    <EssenceUDK:PreferencesPage/>
-                </Grid>
+                <Grid />
             </TabItem>
-            <TabItem Header="tabPreferences"/>
+            <TabItem Header="tabPreferences">
+                <EssenceUDK:PreferencesPage x:Name="preferencesPage1" />
+            </TabItem>
             <TabItem Header="tabItemListTest">
                 <contr:TileItemView Name="tileItemView1" ItemHeight="192" ItemWidth="96" />
             </TabItem>

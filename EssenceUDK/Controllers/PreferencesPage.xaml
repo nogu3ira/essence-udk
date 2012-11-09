@@ -3,7 +3,6 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:avalondock="http://avalondock.codeplex.com"
 	xmlns:local="clr-namespace:EssenceUDK" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 	mc:Ignorable="d"
 	x:Class="EssenceUDK.PreferencesPage"
@@ -12,43 +11,10 @@
 
 	<Grid x:Name="LayoutRoot">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition MaxWidth="460"/>
-			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="460"/>
+			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-		
-		<avalondock:DockingManager  Grid.Column="1">
-            <avalondock:LayoutRoot>
-             
-                    <avalondock:LayoutPanel Orientation="Vertical">
-                    <avalondock:LayoutAnchorablePaneGroup>
-                    <avalondock:LayoutAnchorablePane >
-                        <avalondock:LayoutAnchorable CanAutoHide="True" CanHide="False" CanClose="False" CanFloat="True" ContentId="111" ToolTip="111">
-							<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
-								<RowDefinition Height="{StaticResource Normal Lenght Empty Grid}"/>
-								<RowDefinition Height="{StaticResource LimiterMinimumWidth}"/>
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
-								<ColumnDefinition Width="{StaticResource Normal Lenght Empty Grid}"/>
-								<ColumnDefinition Width="{StaticResource LimiterMinimumWidth}"/>
-							</Grid.ColumnDefinitions>							
-								<xctk:PropertyGrid Grid.Column="1" Grid.Row="1"/>
-							</Grid>
-						</avalondock:LayoutAnchorable>
-						</avalondock:LayoutAnchorablePane>
-                        </avalondock:LayoutAnchorablePaneGroup>
-                    <avalondock:LayoutAnchorablePane>
-                        
-                    </avalondock:LayoutAnchorablePane>
-				</avalondock:LayoutPanel>
-			</avalondock:LayoutRoot>
-		</avalondock:DockingManager>
-		
-		<local:PreferencesNew Grid.Column="0"/>
-		
-		
-		
-	</Grid>
+        <local:PreferencesNew Grid.Column="0"/>
+        <xctk:PropertyGrid Grid.Column="1"/>
+    </Grid>
 </UserControl>

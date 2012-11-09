@@ -10,14 +10,14 @@ namespace EssenceUDK.MapMaker.Elements.Textures
     [Serializable]
     public class CollectionAreaTexture : NotificationObject, IContainerSet
     {
-        private ObservableCollection<TextureArea.AreaTextures> _list;
-        public ObservableCollection<TextureArea.AreaTextures> List { get { return _list; } set { _list = value; RaisePropertyChanged(()=>List); } }
+        private ObservableCollection<AreaTextures> _list;
+        public ObservableCollection<AreaTextures> List { get { return _list; } set { _list = value; RaisePropertyChanged(()=>List); } }
         
         [XmlIgnore]
-        [NonSerialized] private Dictionary<int, TextureArea.AreaTextures> _fast; 
+        [NonSerialized] private Dictionary<int, AreaTextures> _fast; 
         public CollectionAreaTexture()
         {
-            List = new ObservableCollection<TextureArea.AreaTextures>();
+            List = new ObservableCollection<AreaTextures>();
         }
 
         #region Search Methods
@@ -34,8 +34,8 @@ namespace EssenceUDK.MapMaker.Elements.Textures
 
         public void InitializeSeaches()
         {
-            _fast = new Dictionary<int, TextureArea.AreaTextures>();
-            foreach (TextureArea.AreaTextures texturese in List)
+            _fast = new Dictionary<int, AreaTextures>();
+            foreach (AreaTextures texturese in List)
             {
                 _fast.Add(texturese.Index, texturese);
             }
