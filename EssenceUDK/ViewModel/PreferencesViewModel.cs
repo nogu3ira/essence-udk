@@ -177,7 +177,7 @@ namespace EssenceUDK.ViewModel
 
         public IList Themes { get { return ThemeManager.GetThemes(); } }
 
-        public IList<Language> Languages { get { return new List<Language> { Language.English, Language.Chinese, Language.French, Language.French, Language.German, Language.Italian, Language.Japanese, Language.Korean, Language.Russian, Language.Spanish }; } }
+        public IList<Language> Languages { get { return new List<Language> { Language.English, Language.German, Language.Spanish, Language.Italian, Language.French, Language.Russian, Language.Japanese, Language.Korean, Language.Chinese }; } }
 
         public IList ClientsFound { get { return Platform.UtilHelpers.ClientInfo.GetDataPath(); } }
 

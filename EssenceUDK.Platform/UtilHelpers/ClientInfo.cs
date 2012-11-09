@@ -166,7 +166,7 @@ namespace EssenceUDK.Platform.UtilHelpers
         public UODataType DetectDataType()
         {
             var ver = ProductVersion;
-            if (ver != null && CompanyName == "Electronics Art" && FileDescription == "Ultima Online Client") {
+            if (ver != null && CompanyName == "Electronic Arts" && FileDescription == "Ultima Online Client") {
                 if (ver >= new Version(7, 0, 23,  2))
                     return UODataType.ClassicAdventuresOnHighSeasUpdated;
                 if (ver >= new Version(7, 0,  8, 44))

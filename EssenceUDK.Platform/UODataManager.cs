@@ -176,32 +176,32 @@ namespace EssenceUDK.Platform
         /// Classic Client (UO: Age of Shadows)
         /// Versions: from 3.0.8z up to 4.0.4b2
         /// </summary>
-        ClassicAgeOfShadows                 = UseMulFiles | UseVerPatch,
+        ClassicAgeOfShadows                 = UseMulFiles | UseDefPatch | UseVerPatch,
         /// <summary>
         /// Classic Client (UO: Samurai Empire)
         /// Versions: from 4.0.5a up to 4.0.11c
         /// </summary>
-        ClassicSamuraiEmpire                = UseMulFiles | UseVerPatch,
+        ClassicSamuraiEmpire                = UseMulFiles | UseDefPatch | UseVerPatch,
         /// <summary>
         /// Classic Client (UO: Mondain's Legacy)
         /// Versions: from 4.0.11d up to 6.0.14.2
         /// </summary>
-        ClassicMondainsLegacy               = UseMulFiles | UseDifPatch,
+        ClassicMondainsLegacy               = UseMulFiles | UseDefPatch | UseDifPatch,
         /// <summary>
         /// Classic Client (UO: Stygian Abyss)
         /// Versions: from 6.0.14.3 up to 7.0.8.2
         /// </summary>
-        ClassicStygianAbyss                 = UseMulFiles | UseDifPatch,
+        ClassicStygianAbyss                 = UseMulFiles | UseDefPatch | UseDifPatch,
         /// <summary>
         /// Classic Client (UO: Adventures On High Seas)
         /// Versions: from 7.0.8.44 up to 7.0.23.1
         /// </summary>
-        ClassicAdventuresOnHighSeas         = UseMulFiles | UseDifPatch | UseNewDatas,
+        ClassicAdventuresOnHighSeas         = UseMulFiles | UseDefPatch | UseDifPatch | UseNewDatas,
         /// <summary>
         /// Classic Client (UO: Adventures On High Seas)
         /// Versions: from 7.0.23.2 up to 7.0.X.X
         /// </summary>
-        ClassicAdventuresOnHighSeasUpdated  = UseUopFiles | UseDifPatch | UseNewDatas,
+        ClassicAdventuresOnHighSeasUpdated  = UseUopFiles | UseDefPatch | UseDifPatch | UseNewDatas,
     }
 
     public class UODataOptions

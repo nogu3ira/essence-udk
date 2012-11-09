@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using EssenceUDK.Platform;
 
 namespace EssenceUDK
 {
@@ -21,6 +22,17 @@ namespace EssenceUDK
 		public PreferencesNew()
 		{
 			this.InitializeComponent();
+
+            var clientinfo = Platform.UtilHelpers.ClientInfo.Get("C:\\UltimaOnline\\__client\\client.exe");
+            if (clientinfo != null)
+            {
+                var ClientVersion = clientinfo.DetectDataVersion();
+                ClientVersion &= UODataTypeVersion._DataTypeMask;
+                var ClientData = clientinfo.DetectDataFeautures();
+                ClientData &= UODataTypeOptions._DataTypeMask;
+                var a = 10;
+                a += 1;
+            }
 		}
 	}
 }
