@@ -53,8 +53,8 @@
 
 
         <xctk:IntegerUpDown Grid.Row="2" Value="{Binding Index}" Minimum="0" Grid.Column="1"/>
-        <xctk:IntegerUpDown Grid.Row="4" Value="{Binding Max}" Maximum="127" Minimum="-128" Grid.Column="1"/>
-        <xctk:IntegerUpDown Grid.Column="3" Grid.Row="4" Value="{Binding Min}" Maximum="127" Minimum="-128"/>
+        <xctk:IntegerUpDown Grid.Row="4" Value="{Binding Max}" Maximum="127" Minimum="{Binding ElementName=Min,Path=Value}" Grid.Column="1" Name="Max"/>
+        <xctk:IntegerUpDown Grid.Column="3" Grid.Row="4" Value="{Binding Min}" Maximum="{Binding ElementName=Max,Path=Value}" Minimum="-128" Name="Min"/>
         <TextBlock Grid.Row="5" TextWrapping="Wrap" Text="Type"/>
         <ComboBox Name="ComboBoxType" Grid.ColumnSpan="3" Grid.Row="5" SelectedItem="{Binding Type}" ItemsSource="{Binding Source={StaticResource ObjectProviderAreaColorTypes}}" Grid.Column="1"/>
         <TextBlock Grid.Row="6" TextWrapping="Wrap"><Run Language="it-it" Text="Color"/></TextBlock>
