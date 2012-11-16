@@ -26,7 +26,7 @@
                 </Style.Triggers>
             </Style>
 
-            <Style TargetType="{x:Type ListBox}" x:Key="LocalCoastGroundListbox" BasedOn="{StaticResource TileStyle}">
+            <Style TargetType="{x:Type ListBox}" x:Key="LocalCoastGroundListbox" BasedOn="{StaticResource TileStyleMiniList}">
                 <Style.Triggers>
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>

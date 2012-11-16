@@ -33,7 +33,7 @@
         </Grid.RowDefinitions>
                 <ListBox 
                     x:Name="ListBoxNumericTexture" 
-                    Style="{StaticResource TileStyle}"
+                    Style="{StaticResource TileStyleMiniList}"
                     ItemTemplate="{StaticResource MyImagesItemTemplateTextureFromInt}"
                     ItemsSource="{Binding Sdk.SelectedAreaTexture.List, Source={StaticResource Locator}}" 
                     Grid.Row="7" Grid.ColumnSpan="5" ItemsPanel="{DynamicResource ItemsPanelTemplate1}"

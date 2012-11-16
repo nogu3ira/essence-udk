@@ -225,7 +225,7 @@ namespace EssenceUDK.MapMaker.MapMaking
 
             for (int i = 0; i < count; i++)
             {
-                var minX = /*i == 0 ? MinX :*/ (_X / count) * (i)-1;
+                var minX = i == 0 ? MinX : (_X / count) * (i)-1 ;
                 var MaxX = i<count?(_X/count)*(i+1):_X;
                
                 maptasks[i]= new Task(()=>BuildMapThread(MaxX, _Y, minX, MinY));
@@ -2249,7 +2249,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                     Areacoordinates.West.TransitionCliffTextures.FirstOrDefault(
                         o => o.Directions == DirectionCliff.WestEast && o.ColorTo == Areacoordinates.East.Color);
 
-                mapObjectCoordinates.Center.Texture = (short) RandomFromList(areaTransitionCliffTexture.List);
+                if (areaTransitionCliffTexture != null)
+                    mapObjectCoordinates.Center.Texture = (short) RandomFromList(areaTransitionCliffTexture.List);
                 return;
             }
 
@@ -2259,7 +2260,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 var areaTransitionCliffTexture =
                     Areacoordinates.North.TransitionCliffTextures.FirstOrDefault(
                         o => o.Directions == DirectionCliff.NorthSouth && o.ColorTo == Areacoordinates.South.Color);
-
+                if(areaTransitionCliffTexture!=null)
                 mapObjectCoordinates.Center.Texture = (short) RandomFromList(areaTransitionCliffTexture.List);
                 return;
             }
@@ -2402,6 +2403,9 @@ namespace EssenceUDK.MapMaker.MapMaking
                     AddTexture(RandomFromList(areaTransitionCliffTexture.List), mapObjectCoordinates);
                 return;
             }
+
+            int a = 0;
+            a++;
         }
 
 
@@ -2516,19 +2520,17 @@ namespace EssenceUDK.MapMaker.MapMaking
                                             y2 = (byte)(y % 8);
                                             var local = CalculateZone(x, y, _stride);
                                             //if (_AddItemMap[CalculateZone(x,y)] != null)
-                                            if (_mapObjects[local].Items != null)
+                                            if (_mapObjects[local].Items == null) continue;
+                                            //foreach (var item in _AddItemMap[CalculateZone(x,y)])
+                                            foreach (var item in _mapObjects[local].Items)
                                             {
-                                                //foreach (var item in _AddItemMap[CalculateZone(x,y)])
-                                                foreach (var item in _mapObjects[local].Items)
-                                                {
-                                                    statics0.Write((ushort)item.Id);
-                                                    statics0.Write((byte)x2);
-                                                    statics0.Write((byte)y2);
-                                                    statics0.Write((sbyte)item.Z);
-                                                    statics0.Write((Int16)item.Hue);
-                                                    length += 7;
-                                                    items++;
-                                                }
+                                                statics0.Write((ushort)item.Id);
+                                                statics0.Write((byte)x2);
+                                                statics0.Write((byte)y2);
+                                                statics0.Write((sbyte)item.Z);
+                                                statics0.Write((Int16)item.Hue);
+                                                length += 7;
+                                                items++;
                                             }
                                         }
 

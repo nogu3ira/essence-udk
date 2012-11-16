@@ -58,7 +58,7 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-        <ComboBox Grid.Column="7" Grid.Row="12" SelectedItem="{Binding Source={StaticResource Locator}, Path=PreferencesViewModel.InterfaceTheme}" ItemsSource="{Binding Source={StaticResource Locator},Path=PreferencesViewModel.Themes}"/>
+        <ComboBox Grid.Column="6" Grid.Row="12" SelectedItem="{Binding Source={StaticResource Locator}, Path=PreferencesViewModel.InterfaceTheme}" ItemsSource="{Binding Source={StaticResource Locator},Path=PreferencesViewModel.Themes}" Grid.ColumnSpan="2" />
 		<TextBlock Grid.Column="1" Grid.Row="2" TextWrapping="Wrap" FontSize="{StaticResource Text General Options}" FontFamily="{StaticResource General Font}" TextAlignment="{StaticResource Text General Allignment}" Foreground="{StaticResource {x:Static SystemColors.ActiveBorderBrushKey}}"><Run Language="it-it" Text="Client List"/></TextBlock>
 		<TextBlock Grid.Column="1" Grid.Row="4" TextWrapping="Wrap" TextAlignment="{StaticResource Text General Allignment}" FontSize="{StaticResource Text General Options}" FontFamily="{StaticResource General Font}" Foreground="{StaticResource {x:Static SystemColors.ActiveBorderBrushKey}}"><Run Language="it-it" Text="Client Folder"/></TextBlock>
 		<TextBlock Grid.Column="1" Grid.Row="8" TextWrapping="Wrap" TextAlignment="{StaticResource Text General Allignment}" FontSize="{StaticResource Text General Options}" FontFamily="{StaticResource General Font}">

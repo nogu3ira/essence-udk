@@ -41,7 +41,7 @@
                     </Style.Triggers>
                 </Style>
 
-                <Style TargetType="{x:Type ListBox}" x:Key="LocalTransitionListbox" BasedOn="{StaticResource TileStyle}">
+                <Style TargetType="{x:Type ListBox}" x:Key="LocalTransitionListbox" BasedOn="{StaticResource TileStyleMiniList}">
                     <Style.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>

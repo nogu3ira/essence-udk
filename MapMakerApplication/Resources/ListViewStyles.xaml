@@ -64,6 +64,33 @@
         </Setter>
         <Setter Property="ItemTemplate" Value="{StaticResource MyImagesItemTemplateStatic}" />
     </Style>
+	
+	<Style TargetType="ListBox" x:Key="TileStyleMiniList">
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition 
+                        Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Exposed}" 
+                        Value="Textures"
+                        />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="ItemTemplate" Value="{StaticResource MyImagesItemTemplateTexture}"/>
+            </MultiDataTrigger>
+        </Style.Triggers>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"
+                                   MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"
+                               />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ListBox.Background" Value="Black"/>
+
+        <Setter Property="ItemTemplate" Value="{StaticResource MyImagesItemTemplateStatic}" />
+        <Setter Property="SelectionMode" Value="Extended"/>
+    </Style>
 
     <Style TargetType="ListBox" x:Key="TileStyle">
         <Style.Triggers>

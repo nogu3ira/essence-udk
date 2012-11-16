@@ -114,7 +114,7 @@
             ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected.TransitionCliffTextures}"/>
         
         <ListBox Grid.Row="10" Grid.RowSpan="3" Grid.ColumnSpan="5" 
-                 Style="{DynamicResource TileStyle}" 
+                 Style="{DynamicResource TileStyleMiniList}" 
                  ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.CliffList}" 
                  ItemTemplate="{DynamicResource MyImagesItemTemplateTextureFromInt}"
                  SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedTextureInCliffList}"/>

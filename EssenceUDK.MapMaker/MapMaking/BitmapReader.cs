@@ -74,6 +74,7 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// </summary>
         /// <param name="collectionAreaColor"></param>
         /// <param name="location"></param>
+        /// <exception cref="ExecutionEngineException"></exception>
         /// <returns></returns>
         public static AreaColor[] ProduceMap(CollectionAreaColor collectionAreaColor, string location)
         {
@@ -116,9 +117,13 @@ namespace EssenceUDK.MapMaker.MapMaking
                                                                         rgbValues[(coulmn*stride) + (row*3) + 1],
                                                                         rgbValues[(coulmn*stride) + (row*3)]
                                                                     });
+
+                        if(areaColors[(coulmn*(bmpData.Width)) + row] == null)
+                        {
+                            throw new ExecutionEngineException("Color " + Color.FromArgb(255, rgbValues[(coulmn * stride) + (row * 3) + 2], rgbValues[(coulmn * stride) + (row * 3) + 1], rgbValues[(coulmn * stride) + (row * 3)])+ "Not found.");
+                        }
                     }
                 }
-                rgbValues = null;
             }
 
             return areaColors;
@@ -129,7 +134,6 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// 
         /// </summary>
         /// <param name="location"></param>
-        /// <param name="altitude"></param>
         /// <returns></returns>
         public static sbyte[] Altitude(string location)
         {
