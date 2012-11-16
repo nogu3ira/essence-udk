@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using EssenceUDK.MapMaker.Elements.ColorArea;
 using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
@@ -100,7 +102,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 var bytes = bmpData.Stride * bitmap.Height;
                 var rgbValues = new byte[bytes];
 
-
+                var list = new List<String>();
                 // Copy the RGB values into the array.
                 Marshal.Copy(ptr, rgbValues, 0, bytes);
 
@@ -119,10 +121,14 @@ namespace EssenceUDK.MapMaker.MapMaking
                                                                     });
 
                         if(areaColors[(coulmn*(bmpData.Width)) + row] == null)
-                        {
-                            throw new ExecutionEngineException("Color " + Color.FromArgb(255, rgbValues[(coulmn * stride) + (row * 3) + 2], rgbValues[(coulmn * stride) + (row * 3) + 1], rgbValues[(coulmn * stride) + (row * 3)])+ "Not found.");
-                        }
+                            list.Add("Color ="+System.Windows.Media.Color.FromArgb(255, rgbValues[(coulmn * stride) + (row * 3) + 2], rgbValues[(coulmn * stride) + (row * 3) + 1], rgbValues[(coulmn * stride) + (row * 3)])+ " not found.");
                     }
+                }
+
+                if(list.Count>0)
+                {
+                    var message = list.Aggregate("", (current, str) => current + (str + "\n"));
+                    throw new Exception(message);
                 }
             }
 

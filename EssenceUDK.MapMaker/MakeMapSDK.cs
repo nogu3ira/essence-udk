@@ -541,18 +541,26 @@ namespace EssenceUDK.MapMaker
         {
             CollectionColorArea.InitializeSeaches();
 
+            var task = new Task[2];
 
             var taskMapBitmap =
                 Task<AreaColor[]>.Factory.StartNew(() => BitmapReader.ProduceMap(CollectionColorArea, bitmaplocation));
 
             var taskMapZ = Task<sbyte[]>.Factory.StartNew(() => BitmapReader.Altitude(bitmapZLocation));
 
-            var task = new Task[2];
             task[0] = taskMapBitmap;
             task[1] = taskMapZ;
-            Task.WaitAll(task);
+            try
+            {
+                Task.WaitAll(task);
+            }
+            catch (Exception e)
+            {
+                
+                throw e;
+            }
 
-            
+
 
             var mulmaker = new MapMaking.MapMaker(taskMapZ.Result, taskMapBitmap.Result, x, y, index)
                                {
@@ -775,11 +783,6 @@ namespace EssenceUDK.MapMaker
         }
 
         #endregion //Event Handler
-
-
-
-
-
 
 
     }

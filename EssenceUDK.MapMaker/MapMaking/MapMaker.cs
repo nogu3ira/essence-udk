@@ -231,7 +231,16 @@ namespace EssenceUDK.MapMaker.MapMaking
                 maptasks[i]= new Task(()=>BuildMapThread(MaxX, _Y, minX, MinY));
                 maptasks[i].Start();
             }
-            Task.WaitAll(maptasks);
+            try
+            {
+                Task.WaitAll(maptasks);
+
+            }
+            catch (Exception e)
+            {
+                
+                throw e;
+            }
 
             if (!AutomaticZMode)
             {
