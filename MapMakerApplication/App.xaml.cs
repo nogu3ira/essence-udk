@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using GalaSoft.MvvmLight.Threading;
+using MapMakerApplication.Messages;
 
 namespace MapMakerApplication
 {
@@ -14,6 +15,12 @@ namespace MapMakerApplication
             DispatcherHelper.Initialize();
 
             ApplicationController = new ApplicationController();
+        }
+
+        private void ApplicationDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Exception.InnerException.InnerException.Message));
+            e.Handled = true;
         }
     }
 }

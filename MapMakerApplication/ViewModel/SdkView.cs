@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using System.Xml;
 using EssenceUDK.MapMaker;
 using EssenceUDK.MapMaker.Elements;
@@ -1137,16 +1140,9 @@ namespace MapMakerApplication.ViewModel
             var indexes = Globals.Indexes[index];
             _makeMapSDK.EventMakingMapEnd += MakingMapEnd;
 
-            var thread = new System.Threading.Thread(() => Start(xy, indexes));
             _makeMapSDK.EventMapMakingProgress += EventHandlerProgressMapCreation;
-            try
-            {
-                thread.Start();
-            }
-            catch (Exception e)
-            {
-                AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
-            }
+                var task = new Thread(() => Start(xy, indexes));
+                task.Start();
             Visibility = Visibility.Visible;
 
 
@@ -1154,9 +1150,36 @@ namespace MapMakerApplication.ViewModel
 
         private void Start(int[] xy, int indexes)
         {
-            _makeMapSDK.MapMake(ApplicationController.OutputFolder, BitmapLocationMap, BitmapLocationMapZ, xy[0], xy[1],
-                                indexes);
+            try
+            {
+                _makeMapSDK.MapMake(ApplicationController.OutputFolder, BitmapLocationMap, BitmapLocationMapZ, xy[0], xy[1],
+                              indexes);
+            }
+            catch (Exception e)
+            {
+                // Are we not on the main UI thread?
+                if (!Application.Current.Dispatcher.CheckAccess())
+                {
+                    // Unhandled exceptions on worker threads will halt the application. We want to
+                    // use our global exception handler(s), so dispatch or "forward" to the UI thread.
+                    Application.Current.Dispatcher.Invoke(
+                        DispatcherPriority.Normal,
+                        new Action<Exception>(WorkerThreadException), e);
+                    MakingMapEnd(this,EventArgs.Empty);
+                }
+                else
+                {   
+                 
+                    throw;  // Already on UI thread; just rethrow the exception to global handlers
+                }
+            }
+          
         }
+        private static void WorkerThreadException(Exception ex)
+        {
+            throw ex;
+        }
+
 
         private void MakingMapEnd(object sender, EventArgs eventArgs)
         {

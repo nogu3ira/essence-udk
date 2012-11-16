@@ -21,7 +21,7 @@ namespace EssenceUDK.MapMaker.MapMaking
         #region Fields
 
         public static Random Random { get; set; }
-        public int MinX = 1;
+        public int MinX = 2;
         public int MinY = 1;
         private readonly int _stride;
         //private Color[] _bitmap;
@@ -236,7 +236,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 Task.WaitAll(maptasks);
 
             }
-            catch (Exception e)
+            catch (AggregateException e)
             {
                 
                 throw e;
@@ -253,7 +253,6 @@ namespace EssenceUDK.MapMaker.MapMaking
             }
             _bitmapZ = null;
 
-            //SetItem();
             OnProgressText(new ProgressEventArgs() { PayLoad = "Writing files" });
             try
             {
@@ -288,31 +287,40 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// <param name="minY">min Y coordinate </param>
         private void BuildMapThread(int X, int Y, int minX, int minY)
         {
-            for (var x = minX; x < X - 1; x++)
+            try
+            {
+                for (var x = minX; x < X - 1; x++)
+                {
+
+                    for (var y = minY; y < Y - 1; y++)
+                    {
+                        Random = new Random(DateTime.UtcNow.Millisecond);
+                        var coordinates = MakeIndexesDirections(x, y, 1, 1);
+                        var areacolorcoordinates = new AreaColorCoordinates(coordinates, _bitmapAreaColor);
+                        var buildMapCoordinates = new MapObjectCoordinates(coordinates, _mapObjects);
+                        if (AutomaticZMode)
+                            Mountain(areacolorcoordinates, buildMapCoordinates, coordinates);
+
+                        MakeCoastUolStyle(areacolorcoordinates, buildMapCoordinates, coordinates);
+                        TextureTranstion(coordinates, areacolorcoordinates, buildMapCoordinates);
+                        MakeCliffs(coordinates, areacolorcoordinates, buildMapCoordinates);
+                        ItemsTransations(coordinates, areacolorcoordinates, buildMapCoordinates);
+                        PlaceTextures(areacolorcoordinates, buildMapCoordinates, coordinates);
+
+                        if (!AutomaticZMode)
+                            ProcessZ(AutomaticZMode, buildMapCoordinates, coordinates);
+                    }
+                }
+                float percent1 = (100 * (X - minX)) / (_X);
+                _progressPerc += percent1;
+                OnProgressText(new ProgressEventArgs() { PayLoad = "Making Map", Progress = (byte)Math.Round(_progressPerc) });
+            }
+            catch (Exception)
             {
                 
-                for (var y = minY; y < Y - 1; y++)
-                {
-                    Random=new Random(DateTime.UtcNow.Millisecond);
-                    var coordinates = MakeIndexesDirections(x, y, 1, 1);
-                    var areacolorcoordinates = new AreaColorCoordinates(coordinates, _bitmapAreaColor);
-                    var buildMapCoordinates = new MapObjectCoordinates(coordinates, _mapObjects);
-                    if (AutomaticZMode)
-                        Mountain(areacolorcoordinates, buildMapCoordinates, coordinates);
-
-                    MakeCoastUolStyle(areacolorcoordinates, buildMapCoordinates, coordinates);
-                    TextureTranstion(coordinates, areacolorcoordinates, buildMapCoordinates);
-                    MakeCliffs(coordinates, areacolorcoordinates, buildMapCoordinates);
-                    ItemsTransations(coordinates, areacolorcoordinates, buildMapCoordinates);
-                    PlaceTextures(areacolorcoordinates, buildMapCoordinates, coordinates);
-
-                    if (!AutomaticZMode)
-                        ProcessZ(AutomaticZMode, buildMapCoordinates, coordinates);
-                }
+                throw;
             }
-            float percent1 = (100 * (X - minX)) / (_X);
-            _progressPerc += percent1;
-            OnProgressText(new ProgressEventArgs() { PayLoad = "Making Map", Progress = (byte)Math.Round(_progressPerc) });
+            
         }
 
 
@@ -339,30 +347,38 @@ namespace EssenceUDK.MapMaker.MapMaking
             }
             else
             {
-                int x;
-                for (x = MinX; x < _X - 1; x++)
+                try
                 {
-                    Random = new Random(DateTime.UtcNow.Millisecond);
-                    byte percent1 = (byte)((100 * x) / (_X));
-                    OnProgressText(new ProgressEventArgs(){PayLoad = "Making Altitude",Progress = percent1});
-                    int y;
-                    for (y = MinY; y < _Y - 1; y++)
+                    int x;
+                    for (x = MinX; x < _X - 1; x++)
                     {
-                        var location = CalculateZone(x, y, _stride);
-                        var area = _bitmapAreaColor[location];
-                        if (_mapObjects[location].Altitude == 0)
-                            _mapObjects[location].Altitude += (sbyte)Random.Next(area.Min, area.Max);
-                        if (_mapObjects[location].Altitude >= 120)
-                            _mapObjects[location].Altitude = (sbyte)(Random.Next(120, 125));
-                        var z = _bitmapZ[location];
-                        _mapObjects[location].Altitude = (sbyte)(_mapObjects[location].Altitude + z);
-                        if(_mapObjects[location].Altitude==0)
+                        Random = new Random(DateTime.UtcNow.Millisecond);
+                        byte percent1 = (byte)((100 * x) / (_X));
+                        OnProgressText(new ProgressEventArgs() { PayLoad = "Making Altitude", Progress = percent1 });
+                        int y;
+                        for (y = MinY; y < _Y - 1; y++)
                         {
-                            int a=0;
-                            a++;
+                            var location = CalculateZone(x, y, _stride);
+                            var area = _bitmapAreaColor[location];
+                            if (_mapObjects[location].Altitude == 0)
+                                _mapObjects[location].Altitude += (sbyte)Random.Next(area.Min, area.Max);
+                            if (_mapObjects[location].Altitude >= 120)
+                                _mapObjects[location].Altitude = (sbyte)(Random.Next(120, 125));
+                            var z = _bitmapZ[location];
+                            var tmp = _mapObjects[location].Altitude + z;
+                            if (tmp < sbyte.MinValue)
+                                tmp = sbyte.MinValue;
+                            if (tmp > sbyte.MaxValue)
+                                tmp = sbyte.MaxValue;
+                            _mapObjects[location].Altitude = (sbyte)tmp;
                         }
                     }
                 }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                
             }
         }
 
@@ -751,7 +767,7 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// <param name="coordinates"> </param>
         /// <param name="areaColorCoordinates"> </param>
         /// <param name="mapObjectCoordinates"> </param>
-        void ItemsTransations(Coordinates coordinates, AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates)
+        static void ItemsTransations(Coordinates coordinates, AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates)
         {
             if (mapObjectCoordinates.Center.Items != null || mapObjectCoordinates.Center.Occupied != 0) return;
             //int special = 0;

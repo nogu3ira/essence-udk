@@ -560,8 +560,6 @@ namespace EssenceUDK.MapMaker
                 throw e;
             }
 
-
-
             var mulmaker = new MapMaking.MapMaker(taskMapZ.Result, taskMapBitmap.Result, x, y, index)
                                {
                                    CollectionAreaColor = CollectionColorArea,
@@ -572,9 +570,18 @@ namespace EssenceUDK.MapMaker
 
             mulmaker.ProgressText += EventProgress;
 
-            mulmaker.Bmp2Map();
+            try
+            {
+                mulmaker.Bmp2Map();
+                OnMakingMap(EventArgs.Empty);
+
+            }
+            catch (Exception)
+            {
+               
+                throw;
+            }
             
-            OnMakingMap(EventArgs.Empty);
         }
             
         #endregion

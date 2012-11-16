@@ -120,14 +120,25 @@ namespace EssenceUDK.MapMaker.MapMaking
                                                                         rgbValues[(coulmn*stride) + (row*3)]
                                                                     });
 
-                        if(areaColors[(coulmn*(bmpData.Width)) + row] == null)
-                            list.Add("Color ="+System.Windows.Media.Color.FromArgb(255, rgbValues[(coulmn * stride) + (row * 3) + 2], rgbValues[(coulmn * stride) + (row * 3) + 1], rgbValues[(coulmn * stride) + (row * 3)])+ " not found.");
+                        if (areaColors[(coulmn*(bmpData.Width)) + row] != null) continue;
+
+                        var str = "Color =" + 
+                            System.Windows.Media.Color.FromRgb(
+                                rgbValues[(coulmn * stride) + (row * 3) + 2],
+                                rgbValues[(coulmn * stride) + (row * 3) + 1],
+                                rgbValues[(coulmn * stride) + (row * 3)]) 
+                            + " not found.";
+                            
+                        if(!list.Contains(str))
+                        {
+                            list.Add(str);
+                        }
                     }
                 }
 
                 if(list.Count>0)
                 {
-                    var message = list.Aggregate("", (current, str) => current + (str + "\n"));
+                    var message = list.Aggregate("", (current, str) => current + (str + '\n'));
                     throw new Exception(message);
                 }
             }
