@@ -2320,10 +2320,10 @@ namespace EssenceUDK.MapMaker.MapMaking
                 && Areacoordinates.East.Type!= TypeColor.Cliff && Areacoordinates.West.Type!= TypeColor.Cliff)
             {
                 AreaTransitionCliffTexture areaTransitionCliffTexture = null;
-                if (Areacoordinates.East.Type == TypeColor.Cliff)
+                if (Areacoordinates.North.Type != TypeColor.Cliff)
 
                     areaTransitionCliffTexture =
-                        Areacoordinates.West.TransitionCliffTextures.FirstOrDefault(
+                        Areacoordinates.North.TransitionCliffTextures.FirstOrDefault(
                             c => c.Directions == DirectionCliff.NorthEnd && c.ColorTo == Areacoordinates.North.Color);
 
                 if (areaTransitionCliffTexture != null)
