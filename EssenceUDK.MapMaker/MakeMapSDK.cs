@@ -576,11 +576,12 @@ namespace EssenceUDK.MapMaker
                 OnMakingMap(EventArgs.Empty);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
                
-                throw;
+                throw e;
             }
+            System.GC.Collect();
             
         }
             
