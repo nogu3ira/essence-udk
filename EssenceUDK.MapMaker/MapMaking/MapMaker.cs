@@ -7,7 +7,6 @@ using System.Windows.Media;
 using EssenceUDK.MapMaker.Elements;
 using EssenceUDK.MapMaker.Elements.ColorArea;
 using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
-using System.Security.Cryptography;
 using EssenceUDK.MapMaker.Elements.Items.Items;
 using EssenceUDK.MapMaker.Elements.Items.ItemsTransition;
 using EssenceUDK.MapMaker.Elements.Textures;
@@ -223,10 +222,10 @@ namespace EssenceUDK.MapMaker.MapMaking
 
             for (int i = 0; i < count; i++)
             {
-                var minX = i == 0 ? MinX : (_X / count) * (i)-1 ;
-                var MaxX = i<count?(_X/count)*(i+1):_X;
-               
-                maptasks[i]= new Task(()=>BuildMapThread(MaxX, _Y, minX, MinY));
+                var minX = i == 0 ? MinX : (_X / count) * (i) - 1;
+                var MaxX = i < count ? (_X / count) * (i + 1) : _X;
+
+                maptasks[i] = new Task(() => BuildMapThread(MaxX, _Y, minX, MinY));
                 maptasks[i].Start();
             }
             try
@@ -236,7 +235,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             }
             catch (AggregateException e)
             {
-                
+
                 throw e;
             }
 
@@ -246,8 +245,15 @@ namespace EssenceUDK.MapMaker.MapMaking
             }
             if (AutomaticZMode)
             {
-                OnProgressText(new ProgressEventArgs(){PayLoad = "Making Altitude"});
-                ProcessZ(AutomaticZMode, null, new Coordinates(0,0,0,0,0,0));
+                OnProgressText(new ProgressEventArgs() { PayLoad = "Making Altitude" });
+                try
+                {
+                    ProcessZ(AutomaticZMode, null, new Coordinates(0, 0, 0, 0, 0, 0));
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
             _bitmapZ = null;
 
@@ -263,12 +269,12 @@ namespace EssenceUDK.MapMaker.MapMaking
             }
             catch (Exception e)
             {
-                
+
                 throw e;
             }
-            
 
-            OnProgressText(new ProgressEventArgs(){PayLoad = "Done"});
+
+            OnProgressText(new ProgressEventArgs() { PayLoad = "Done" });
         }
 
         #endregion
@@ -293,17 +299,17 @@ namespace EssenceUDK.MapMaker.MapMaking
 
                     for (var y = minY; y < Y - 1; y++)
                     {
-                        
+
                         var coordinates = MakeIndexesDirections(x, y, 1, 1);
                         var areacolorcoordinates = new AreaColorCoordinates(coordinates, _bitmapAreaColor);
                         var buildMapCoordinates = new MapObjectCoordinates(coordinates, _mapObjects);
                         if (AutomaticZMode)
-                            Mountain(areacolorcoordinates, buildMapCoordinates, coordinates,random);
+                            Mountain(areacolorcoordinates, buildMapCoordinates, coordinates, random);
 
-                        MakeCoastUolStyle(areacolorcoordinates, buildMapCoordinates, coordinates,random);
-                        TextureTranstion(coordinates, areacolorcoordinates, buildMapCoordinates,random);
-                        MakeCliffs(coordinates, areacolorcoordinates, buildMapCoordinates,random);
-                        ItemsTransations(coordinates, areacolorcoordinates, buildMapCoordinates,random);
+                        MakeCoastUolStyle(areacolorcoordinates, buildMapCoordinates, coordinates, random);
+                        TextureTranstion(coordinates, areacolorcoordinates, buildMapCoordinates, random);
+                        MakeCliffs(coordinates, areacolorcoordinates, buildMapCoordinates, random);
+                        ItemsTransations(coordinates, areacolorcoordinates, buildMapCoordinates, random);
                         PlaceTextures(areacolorcoordinates, buildMapCoordinates, coordinates, random);
 
                         if (!AutomaticZMode)
@@ -314,21 +320,21 @@ namespace EssenceUDK.MapMaker.MapMaking
                 _progressPerc += percent1;
                 OnProgressText(new ProgressEventArgs() { PayLoad = "Making Map", Progress = (byte)Math.Round(_progressPerc) });
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                
-                throw;
+
+                throw e;
             }
-            
+
         }
 
 
-        private void PlaceTextures(AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates, Coordinates coordinates,Random random)
+        private void PlaceTextures(AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates, Coordinates coordinates, Random random)
         {
             if (areaColorCoordinates.Center == null) return;
 
             if (mapObjectCoordinates.Center.Texture == 0)
-                mapObjectCoordinates.Center.Texture = (short)RandomTexture(areaColorCoordinates.Center.TextureIndex,random);
+                mapObjectCoordinates.Center.Texture = (short)RandomTexture(areaColorCoordinates.Center.TextureIndex, random);
         }
 
 
@@ -352,7 +358,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                     int x;
                     for (x = MinX; x < _X - 1; x++)
                     {
-                        byte percent1 = (byte)((100 * x) / (_X));
+                        var percent1 = (byte)((100 * x) / (_X));
                         OnProgressText(new ProgressEventArgs() { PayLoad = "Making Altitude", Progress = percent1 });
                         int y;
                         for (y = MinY; y < _Y - 1; y++)
@@ -377,7 +383,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 {
                     throw e;
                 }
-                
+
             }
         }
 
@@ -403,7 +409,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 var cirlce = areacoord.Center.List[index];
 
                 var areacircles =
-                    new AreaColorCoordinates(new Coordinates(index, index, coord.X, coord.Y, _stride,_bitmapAreaColor.Length),
+                    new AreaColorCoordinates(new Coordinates(index, index, coord.X, coord.Y, _stride, _bitmapAreaColor.Length),
                                                 _bitmapAreaColor);
 
                 if (areacircles.List == null)
@@ -422,12 +428,12 @@ namespace EssenceUDK.MapMaker.MapMaking
                 {
                     var area = _bitmapAreaColor[coord.Center];
                     area = CollectionAreaColor.FindByIndex(area.IndexColorTopMountain);
-                    mapObjectCoordinates.Center.Texture = (short)RandomTexture(area.TextureIndex,random);
+                    mapObjectCoordinates.Center.Texture = (short)RandomTexture(area.TextureIndex, random);
                     _bitmapAreaColor[coord.Center] = CollectionAreaColor.FindByColor(area.ColorTopMountain);
                 }
             }
 
-           
+
         }
 
         #endregion //mountains
@@ -511,7 +517,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                     //_mapObjects[_directions[(int)Directions.Center]].Texture = (short)RandomFromList(smoothT.Line.CollectionFirst.List);
                     //z = _mapObjects[_directions[(int)Directions.South]].Altitude +
                     //    _mapObjects[_directions[(int)Directions.North]].Altitude;
-                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.LineNorth.List,random);
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.LineNorth.List, random);
                     z = mapObjectCoordinates.South.Altitude +
                         mapObjectCoordinates.North.Altitude;
                 }
@@ -539,7 +545,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                     //z = _mapObjects[_directions[(int)Directions.East]].Altitude +
                     //    _mapObjects[_directions[(int)Directions.West]].Altitude;
                     mapObjectCoordinates.Center.Texture =
-                        (short)RandomFromList(transation.LineWest.List,random);
+                        (short)RandomFromList(transation.LineWest.List, random);
                     z = mapObjectCoordinates.East.Altitude +
                         mapObjectCoordinates.West.Altitude;
                 }
@@ -567,7 +573,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                     //z = _mapObjects[_directions[(int)Directions.West]].Altitude +
                     //    _mapObjects[_directions[(int)Directions.East]].Altitude;
                     mapObjectCoordinates.Center.Texture =
-                        (short)RandomFromList(transation.LineEast.List,random);
+                        (short)RandomFromList(transation.LineEast.List, random);
                     z = mapObjectCoordinates.West.Altitude +
                         mapObjectCoordinates.East.Altitude;
                 }
@@ -593,7 +599,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 if (transition != null)
                 {
                     mapObjectCoordinates.Center.Texture =
-                        (short)RandomFromList(transition.BorderSouthWest.List,random);
+                        (short)RandomFromList(transition.BorderSouthWest.List, random);
                     z = mapObjectCoordinates.NorthEast.Altitude +
                         mapObjectCoordinates.SouthWest.Altitude;
                 }
@@ -613,7 +619,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 {
                     special = 1;
                     mapObjectCoordinates.Center.Texture =
-                        (short)RandomFromList(transition.BorderSouthEast.List,random);
+                        (short)RandomFromList(transition.BorderSouthEast.List, random);
 
                     z = mapObjectCoordinates.NorthWest.Altitude +
                         mapObjectCoordinates.SouthEast.Altitude;
@@ -633,7 +639,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 {
                     special = 2;
 
-                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.BorderNorthEast.List,random);
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.BorderNorthEast.List, random);
                     z = mapObjectCoordinates.NorthWest.Altitude +
                         mapObjectCoordinates.NorthEast.Altitude;
                 }
@@ -655,7 +661,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 if (transation != null)
                 {
                     special = 2;
-                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.BorderNorthWest.List,random);
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.BorderNorthWest.List, random);
                     z = _mapObjects[coordinates.SouthEast].Altitude +
                         _mapObjects[coordinates.NorthWest].Altitude;
                 }
@@ -680,7 +686,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 {
                     special = 2;
                     mapObjectCoordinates.Center.Texture =
-                        (short)RandomFromList(transition.EdgeSouthWest.List,random);
+                        (short)RandomFromList(transition.EdgeSouthWest.List, random);
                     z = mapObjectCoordinates.NorthEast.Altitude +
                         mapObjectCoordinates.SouthWest.Altitude;
                 }
@@ -700,7 +706,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 {
                     special = 1;
                     mapObjectCoordinates.Center.Texture =
-                        (short)RandomFromList(transation.EdgeSouthEast.List,random);
+                        (short)RandomFromList(transation.EdgeSouthEast.List, random);
                     z = mapObjectCoordinates.NorthEast.Altitude +
                         mapObjectCoordinates.SouthWest.Altitude;
                 }
@@ -720,7 +726,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 {
                     special = 2;
 
-                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.EdgeNorthEast.List,random);
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.EdgeNorthEast.List, random);
                     z = mapObjectCoordinates.SouthWest.Altitude +
                         mapObjectCoordinates.NorthEast.Altitude;
                 }
@@ -740,7 +746,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 {
                     special = 2;
 
-                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.EdgeNorthWest.List,random);
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(transation.EdgeNorthWest.List, random);
                     z = mapObjectCoordinates.SouthEast.Altitude +
                         mapObjectCoordinates.NorthWest.Altitude;
                 }
@@ -766,7 +772,7 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// <param name="coordinates"> </param>
         /// <param name="areaColorCoordinates"> </param>
         /// <param name="mapObjectCoordinates"> </param>
-        static void ItemsTransations(Coordinates coordinates, AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates,Random random)
+        static void ItemsTransations(Coordinates coordinates, AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates, Random random)
         {
             if (mapObjectCoordinates.Center.Items != null || mapObjectCoordinates.Center.Occupied != 0) return;
             //int special = 0;
@@ -799,7 +805,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthEast.Color);
                 //7
                 if (transation != null)
-                    item = new ItemClone() { Id = RandomFromList(transation.BorderSouthWest.List,random) };
+                    item = new ItemClone() { Id = RandomFromList(transation.BorderSouthWest.List, random) };
             }
             //BG
             //Gx
@@ -808,7 +814,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthWest.Color);
                 //6
                 if (transation != null)
-                    item = new ItemClone { Id = RandomFromList(transation.BorderSouthEast.List,random) };
+                    item = new ItemClone { Id = RandomFromList(transation.BorderSouthEast.List, random) };
             }
             //Gx
             //BG
@@ -817,7 +823,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthWest.Color);
                 //5
                 if (transation != null)
-                    item = new ItemClone { Id = RandomFromList(transation.BorderNorthEast.List,random) };
+                    item = new ItemClone { Id = RandomFromList(transation.BorderNorthEast.List, random) };
             }
             //xG
             //GB
@@ -826,7 +832,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthEast.Color);
                 //4
                 if (transation != null)
-                    item = new ItemClone { Id = RandomFromList(transation.BorderNorthWest.List,random) };
+                    item = new ItemClone { Id = RandomFromList(transation.BorderNorthWest.List, random) };
             }
             #endregion //Border
 
@@ -839,7 +845,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             {
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.North.Color);
                 //2
-                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineSouth.List,random) };
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineSouth.List, random) };
             }
             //GxG
             // B
@@ -847,7 +853,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             {
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.South.Color);
                 //0
-                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineNorth.List,random) };
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineNorth.List, random) };
             }
             //G
             //xB
@@ -856,7 +862,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             {
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.East.Color);
                 //3
-                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineWest.List,random) };
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineWest.List, random) };
             }
             // G
             //Bx
@@ -865,7 +871,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             {
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.West.Color);
                 //1
-                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineEast.List,random) };
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.LineEast.List, random) };
             }
             #endregion //Line
 
@@ -881,7 +887,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             {
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthEast.Color);
                 //11
-                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeSouthWest.List,random) };
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeSouthWest.List, random) };
             }
             // B
             //Bx
@@ -892,7 +898,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             {
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.NorthWest.Color);
                 //10
-                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeSouthEast.List,random) };
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeSouthEast.List, random) };
             }
             //Bx
             // B
@@ -903,7 +909,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             {
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthWest.Color);
                 //9
-                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeNorthEast.List,random) };
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeNorthEast.List, random) };
             }
             //xB
             //B
@@ -914,7 +920,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             {
                 var transation = areaColorCoordinates.Center.FindTransationItemByColor(areaColorCoordinates.SouthEast.Color);
                 //8
-                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeNorthWest.List,random) };
+                if (transation != null) item = new ItemClone { Id = RandomFromList(transation.EdgeNorthWest.List, random) };
             }
 
             #endregion //Edge
@@ -944,7 +950,7 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// <summary>
         /// Make Coast method, it search if the given parameter is a coast or not
         /// </summary>
-        private void MakeCoast(AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates, Coordinates coordinates,Random random)
+        private void MakeCoast(AreaColorCoordinates areaColorCoordinates, MapObjectCoordinates mapObjectCoordinates, Coordinates coordinates, Random random)
         {
             //Color Water = _bitmap[_directions[(int)Directions.Center]];
             //int ID = 0;
@@ -980,8 +986,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                 || areaColorCoordinates.NorthWest.Type != TypeColor.WaterCoast)
                 )
             {
-                id = RandomFromList(areaColorCoordinates.North.Coasts.Coast.LineSouth.List,random);
-                var texture = (short)RandomFromList(areaColorCoordinates.North.Coasts.Ground.LineSouth.List,random);
+                id = RandomFromList(areaColorCoordinates.North.Coasts.Coast.LineSouth.List, random);
+                var texture = (short)RandomFromList(areaColorCoordinates.North.Coasts.Ground.LineSouth.List, random);
                 mapObjectCoordinates.Center.Occupied = 1;
 
 
@@ -1013,7 +1019,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 //mapObjectCoordinates.Center.Altitude = -15;
 
                 var texture =
-                   (short)RandomFromList(areaColorCoordinates.South.Coasts.Ground.LineNorth.List,random);
+                   (short)RandomFromList(areaColorCoordinates.South.Coasts.Ground.LineNorth.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
                 //id = RandomFromList(areaColorCoordinates.South.Coasts.Coast.LineNorth.List);
                 //PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates, -5, true);
@@ -1026,12 +1032,12 @@ namespace EssenceUDK.MapMaker.MapMaking
                     mapObjectCoordinates.North.Altitude = -15;
                     mapObjectCoordinates.North.Occupied = 1;
                     mapObjectCoordinates.South.Altitude = (sbyte)random.Next(-4, -2);
-                    id = RandomFromList(areaColorCoordinates.South.Coasts.Coast.LineNorth.List,random);
+                    id = RandomFromList(areaColorCoordinates.South.Coasts.Coast.LineNorth.List, random);
                     return;
 
                 }
 
-                id = RandomFromList(areaColorCoordinates.South.Coasts.Coast.LineNorth.List,random);
+                id = RandomFromList(areaColorCoordinates.South.Coasts.Coast.LineNorth.List, random);
                 PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates, 0, true, coordinates);
             }
             // W
@@ -1046,8 +1052,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                 || areaColorCoordinates.SouthEast.Type != TypeColor.WaterCoast)
                 )
             {
-                id = RandomFromList(areaColorCoordinates.East.Coasts.Coast.LineWest.List,random);
-                var texture = (short)RandomFromList(areaColorCoordinates.East.Coasts.Ground.LineWest.List,random);
+                id = RandomFromList(areaColorCoordinates.East.Coasts.Coast.LineWest.List, random);
+                var texture = (short)RandomFromList(areaColorCoordinates.East.Coasts.Ground.LineWest.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Occupied = 1;
 
@@ -1074,8 +1080,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                 || areaColorCoordinates.NorthWest.Type != TypeColor.WaterCoast)
                 )
             {
-                id = RandomFromList(areaColorCoordinates.West.Coasts.Coast.LineEast.List,random);
-                var texture = (short)RandomFromList(areaColorCoordinates.West.Coasts.Ground.LineEast.List,random);
+                id = RandomFromList(areaColorCoordinates.West.Coasts.Coast.LineEast.List, random);
+                var texture = (short)RandomFromList(areaColorCoordinates.West.Coasts.Ground.LineEast.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
                 if (AutomaticZMode || (!AutomaticZMode && _bitmapZ[coordinates.West] != _bitmapZ[coordinates.Center]))
                 {
@@ -1116,8 +1122,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                 )
             {
 
-                id = RandomFromList(areaColorCoordinates.NorthEast.Coasts.Coast.BorderSouthWest.List,random);
-                var texture = (short)RandomFromList(areaColorCoordinates.NorthEast.Coasts.Ground.BorderNorthEast.List,random);
+                id = RandomFromList(areaColorCoordinates.NorthEast.Coasts.Coast.BorderSouthWest.List, random);
+                var texture = (short)RandomFromList(areaColorCoordinates.NorthEast.Coasts.Ground.BorderNorthEast.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Occupied = 1;
 
@@ -1141,8 +1147,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                 )
             {
 
-                id = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.BorderSouthEast.List,random);
-                var texture = (short)RandomFromList(areaColorCoordinates.NorthWest.Coasts.Ground.BorderNorthWest.List,random);
+                id = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.BorderSouthEast.List, random);
+                var texture = (short)RandomFromList(areaColorCoordinates.NorthWest.Coasts.Ground.BorderNorthWest.List, random);
 
                 mapObjectCoordinates.Center.Occupied = 1;
                 mapObjectCoordinates.Center.Texture = texture;
@@ -1166,8 +1172,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                 && areaColorCoordinates.South.Type == TypeColor.WaterCoast
                 )
             {
-                id = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.BorderNorthEast.List,random);
-                var texture = (short)RandomFromList(areaColorCoordinates.SouthWest.Coasts.Ground.BorderSouthWest.List,random);
+                id = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.BorderNorthEast.List, random);
+                var texture = (short)RandomFromList(areaColorCoordinates.SouthWest.Coasts.Ground.BorderSouthWest.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.SouthWest.Occupied = 1;
 
@@ -1192,7 +1198,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 )
             {
                 mapObjectCoordinates.Center.Occupied = 1;
-                var texture = (short)RandomFromList(areaColorCoordinates.SouthEast.Coasts.Ground.BorderSouthEast.List,random);
+                var texture = (short)RandomFromList(areaColorCoordinates.SouthEast.Coasts.Ground.BorderSouthEast.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
 
 
@@ -1204,7 +1210,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 }
                 else
                 {
-                    id = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.BorderNorthWest.List,random);
+                    id = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.BorderNorthWest.List, random);
                     PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates, 0, true, coordinates);
                 }
 
@@ -1223,7 +1229,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 && areaColorCoordinates.North.Type != TypeColor.WaterCoast
                 )
             {
-                var texture = (short)RandomFromList(areaColorCoordinates.NorthEast.Coasts.Ground.EdgeSouthWest.List,random);
+                var texture = (short)RandomFromList(areaColorCoordinates.NorthEast.Coasts.Ground.EdgeSouthWest.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = (sbyte)random.Next(-3, 0);
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1233,7 +1239,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 }
                 else
                 {
-                    id = RandomFromList(areaColorCoordinates.NorthEast.Coasts.Coast.EdgeSouthWest.List,random);
+                    id = RandomFromList(areaColorCoordinates.NorthEast.Coasts.Coast.EdgeSouthWest.List, random);
                     PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates, -5, true, coordinates);
                 }
             }
@@ -1246,8 +1252,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                 )
             {
                 //unico corretto
-                id = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.EdgeSouthEast.List,random);
-                var texture = (short)RandomFromList(areaColorCoordinates.NorthWest.Coasts.Ground.EdgeSouthEast.List,random);
+                id = RandomFromList(areaColorCoordinates.NorthWest.Coasts.Coast.EdgeSouthEast.List, random);
+                var texture = (short)RandomFromList(areaColorCoordinates.NorthWest.Coasts.Ground.EdgeSouthEast.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = (sbyte)random.Next(-3, 0); ;
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1270,7 +1276,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 && areaColorCoordinates.South.Type != TypeColor.WaterCoast
                 )
             {
-                var texture = (short)RandomFromList(areaColorCoordinates.SouthWest.Coasts.Ground.EdgeNorthEast.List,random);
+                var texture = (short)RandomFromList(areaColorCoordinates.SouthWest.Coasts.Ground.EdgeNorthEast.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = (sbyte)random.Next(-3, 0); ;
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1280,7 +1286,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 }
                 else
                 {
-                    id = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.EdgeNorthEast.List,random);
+                    id = RandomFromList(areaColorCoordinates.SouthWest.Coasts.Coast.EdgeNorthEast.List, random);
                     PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates, 0, true, coordinates);
                 }
             }
@@ -1292,7 +1298,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 && areaColorCoordinates.South.Type != TypeColor.WaterCoast
                 )
             {
-                var texture = (short)RandomFromList(areaColorCoordinates.SouthEast.Coasts.Ground.EdgeNorthWest.List,random);
+                var texture = (short)RandomFromList(areaColorCoordinates.SouthEast.Coasts.Ground.EdgeNorthWest.List, random);
                 mapObjectCoordinates.Center.Texture = texture;
                 mapObjectCoordinates.Center.Altitude = -9;
                 mapObjectCoordinates.Center.Occupied = 1;
@@ -1302,7 +1308,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 }
                 else
                 {
-                    id = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.EdgeNorthWest.List,random);
+                    id = RandomFromList(areaColorCoordinates.SouthEast.Coasts.Coast.EdgeNorthWest.List, random);
                     PlaceCoastItem(id, mapObjectCoordinates, areaColorCoordinates, 0, true, coordinates);
                 }
             }
@@ -1361,19 +1367,19 @@ namespace EssenceUDK.MapMaker.MapMaking
         #region Coasts UOL style
 
 
-        private static bool PlaceObject(MapObjectCoordinates mapObjectCoordinates, AreaColorCoordinates area, sbyte altitude, int itemid, sbyte zItem, int texture, bool normal = true)
+        private static bool PlaceObject(MapObjectCoordinates mapObjectCoordinates, sbyte altitude, int itemid, sbyte zItem, int texture, bool normal = true)
         {
 
             var mapObject = normal ? mapObjectCoordinates.Center : mapObjectCoordinates.SouthEast;
 
             mapObject.Altitude = altitude;
-           
-            mapObject.Items = new List<ItemClone> {new ItemClone {Id = itemid, Z = zItem}};
+
+            mapObject.Items = new List<ItemClone> { new ItemClone { Id = itemid, Z = zItem } };
 
             mapObject.Occupied = 1;
             if (texture >= 0)
                 mapObject.Texture = (short)texture;
-            
+
             return true;
         }
 
@@ -1404,9 +1410,9 @@ namespace EssenceUDK.MapMaker.MapMaking
             {
                 if (areaColorCoordinates.SouthEast.Type == trueType && areaColorCoordinates.SouthEast.Type == trueType && areaColorCoordinates.South.Type != trueType)
                 {
-                    return PlaceObject(mapObjectCoordinates,areaColorCoordinates, altitude, itemid, zItem, texture,ground);
+                    return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture,ground);
                 }
-                return PlaceObject(mapObjectCoordinates,areaColorCoordinates, altitude, itemid, zItem, texture,ground);
+                return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
             }
             return false;
         }
@@ -1441,17 +1447,17 @@ namespace EssenceUDK.MapMaker.MapMaking
                 || areaColorCoordinates.NorthWest.Type != trueType
                 )
             {
-                if (
-                    areaColorCoordinates.North.Type != trueType
-                    && areaColorCoordinates.NorthEast.Type != trueType
-                    && trueType != TypeColor.WaterCoast
-                    && areaColorCoordinates.NorthWest.Type == trueType
-                    )
-                {
-                    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderNorthEast.List, random), zItem, texture, ground);
-                }
+                //if (
+                //    areaColorCoordinates.North.Type != trueType
+                //    && areaColorCoordinates.NorthEast.Type != trueType
+                //    && trueType != TypeColor.WaterCoast
+                //    && areaColorCoordinates.NorthWest.Type == trueType
+                //    )
+                //{
+                //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderNorthEast.List, random), zItem, texture, ground);
+                //}
 
-                return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+                return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
             }
             return false;
         }
@@ -1469,7 +1475,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             int itemid,
             Random random,
             int texture = -1,
-            bool ground= false
+            bool ground = false
             )
         {
             if (
@@ -1483,20 +1489,20 @@ namespace EssenceUDK.MapMaker.MapMaking
 
             if (areaColorCoordinates.West.Type != type || areaColorCoordinates.SouthWest.Type != type || areaColorCoordinates.NorthWest.Type != type)
             {
-                if
-                (
-                areaColorCoordinates.SouthWest.Type == type
-                && areaColorCoordinates.West.Type == type
-                && areaColorCoordinates.NorthWest.Type != type
-                && type != TypeColor.WaterCoast
-                )
-                {
-                    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude,
-                                       RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderSouthWest.List, random),
-                                       zItem, texture,ground);
-                }
+                //if
+                //(
+                //areaColorCoordinates.SouthWest.Type == type
+                //&& areaColorCoordinates.West.Type == type
+                //&& areaColorCoordinates.NorthWest.Type != type
+                //&& type != TypeColor.WaterCoast
+                //)
+                //{
+                //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude,
+                //                       RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderSouthWest.List, random),
+                //                       zItem, texture,ground);
+                //}
 
-                return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+                return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
 
             }
 
@@ -1530,7 +1536,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                 || areaColorCoordinates.NorthEast.Type != type
                 || areaColorCoordinates.SouthEast.Type != type)
             {
-                return PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, itemid, zItem, texture,ground);
+                return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
             }
 
             return false;
@@ -1563,16 +1569,16 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (areaColorCoordinates.South.Type != type || areaColorCoordinates.SouthEast.Type != type || areaColorCoordinates.SouthWest.Type != type)
                 if (areaColorCoordinates.West.Type != type || areaColorCoordinates.NorthWest.Type != type)
                 {
-                    if (areaColorCoordinates.SouthWest.Type != type
-                        && areaColorCoordinates.West.Type != type
-                        && areaColorCoordinates.South.Type != type
-                        && type != TypeColor.WaterCoast
-                        && areaColorCoordinates.NorthWest.Type == type)
-                    {
-                        return PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderSouthWest.List, random), zItem, texture, ground);
-                    }
+                    //if (areaColorCoordinates.SouthWest.Type != type
+                    //    && areaColorCoordinates.West.Type != type
+                    //    && areaColorCoordinates.South.Type != type
+                    //    && type != TypeColor.WaterCoast
+                    //    && areaColorCoordinates.NorthWest.Type == type)
+                    //{
+                    //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderSouthWest.List, random), zItem, texture, ground);
+                    //}
 
-                    return PlaceObject(mapObjectCoordinates,areaColorCoordinates, altitude, itemid, zItem, texture,ground);
+                    return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
                 }
 
             return false;
@@ -1601,15 +1607,15 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (areaColorCoordinates.East.Type != type || areaColorCoordinates.SouthEast.Type != type)
                 if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthWest.Type != type || areaColorCoordinates.NorthEast.Type != type)
                 {
-                    if (areaColorCoordinates.North.Type == type
-                        && areaColorCoordinates.NorthWest.Type == type
-                        && areaColorCoordinates.East.Type == type
-                        && areaColorCoordinates.NorthEast.Type != type
-                        && type != TypeColor.WaterCoast)
-                    {
-                        return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude,
-                                    RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderNorthEast.List, random), zItem, texture,ground);
-                    }
+                    //if (areaColorCoordinates.North.Type == type
+                    //    && areaColorCoordinates.NorthWest.Type == type
+                    //    && areaColorCoordinates.East.Type == type
+                    //    && areaColorCoordinates.NorthEast.Type != type
+                    //    && type != TypeColor.WaterCoast)
+                    //{
+                    //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude,
+                    //                RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderNorthEast.List, random), zItem, texture,ground);
+                    //}
 
                     if (areaColorCoordinates.NorthWest.Type == type
                         && areaColorCoordinates.East.Type == type
@@ -1618,10 +1624,10 @@ namespace EssenceUDK.MapMaker.MapMaking
                         && areaColorCoordinates.North.Type != type
                         )
                     {
-                        return PlaceObject(mapObjectCoordinates,areaColorCoordinates, 0, itemid, zItem, texture,ground);
+                        return PlaceObject(mapObjectCoordinates, 0, itemid, zItem, texture, ground);
                     }
 
-                    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+                    return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
                 }
 
             return false;
@@ -1651,16 +1657,16 @@ namespace EssenceUDK.MapMaker.MapMaking
                 {
 
 
-                    if (areaColorCoordinates.SouthEast.Type == type
-                        && areaColorCoordinates.SouthWest.Type == type
-                        && areaColorCoordinates.NorthEast.Type == type
-                        && areaColorCoordinates.East.Type != type
-                        && type != TypeColor.WaterCoast)
-                    {
-                        return PlaceObject(mapObjectCoordinates, areaColorCoordinates,0, itemid, zItem, texture, ground);
-                    }
+                    //if (areaColorCoordinates.SouthEast.Type == type
+                    //    && areaColorCoordinates.SouthWest.Type == type
+                    //    && areaColorCoordinates.NorthEast.Type == type
+                    //    && areaColorCoordinates.East.Type != type
+                    //    && type != TypeColor.WaterCoast)
+                    //{
+                    //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates, 0, itemid, zItem, texture, ground);
+                    //}
 
-                    return PlaceObject(mapObjectCoordinates,areaColorCoordinates, altitude, itemid, zItem, texture,ground);
+                    return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
                 }
 
             return false;
@@ -1688,7 +1694,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthEast.Type != type || areaColorCoordinates.NorthWest.Type != type)
                 if (areaColorCoordinates.West.Type != type || areaColorCoordinates.SouthWest.Type != type)
                 {
-                    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture,ground);
+                    return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
                 }
 
             return false;
@@ -1716,7 +1722,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (areaColorCoordinates.List.Count(o => o != border && o.Type == type) != 8)
                 return false;
 
-            return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+            return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
 
         }
 
@@ -1742,7 +1748,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (areaColorCoordinates.List.Count(o => o.Type == type && o != border && o != border2) != 7)
                 return false;
 
-            return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+            return PlaceObject(mapObjectCoordinates, altitude, itemid, zItem, texture, ground);
 
         }
 
@@ -1766,15 +1772,15 @@ namespace EssenceUDK.MapMaker.MapMaking
 
             //if (areaColorCoordinates.List.All(o => o.Type == TypeColor.Water || o.Type == TypeColor.WaterCoast) && areaColorCoordinates.Center.Type == TypeColor.WaterCoast)
             //{
-                //PlaceObject(mapObjectCoordinates, areaColorCoordinates, - 15, areaColorCoordinates.Center.Coasts.Coast.Texture, -5,
-                //            RandomTexture(areaColorCoordinates.Center.TextureIndex,random));
-                //return;
+            //PlaceObject(mapObjectCoordinates, areaColorCoordinates, - 15, areaColorCoordinates.Center.Coasts.Coast.Texture, -5,
+            //            RandomTexture(areaColorCoordinates.Center.TextureIndex,random));
+            //return;
             //}
 
             #region WaterCoasts
             if (areaColorCoordinates.Center.Type == TypeColor.WaterCoast)
             {
-                PlaceObject(mapObjectCoordinates, areaColorCoordinates, -15, areaColorCoordinates.Center.Coasts.Coast.Texture, -5,
+                PlaceObject(mapObjectCoordinates, -15, areaColorCoordinates.Center.Coasts.Coast.Texture, -5,
                            RandomTexture(areaColorCoordinates.Center.TextureIndex, random));
                 #region Borders
                 if
@@ -1995,11 +2001,12 @@ namespace EssenceUDK.MapMaker.MapMaking
                                   -15,
                                   areaColorCoordinates.Center.Coasts.Coast.Texture,
                                   areaColorCoordinates.NorthWest,
-                                  RandomFromList(areaColorCoordinates.Center.Coasts.Ground.EdgeNorthWest.List,random),true))
+                                  RandomFromList(areaColorCoordinates.Center.Coasts.Ground.EdgeNorthWest.List, random), true))
             {
                 mapObjectCoordinates.East.Altitude = -5;
                 if (areaColorCoordinates.NorthEast.Type != TypeColor.WaterCoast)
                     mapObjectCoordinates.NorthEast.Altitude = -5;
+                mapObjectCoordinates.Center.Altitude += (sbyte)random.Next(-5, 1);
 
                 return;
             }
@@ -2017,15 +2024,20 @@ namespace EssenceUDK.MapMaker.MapMaking
                     -15,
                     RandomFromList
                         (
-                            areaColorCoordinates.Center.Coasts.Coast.EdgeNorthEast.List,random
+                            areaColorCoordinates.Center.Coasts.Coast.EdgeNorthEast.List, random
                         )
                     ,
                     areaColorCoordinates.NorthEast,
                     RandomFromList
-                        (areaColorCoordinates.Center.Coasts.Ground.EdgeNorthEast.List,random),
+                        (areaColorCoordinates.Center.Coasts.Ground.EdgeNorthEast.List, random),
                         true
                     ))
+            {
+                mapObjectCoordinates.Center.Altitude += (sbyte)random.Next(-5, 1);
+
                 return;
+            }
+
             #endregion //NEB
 
             #region SEB
@@ -2041,17 +2053,17 @@ namespace EssenceUDK.MapMaker.MapMaking
                     (sbyte)random.Next(areaColorCoordinates.Center.Min, areaColorCoordinates.Center.Max),
                     RandomFromList
                         (
-                            areaColorCoordinates.Center.Coasts.Coast.EdgeSouthEast.List,random
+                            areaColorCoordinates.Center.Coasts.Coast.EdgeSouthEast.List, random
                         )
                     ,
                     areaColorCoordinates.SouthEast,
                     RandomFromList
-                        (areaColorCoordinates.Center.Coasts.Ground.EdgeSouthEast.List,random)
-                    ,true))
-                    
-                
-                
+                        (areaColorCoordinates.Center.Coasts.Ground.EdgeSouthEast.List, random)
+                    , true))
+            {
+
                 return;
+            }
 
             #endregion //SEB
 
@@ -2068,13 +2080,13 @@ namespace EssenceUDK.MapMaker.MapMaking
                     (sbyte)random.Next(areaColorCoordinates.Center.Min, areaColorCoordinates.Center.Max),
                     RandomFromList
                         (
-                            areaColorCoordinates.Center.Coasts.Coast.EdgeSouthWest.List,random
+                            areaColorCoordinates.Center.Coasts.Coast.EdgeSouthWest.List, random
                         )
                     ,
                     areaColorCoordinates.SouthWest,
                     RandomFromList
-                        (areaColorCoordinates.Center.Coasts.Ground.EdgeSouthWest.List,random)
-                    ,true))
+                        (areaColorCoordinates.Center.Coasts.Ground.EdgeSouthWest.List, random)
+                    , true))
                 return;
 
             #endregion //SWB
@@ -2087,13 +2099,13 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (PlaceDoubleBorder(areaColorCoordinates, mapObjectCoordinates, coordinates,
                                   areaColorCoordinates.Center.Type, 0, 0, 0, areaColorCoordinates.SouthWest,
                                   areaColorCoordinates.NorthWest,
-                                  RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthWest.List,random),true))
+                                  RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthWest.List, random), true))
                 return;
             //IWE
             if (PlaceDoubleBorder(areaColorCoordinates, mapObjectCoordinates, coordinates,
                                   areaColorCoordinates.Center.Type, 0, 0, 0, areaColorCoordinates.NorthWest,
                                   areaColorCoordinates.SouthEast,
-                                  RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthWest.List,random),true))
+                                  RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthWest.List, random), true))
                 return;
             #endregion //DOUBLE BORDER
 
@@ -2110,9 +2122,9 @@ namespace EssenceUDK.MapMaker.MapMaking
                               -15,
                               areaColorCoordinates.Center.Coasts.Coast.Texture,
                               random,
-                              RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineNorth.List, random),true))
+                              RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineNorth.List, random), true))
             {
-                mapObjectCoordinates.South.Altitude += (sbyte) random.Next(areaColorCoordinates.South.Min-2, areaColorCoordinates.South.Max-2);
+                mapObjectCoordinates.South.Altitude += (sbyte)random.Next(areaColorCoordinates.South.Min - 2, areaColorCoordinates.South.Max - 2);
                 return;
 
             }
@@ -2129,9 +2141,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                               -15,
                               areaColorCoordinates.Center.Coasts.Coast.Texture,
                               random,
-                              RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineWest.List,random),true))
+                              RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineWest.List, random), true))
             {
-
                 return;
             }
 
@@ -2146,9 +2157,10 @@ namespace EssenceUDK.MapMaker.MapMaking
                               areaColorCoordinates.Center.Type,
                               -5,
                               (sbyte)random.Next(areaColorCoordinates.Center.Min, areaColorCoordinates.Center.Max),
-                              RandomFromList(areaColorCoordinates.Center.Coasts.Coast.LineEast.List,random),
-                              RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineEast.List,random),true))
+                              RandomFromList(areaColorCoordinates.Center.Coasts.Coast.LineEast.List, random),
+                              RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineEast.List, random), true))
             {
+                mapObjectCoordinates.Center.Altitude += (sbyte)random.Next(-4, 2);
                 return;
 
             }
@@ -2164,10 +2176,12 @@ namespace EssenceUDK.MapMaker.MapMaking
                               areaColorCoordinates.Center.Type,
                               -5,
                               (sbyte)random.Next(areaColorCoordinates.Center.Min, areaColorCoordinates.Center.Max),
-                              RandomFromList(areaColorCoordinates.Center.Coasts.Coast.LineSouth.List,random),
-                              RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineSouth.List,random),true))
-
+                              RandomFromList(areaColorCoordinates.Center.Coasts.Coast.LineSouth.List, random),
+                              RandomFromList(areaColorCoordinates.Center.Coasts.Ground.LineSouth.List, random), true))
+            {
+                mapObjectCoordinates.Center.Altitude += (sbyte)random.Next(-5, 1);
                 return;
+            }
 
             #endregion //NS
 
@@ -2187,14 +2201,15 @@ namespace EssenceUDK.MapMaker.MapMaking
                 -15,
                 areaColorCoordinates.Center.Coasts.Coast.Texture,
                 random,
-                RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderNorthEast.List, random),true))
+                RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderNorthEast.List, random), true))
             {
-                if(areaColorCoordinates.NorthWest.Type!= TypeColor.WaterCoast)
-                    PlaceObject(mapObjectCoordinates, areaColorCoordinates ,- 15,
-                            RandomFromList(areaColorCoordinates.Center.Coasts.Coast.EdgeSouthWest.List,random), -15,-1);
-                 
+                //if (areaColorCoordinates.NorthWest.Type != TypeColor.WaterCoast)
+                //    PlaceObject(mapObjectCoordinates, areaColorCoordinates, -15,
+                //            RandomFromList(areaColorCoordinates.Center.Coasts.Coast.EdgeSouthWest.List, random), -15, -1);
+
                 mapObjectCoordinates.SouthEast.Altitude = -15;
-                
+                mapObjectCoordinates.Center.Altitude += (sbyte)random.Next(-5, 1);
+
                 return;
 
             }
@@ -2211,7 +2226,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                                -15,
                                areaColorCoordinates.Center.Coasts.Coast.Texture,
                                random,
-                               RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthWest.List,random),true))
+                               RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthWest.List, random), true))
             {
                 return;
 
@@ -2229,9 +2244,10 @@ namespace EssenceUDK.MapMaker.MapMaking
                  -5,
                  -15,
                  areaColorCoordinates.Center.Coasts.Coast.Texture,
-                 RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderNorthWest.List,random),true))
+                 RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderNorthWest.List, random), true))
             {
                 mapObjectCoordinates.SouthEast.Altitude = -15;
+                mapObjectCoordinates.Center.Altitude += (sbyte)random.Next(-4, 2);
                 return;
             }
 
@@ -2245,9 +2261,14 @@ namespace EssenceUDK.MapMaker.MapMaking
                                areaColorCoordinates.Center.Type,
                                -5,
                                (sbyte)random.Next(areaColorCoordinates.Center.Min, areaColorCoordinates.Center.Max),
-                               RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderSouthEast.List,random),
-                               RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthEast.List,random),true))
+                               RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderSouthEast.List, random),
+                               RandomFromList(areaColorCoordinates.Center.Coasts.Ground.BorderSouthEast.List, random), true))
+            {
+                mapObjectCoordinates.Center.Altitude += (sbyte)random.Next(-5, 1);
+
                 return;
+                
+            }
 
             #endregion //South East Edge
 
@@ -2257,7 +2278,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             var coasts = areaColorCoordinates.List.FirstOrDefault(o => o.Type == TypeColor.WaterCoast);
 
             _bitmapAreaColor[coordinates.Center] = coasts;
-            PlaceObject(mapObjectCoordinates, areaColorCoordinates ,- 5, coasts.Coasts.Coast.Texture, -15, -1);
+            PlaceObject(mapObjectCoordinates, -5, coasts.Coasts.Coast.Texture, -15, -1);
 
             #endregion //casual
         }
@@ -2275,7 +2296,7 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// <param name="coordinates"> </param>
         /// <param name="Areacoordinates"> </param>
         /// <param name="mapObjectCoordinates"> </param>
-        private static void MakeCliffs(Coordinates coordinates, AreaColorCoordinates Areacoordinates, MapObjectCoordinates mapObjectCoordinates,Random random)
+        private static void MakeCliffs(Coordinates coordinates, AreaColorCoordinates Areacoordinates, MapObjectCoordinates mapObjectCoordinates, Random random)
         {
             if (Areacoordinates.Center.Type != TypeColor.Cliff) return;
 
@@ -2293,7 +2314,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                         o => o.Directions == DirectionCliff.WestEast && o.ColorTo == Areacoordinates.East.Color);
 
                 if (areaTransitionCliffTexture != null)
-                    mapObjectCoordinates.Center.Texture = (short) RandomFromList(areaTransitionCliffTexture.List,random);
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(areaTransitionCliffTexture.List, random);
                 return;
             }
 
@@ -2303,8 +2324,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                 var areaTransitionCliffTexture =
                     Areacoordinates.North.TransitionCliffTextures.FirstOrDefault(
                         o => o.Directions == DirectionCliff.NorthSouth && o.ColorTo == Areacoordinates.South.Color);
-                if(areaTransitionCliffTexture!=null)
-                mapObjectCoordinates.Center.Texture = (short) RandomFromList(areaTransitionCliffTexture.List, random);
+                if (areaTransitionCliffTexture != null)
+                    mapObjectCoordinates.Center.Texture = (short)RandomFromList(areaTransitionCliffTexture.List, random);
                 return;
             }
 
@@ -2317,7 +2338,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             // ?X?
             //  C
             if (Areacoordinates.South.Type == TypeColor.Cliff && Areacoordinates.North.Type != TypeColor.Cliff
-                && Areacoordinates.East.Type!= TypeColor.Cliff && Areacoordinates.West.Type!= TypeColor.Cliff)
+                && Areacoordinates.East.Type != TypeColor.Cliff && Areacoordinates.West.Type != TypeColor.Cliff)
             {
                 AreaTransitionCliffTexture areaTransitionCliffTexture = null;
                 if (Areacoordinates.North.Type != TypeColor.Cliff)
@@ -2327,7 +2348,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                             c => c.Directions == DirectionCliff.NorthEnd && c.ColorTo == Areacoordinates.North.Color);
 
                 if (areaTransitionCliffTexture != null)
-                    AddTexture(RandomFromList(areaTransitionCliffTexture.List,random), mapObjectCoordinates);
+                    AddTexture(RandomFromList(areaTransitionCliffTexture.List, random), mapObjectCoordinates);
                 return;
             }
 
@@ -2335,7 +2356,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             // CX!
             //  ?
             if (Areacoordinates.West.Type == TypeColor.Cliff && Areacoordinates.East.Type != TypeColor.Cliff
-                && Areacoordinates.North.Type!=TypeColor.Cliff && Areacoordinates.South.Type!=TypeColor.Cliff)
+                && Areacoordinates.North.Type != TypeColor.Cliff && Areacoordinates.South.Type != TypeColor.Cliff)
             {
                 var areaTransitionCliffTexture = Areacoordinates.South.TransitionCliffTextures.
                     FirstOrDefault(
@@ -2351,7 +2372,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             // ?X?
             //  !
             if (Areacoordinates.South.Type != TypeColor.Cliff && Areacoordinates.North.Type == TypeColor.Cliff
-                && Areacoordinates.East.Type!= TypeColor.Cliff && Areacoordinates.West.Type!=TypeColor.Cliff)
+                && Areacoordinates.East.Type != TypeColor.Cliff && Areacoordinates.West.Type != TypeColor.Cliff)
             {
                 var areaTransitionCliffTexture = Areacoordinates.East.TransitionCliffTextures.
                     FirstOrDefault(c => c.Directions == DirectionCliff.SouthEnd &&
@@ -2368,7 +2389,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             // !XC
             //  ?
             if (Areacoordinates.East.Type == TypeColor.Cliff && Areacoordinates.West.Type != TypeColor.Cliff
-                && Areacoordinates.North.Type!=TypeColor.Cliff&& Areacoordinates.South.Type!=TypeColor.Cliff)
+                && Areacoordinates.North.Type != TypeColor.Cliff && Areacoordinates.South.Type != TypeColor.Cliff)
             {
                 var areaTransitionCliffTexture = Areacoordinates.South.TransitionCliffTextures.
                     FirstOrDefault(c => c.Directions == DirectionCliff.WestEnd
@@ -2390,7 +2411,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             // CX
             //   ?
             if (Areacoordinates.West.Type == TypeColor.Cliff && Areacoordinates.North.Type == TypeColor.Cliff
-                && Areacoordinates.NorthWest.Type!= TypeColor.Cliff)
+                && Areacoordinates.NorthWest.Type != TypeColor.Cliff)
             {
                 var areaTransitionCliffTexture = Areacoordinates.NorthWest.TransitionCliffTextures.
                     FirstOrDefault(c => c.Directions == DirectionCliff.NorthWestRounding &&
@@ -2412,14 +2433,14 @@ namespace EssenceUDK.MapMaker.MapMaking
                              && c.ColorTo == Areacoordinates.NorthEast.Color);
 
                 if (areaTransitionCliffTexture != null)
-                    AddTexture(RandomFromList(areaTransitionCliffTexture.List,random), mapObjectCoordinates);
+                    AddTexture(RandomFromList(areaTransitionCliffTexture.List, random), mapObjectCoordinates);
                 return;
             }
 
             // ? 
             //  XC
             //  C
-            if (Areacoordinates.East.Type == TypeColor.Cliff && Areacoordinates.South.Type == TypeColor.Cliff && Areacoordinates.SouthEast.Type!= TypeColor.Cliff)
+            if (Areacoordinates.East.Type == TypeColor.Cliff && Areacoordinates.South.Type == TypeColor.Cliff && Areacoordinates.SouthEast.Type != TypeColor.Cliff)
             {
                 var areaTransitionCliffTexture = Areacoordinates.SouthEast.TransitionCliffTextures.
                     FirstOrDefault(
@@ -2435,7 +2456,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             //   ?
             // CX
             //  C
-            if (Areacoordinates.West.Type == TypeColor.Cliff && Areacoordinates.South.Type == TypeColor.Cliff && Areacoordinates.SouthWest.Type!= TypeColor.Cliff)
+            if (Areacoordinates.West.Type == TypeColor.Cliff && Areacoordinates.South.Type == TypeColor.Cliff && Areacoordinates.SouthWest.Type != TypeColor.Cliff)
             {
                 var areaTransitionCliffTexture = Areacoordinates.SouthWest.TransitionCliffTextures.
                     FirstOrDefault(
@@ -2443,7 +2464,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                              && c.ColorTo == Areacoordinates.SouthWest.Color);
 
                 if (areaTransitionCliffTexture != null)
-                    AddTexture(RandomFromList(areaTransitionCliffTexture.List,random), mapObjectCoordinates);
+                    AddTexture(RandomFromList(areaTransitionCliffTexture.List, random), mapObjectCoordinates);
                 return;
             }
 
@@ -2462,7 +2483,7 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// <summary>
         /// method to set items in the map
         /// </summary>
-        void SetItem( )
+        void SetItem()
         {
             var randomGen = new Random();
             int x, y, z = 0;
@@ -2690,7 +2711,7 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// <returns>array of params</returns>
         private Coordinates MakeIndexesDirections(int x, int y, int shiftX, int shiftY)
         {
-            return new Coordinates(shiftX, shiftY, x, y, _stride,_bitmapAreaColor.Length);
+            return new Coordinates(shiftX, shiftY, x, y, _stride, _bitmapAreaColor.Length);
         }
 
 
@@ -2793,7 +2814,7 @@ namespace EssenceUDK.MapMaker.MapMaking
 
         public AreaColor[] List { get; set; }
 
-        
+
         public AreaColorCoordinates(Coordinates coordinates, AreaColor[] map)
         {
             List = new AreaColor[9];
@@ -2932,38 +2953,38 @@ namespace EssenceUDK.MapMaker.MapMaking
 
     internal struct ItemClone
     {
-        private int _x;
-        private int _y;
-        private int _z;
+        //private int _x;
+        //private int _y;
+        private sbyte _z;
         private int _hue;
         private int _id;
 
-        public int X
-        {
-            get { return _x; }
-            set { _x = value; }
-        }
+        //public int X
+        //{
+        //    get { return _x; }
+        //    set { _x = value; }
+        //}
 
-        public int Y { get { return _y; } set { _y = value; } }
+        //public int Y { get { return _y; } set { _y = value; } }
 
         public int Id { get { return _id; } set { _id = value; } }
 
-        public int Z { get { return _z; } set { _z = value; } }
+        public sbyte Z { get { return _z; } set { _z = value; } }
 
         public int Hue { get { return _hue; } set { _hue = value; } }
 
         public ItemClone(SingleItem item)
         {
-            _x = item.X;
-            _y = item.Y;
-            _z = item.Z;
+            //_x = item.X;
+            //_y = item.Y;
+            _z = (sbyte)item.Z;
             _id = item.Id;
             _hue = item.Hue;
         }
 
         public SingleItem ToSingleItem()
         {
-            return new SingleItem() { Id = Id, Hue = _hue, X = X, Y = Y, Z = Z };
+            return new SingleItem() { Id = Id, Hue = _hue, X = 0, Y = 0, Z = Z };
         }
     }
 
