@@ -559,6 +559,7 @@ namespace EssenceUDK.MapMaker
                 
                 throw e;
             }
+            GC.Collect();
 
             var mulmaker = new MapMaking.MapMaker(taskMapZ.Result, taskMapBitmap.Result, x, y, index)
                                {
@@ -581,7 +582,7 @@ namespace EssenceUDK.MapMaker
                
                 throw e;
             }
-            System.GC.Collect();
+            GC.Collect();
             
         }
             
