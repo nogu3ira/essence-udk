@@ -19,7 +19,15 @@ namespace MapMakerApplication
 
         private void ApplicationDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Exception.InnerException.InnerException.Message));
+            if (e.Exception.InnerException != null && e.Exception.InnerException.InnerException!=null)
+            AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Exception.Message + '\n'+ e.Exception.InnerException.Message + '\n' + e.Exception.InnerException.InnerException.Message));
+            else
+            {
+                AppMessages.DialogRequest.Send(e.Exception.InnerException != null
+                                                   ? new MessageDialogRequest(e.Exception.Message + '\n' +
+                                                                              e.Exception.InnerException.Message)
+                                                   : new MessageDialogRequest(e.Exception.Message));
+            }
             e.Handled = true;
         }
     }
