@@ -125,6 +125,7 @@ namespace EssenceUDK.MapMaker.Elements.BaseTypes
         private IList<T> ListDeserialization<T>(SerializationInfo info, string name)
         {
             var lenght =info.GetUInt32(name + "Lenght");
+            if (lenght == 0) return new List<T>();
             var list = new List<T>();
             Type t = typeof (T);
             for (int i = 0; i < lenght; i++)

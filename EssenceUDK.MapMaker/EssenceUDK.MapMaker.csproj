@@ -62,7 +62,7 @@
     <Compile Include="Elements\Items\CollectionItem.cs" />
     <Compile Include="Elements\Items\Items\SingleItem.cs" />
     <Compile Include="Elements\ProgressEventArgs.cs" />
-    <Compile Include="MakeMapSDK.cs" />
+    <Compile Include="MapSdk.cs" />
     <Compile Include="MapMaking\BitmapReader.cs" />
     <Compile Include="Elements\BaseTypes\ComplexTypes\CollectionItem.cs" />
     <Compile Include="Elements\ColorArea\ColorArea\AreaColor.cs" />

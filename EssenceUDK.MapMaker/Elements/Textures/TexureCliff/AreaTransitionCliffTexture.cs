@@ -50,7 +50,7 @@ namespace EssenceUDK.MapMaker.Elements.Textures.TexureCliff
             set
             {
                 _idTo = value;
-                ColorTo = MakeMapSDK.Colors[value];
+                ColorTo = MapSdk.Colors[value];
                 RaisePropertyChanged(() => IdTo);
             }
         }

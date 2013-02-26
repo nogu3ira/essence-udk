@@ -3,9 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:CollectionManager="clr-namespace:MapMakerApplication.Controllers.CollectionManager"  x:Class="MapMakerApplication.Controllers.TransationEditor"
+             xmlns:CollectionManager="clr-namespace:MapMakerApplication.Controllers.CollectionManager"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:ViewModel="clr-namespace:MapMakerApplication.ViewModel"
+             x:Class="MapMakerApplication.Controllers.TransationEditor"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="800" d:DesignWidth="600">
 	<UserControl.Resources>
 		
 		<ItemsPanelTemplate x:Key="ItemsPanelTemplate2">
@@ -47,7 +50,7 @@
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding SelectedIndex, ElementName=ComboBoxSelector}" Value="1"/>
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="ItemTemplate" Value="{StaticResource MyImagesItemTemplateTextureFromInt}"/>
+                            <Setter Property="ItemTemplate" Value="{StaticResource MyImagesItemTemplateItemFromInt}"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -114,21 +117,10 @@
                                  >
                                         <ListView.View>
                                             <GridView>
-                                            	<GridViewColumn Header="Index" DisplayMemberBinding="{Binding IndexTo}"/>
-                                            	<GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
-                                            	<GridViewColumn Header="Color" >
-                                            		<GridViewColumn.CellTemplate>
-                                            			<DataTemplate>
-                                            				<DockPanel>
-                                            					<DockPanel.Background>
-                                            						<SolidColorBrush Color="{Binding ColorTo}"/>
-                                            					</DockPanel.Background>
-                                            					<TextBlock Text="{Binding ColorTo}" DockPanel.Dock="Top"/>
-                                            				</DockPanel>
-                                            			</DataTemplate>
-                                            		</GridViewColumn.CellTemplate>
-                                            	</GridViewColumn>
-                                            </GridView>
+                                            	<GridViewColumn Header="Transition Name" DisplayMemberBinding="{Binding Name}"/>
+                                            	<GridViewColumn Header="Texture Referenced" DisplayMemberBinding="{Binding TextureIdTo}"/>
+                                            	
+											</GridView>
                                         </ListView.View>
                                     </ListView>
                                     <Button Content="Add" Command="{Binding CommandAdd, RelativeSource={RelativeSource TemplatedParent}}"/>
@@ -153,90 +145,103 @@
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding SelectedIndex, ElementName=ComboBoxSelector}" Value="1"/>
                                 </MultiDataTrigger.Conditions>
-                                <Setter Property="ItemsSource" Value="{Binding Sdk.CollectionAreaColorSelected.TransitionItems, Source={StaticResource Locator}}"/>
+                            <Setter Property="ItemsSource" Value="{Binding Source={StaticResource Locator}, Path=Sdk.SelectedTextures.CollectionAreaItems.List}"/>
                             </MultiDataTrigger>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding SelectedIndex, ElementName=ComboBoxSelector}" Value="0"/>
                                 </MultiDataTrigger.Conditions>
-                            <Setter Property="ItemsSource" Value="{Binding Sdk.CollectionAreaColorSelected.TextureTransitions, Source={StaticResource Locator}}"/>
+                            <Setter Property="ItemsSource" Value="{Binding Sdk.SelectedTextures.AreaTransitionTexture.List, Source={StaticResource Locator}}"/>
                         </MultiDataTrigger>
                         </Style.Triggers>
                 </Style>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="14.899" />
-                <ColumnDefinition Width="23"/>
-                <ColumnDefinition Width="0.479*"/>
-                <ColumnDefinition Width="0.228*" />
-                <ColumnDefinition Width="21" />
-                <ColumnDefinition Width="0.293*" />
-                <ColumnDefinition Width="Auto" MinWidth="96.929"/>
+                <ColumnDefinition Width="Auto" MinWidth="114" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="Auto" MinWidth="114"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="21" />
-                <RowDefinition Height="21"/>
-                <RowDefinition Height="21"/>
-                <RowDefinition Height="78*" />
                 <RowDefinition Height="20" />
-                <RowDefinition Height="21" />
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="*" />
                 <RowDefinition Height="20" />
-                <RowDefinition Height="21" />
-                <RowDefinition Height="45*" />
-                <RowDefinition Height="20" />
-                <RowDefinition Height="16*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <ListBox 
-                Grid.ColumnSpan="6" 
+			<Border 
+			CornerRadius="5" 
+			Grid.Column="0" 
+			Grid.Row="3" 
+			Grid.ColumnSpan="8"
+			Margin="5"
+			>
+            <ListBox  
                 x:Name="ListBoxData"
-                Style="{StaticResource localChanginAll}" Grid.Row="3"
-                SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTile, Source={StaticResource Locator}}"
-                     />
-
+                Style="{StaticResource localChanginAll}" 
+                SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTile, Source={StaticResource Locator}}" 
+				Background="{DynamicResource BackGroundGreed}">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Add" Command="{Binding Sdk.TransationEditorViewModel.TileAdd, Source={StaticResource Locator}}"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                </ListBox>
+			</Border>
             <ListBox 
         		Grid.ColumnSpan="6" 
-        		Grid.Row="8" 
+        		Grid.Row="5" 
         		x:Name="ListBoxSelect"
         		Style="{StaticResource LocalTransitionListbox}"
                 ItemsSource="{Binding Sdk.TransationEditorViewModel.SelectedLineTransition, Source={StaticResource Locator}}"
-                SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTileInt, Source={StaticResource Locator}}" ItemsPanel="{DynamicResource ItemsPanelTemplate2}" Grid.RowSpan="3" />
+                SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTileInt, Source={StaticResource Locator}}" ItemsPanel="{DynamicResource ItemsPanelTemplate2}" Background="{DynamicResource BackGroundGreed}" Margin="5">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Remove" Command="{Binding Sdk.TransationEditorViewModel.TileRemove, Source={StaticResource Locator}}"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
             <ComboBox 
-                Grid.Row="7" 
+                Grid.Row="4" 
                 x:Name="comboBoxTypeLine" 
                 ItemsSource="{Binding Source={StaticResource ObjectProviderLineType}}" 
-                SelectedIndex="{Binding Sdk.TransationEditorViewModel.ComboBoxLineTypeSelectedIndex, Source={StaticResource Locator}}" Grid.ColumnSpan="2" Margin="0,0,0.333,0.333"
-                />
+                SelectedIndex="{Binding Sdk.TransationEditorViewModel.ComboBoxLineTypeSelectedIndex, Source={StaticResource Locator}}" Margin="5,0,0,0" />
             <ComboBox 
-                Grid.Column="3" 
-                Grid.Row="7" 
-                x:Name="comboBoxDirection" Grid.ColumnSpan="2" 
-                Style="{StaticResource ComboBoxLinked}"
+                Grid.Column="4" 
+                Grid.Row="4" 
+                x:Name="comboBoxDirection" Style="{StaticResource ComboBoxLinked}"
                 />
-            <Button Content="Add" Grid.Row="5" x:Name="ButtonAdd" Grid.ColumnSpan="2" Command="{Binding Sdk.TransationEditorViewModel.TileAdd, Source={StaticResource Locator}}" />
-            <Button Content="Remove" Grid.Column="3" Grid.Row="5" x:Name="ButtonRemove" Grid.ColumnSpan="2" Command="{Binding Sdk.TransationEditorViewModel.TileRemove, Source={StaticResource Locator}}" />
-            <ComboBox x:Name="ComboBoxSelector" Grid.ColumnSpan="3" Grid.Row="2" SelectedIndex="{Binding Sdk.TransationEditorViewModel.SelectedKindOfTransition, Source={StaticResource Locator}}">
+            <ComboBox x:Name="ComboBoxSelector" Grid.Row="2" SelectedIndex="{Binding Sdk.TransationEditorViewModel.SelectedKindOfTransition,UpdateSourceTrigger=PropertyChanged, Source={StaticResource Locator}}" Margin="5,0,0,0">
                 <ComboBoxItem Content="Textures"/>
                 <ComboBoxItem Content="Items"/>
             </ComboBox>
 
-            <CollectionManager:CollectionManager 
+            <CollectionManager:CollectionManager
                 x:Name="CollectionManager"
                 CommandAdd="{Binding Sdk.TransationEditorViewModel.TransitionAdd, Source={StaticResource Locator}}"
                 CommandRemove="{Binding Sdk.TransationEditorViewModel.TransitionRemove, Source={StaticResource Locator}}"
                 Style="{StaticResource TransitionGridLocal}"
                 SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTransition, Mode=TwoWay, Source={StaticResource Locator}}" 
-                Grid.Row="2" Grid.Column="7" Grid.RowSpan="6" />
-            <TextBlock Text="Name" TextWrapping="Wrap"/>
-            <TextBox Grid.ColumnSpan="7" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Sdk.TransationEditorViewModel.SelectedTransition.Name}"/>
-            <TextBlock TextWrapping="Wrap" Grid.Row="1"><Run Language="it-it" Text="Id"/></TextBlock>
-            <ComboBox Grid.ColumnSpan="5" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Sdk.MakeMapSDK.AreaColorIndexes, Source={StaticResource Locator}}" SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTransition.IndexTo}"/>
-            <TextBlock Grid.Column="6" TextWrapping="Wrap" Text="{Binding Sdk.SelectedTransition.ColorTo, Source={StaticResource Locator}}" Grid.ColumnSpan="2" Grid.Row="1">
-                <TextBlock.Background>
-                    <SolidColorBrush Color="{Binding Sdk.SelectedTransition.ColorTo, Source={StaticResource Locator}}"/>
-                </TextBlock.Background>
-            </TextBlock>
-            <Button Content="Export to CentrED+" Grid.Column="7" Grid.Row="9" Name="button1" />
+                Grid.Row="5" Grid.Column="6" Grid.ColumnSpan="2" Margin="5" >
+            	<CollectionManager:CollectionManager.ContextMenu>
+            		<ContextMenu>
+            			<MenuItem 
+						Header="Remove" 
+						Command="{Binding Sdk.TransationEditorViewModel.TransitionRemove, Source={StaticResource Locator}}"/>      		
+					</ContextMenu>        	
+				</CollectionManager:CollectionManager.ContextMenu>
+				</CollectionManager:CollectionManager>
+            <TextBlock Text="Name" TextWrapping="Wrap" Margin="5,0,0,0" />
+            <TextBox Grid.ColumnSpan="5" Grid.Column="2" TextWrapping="Wrap" Text="{Binding Sdk.TransationEditorViewModel.SelectedTransition.Name,UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock TextWrapping="Wrap" Grid.Row="1" Margin="5,0,0,0"><Run Language="it-it" Text="Texture Reference"/></TextBlock>
+            <!--<xctk:IntegerUpDown Grid.Column="2" Grid.Row="1" Minimum="0" Value="{Binding Sdk.TransationEditorViewModel.SelectedTransition.IndexTextureTo, UpdateSourceTrigger=PropertyChanged}" />-->
+            <ComboBox Grid.Column="4" Grid.Row="1" Name="ComboBoxId" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.TextureIds,UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Sdk.TransationEditorViewModel.IndexTextureTo, UpdateSourceTrigger=PropertyChanged}" />
+            <ComboBox Grid.Column="2" Grid.Row="1" SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTextureName,UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.TextureNames}"/>
         </Grid>
     </Grid>
 </UserControl>

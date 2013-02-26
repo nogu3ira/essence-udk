@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	x:Class="MapMakerApplication.Controllers.MapMaker"
-	x:Name="UserControl" DataContext="{Binding Source={StaticResource Locator},Path=MapMaker}" d:DesignHeight="480" d:DesignWidth="640">
+	x:Name="UserControl" DataContext="{Binding Source={StaticResource Locator},Path=MapMaker}" d:DataContext="" d:DesignHeight="800" d:DesignWidth="640">
 
 	<Grid x:Name="LayoutRoot">
 		<Grid.ColumnDefinitions>

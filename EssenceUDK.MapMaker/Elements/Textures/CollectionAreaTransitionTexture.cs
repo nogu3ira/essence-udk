@@ -20,9 +20,10 @@ namespace EssenceUDK.MapMaker.Elements.Textures
         
         #region Fields
         
-        [NonSerialized] private Dictionary<Color, bool> _dictionaryColorTo;
-        [NonSerialized] private Dictionary<Color, bool> _dictionaryColorFrom;
-        
+        //[NonSerialized] private Dictionary<Color, bool> _dictionaryColorTo;
+        //[NonSerialized] private Dictionary<Color, bool> _dictionaryColorFrom;
+        [NonSerialized] private Dictionary<int, AreaTransitionTexture> _dictionaryFindIndex;
+        private bool init = false;
         #endregion
 
         #region Ctor
@@ -35,62 +36,81 @@ namespace EssenceUDK.MapMaker.Elements.Textures
 
         #region Search Methods
 
-        public IEnumerable<AreaTransitionTexture> FindFromByColor(Color color)
+        //public IEnumerable<AreaTransitionTexture> FindFromByColor(Color color)
+        //{
+        //    return List.Where(text => text.ColorFrom == color);
+        //}
+
+        //public IEnumerable<AreaTransitionTexture> FindToByColor(Color color)
+        //{
+        //    return List.Where(text => text.ColorTo == color);
+        //}
+
+        //public bool ColorFromContains(Color color)
+        //{
+        //    bool answer;
+
+        //    _dictionaryColorFrom.TryGetValue(color, out answer);
+        //    return answer;
+        //}
+
+        //public bool Contains(Color color)
+        //{
+        //    bool answer;
+
+        //    _dictionaryColorFrom.TryGetValue(color, out answer);
+        //    if (answer)
+        //        return true;
+
+        //    _dictionaryColorTo.TryGetValue(color, out answer);
+        //    return answer;
+
+        //}
+
+
+        public AreaTransitionTexture FindById(int id)
         {
-            return List.Where(text => text.ColorFrom == color);
+            AreaTransitionTexture result;
+            _dictionaryFindIndex.TryGetValue(id, out result);
+            return result;
         }
-
-        public IEnumerable<AreaTransitionTexture> FindToByColor(Color color)
-        {
-            return List.Where(text => text.ColorTo == color);
-        }
-
-        public bool ColorFromContains(Color color)
-        {
-            bool answer;
-
-            _dictionaryColorFrom.TryGetValue(color, out answer);
-            return answer;
-        }
-
-        public bool Contains(Color color)
-        {
-            bool answer;
-
-            _dictionaryColorFrom.TryGetValue(color, out answer);
-            if (answer)
-                return true;
-
-            _dictionaryColorTo.TryGetValue(color, out answer);
-            return answer;
-
-        }
+        
         #endregion
 
         #region IContainerSet
         
         public void InitializeSeaches()
         {
-            _dictionaryColorTo  = new Dictionary<Color, bool>();
-            _dictionaryColorFrom = new Dictionary<Color, bool>();
-
+            if (init)
+                return;
+            //_dictionaryColorTo  = new Dictionary<Color, bool>();
+            //_dictionaryColorFrom = new Dictionary<Color, bool>();
+            _dictionaryFindIndex = new Dictionary<int, AreaTransitionTexture>();
             foreach (var textureSmooth in List)
             {
+                //try
+                //{
+                //    _dictionaryColorTo.Add(textureSmooth.ColorTo, true);
+                //}
+                //catch (Exception)
+                //{
+                //}
+                //try
+                //{
+                //    _dictionaryColorFrom.Add(textureSmooth.ColorFrom,true);
+                //}
+                //catch (Exception)
+                //{
+                //}
                 try
                 {
-                    _dictionaryColorTo.Add(textureSmooth.ColorTo, true);
-                }
-                catch (Exception)
-                {
-                }
-                try
-                {
-                    _dictionaryColorFrom.Add(textureSmooth.ColorFrom,true);
+                    _dictionaryFindIndex.Add(textureSmooth.TextureIdTo,textureSmooth);
                 }
                 catch (Exception)
                 {
                 }
             }
+            init = true;
         }
         #endregion //IContainerSet
 

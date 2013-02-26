@@ -27,6 +27,11 @@ namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
         private String _name;
         private TypeColor _typeColor;
         private Color _color, _colorMountain;
+        private int _coastAltitude;
+        private int _itemsAltitude;
+        private bool _cliffCoast;
+        private int _minCoastTextureZ;
+
 
         private AreaTransitionItemCoast _coast;
         private ObservableCollection<AreaTransitionItem> _transitionItems;
@@ -34,12 +39,42 @@ namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
         private ObservableCollection<AreaTransitionTexture> _transitionTexture;
         private ObservableCollection<AreaTransitionCliffTexture> _transitionCliff;
         private ObservableCollection<CircleMountain> _list;
+        private ObservableCollection<CircleMountain> _SmoothCoast; 
         private Dictionary<Color, AreaTransitionTexture> _transitionTextureFinding;
         private Dictionary<Color, AreaTransitionItem> _transitionItemsFinding;
+
         public bool Initialized { get; private set; }
             #endregion
 
         #region Props
+
+        #region Item Part
+        public int ItemsAltitude { get { return _itemsAltitude; } set { _itemsAltitude = value; RaisePropertyChanged(()=>ItemsAltitude); } }
+
+        #endregion //itemParts
+
+        #region Coast Info
+        [Description("Item Coast Altitude"), Category("Area Color"), DisplayName("Coast Altitude")]
+        public int CoastAltitude
+        {
+            get { return _coastAltitude; }
+            set
+            {
+                _coastAltitude = value;
+                RaisePropertyChanged(() => CoastAltitude);
+            }
+        }
+
+        [Description("Coast Smooth Circles"), Category("Area Color"), DisplayName("Coast Smooth Circles")]
+        public ObservableCollection<CircleMountain> CoastSmoothCircles
+        {
+            get { return _SmoothCoast; }
+            set { _SmoothCoast = value; RaisePropertyChanged(() => CoastSmoothCircles); }
+        }
+
+        public bool CliffCoast { get { return _cliffCoast; } set { _cliffCoast = value; RaisePropertyChanged(()=>CliffCoast); } }
+
+        #endregion
 
         #region ColorArea Generical part
 
@@ -64,6 +99,9 @@ namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
         [Description("It describes what Area Color Represents"), Category("Area Color"), DisplayName("Type of Area")]
         public TypeColor Type { get { return _typeColor; } set { _typeColor = value; RaisePropertyChanged(() => Type); } }
 
+
+        public int MinCoastTextureZ { get { return _minCoastTextureZ; } set { _minCoastTextureZ = value; RaisePropertyChanged(()=>MinCoastTextureZ); } }
+
         #endregion
 
         #region Mountain Part
@@ -81,7 +119,7 @@ namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
             set
             {
                 _indexColorTop = value;
-                ColorTopMountain = MakeMapSDK.Colors[value];
+                ColorTopMountain = MapSdk.Colors[value];
                 RaisePropertyChanged(() => IndexColorTopMountain);
             }
         }
@@ -116,6 +154,10 @@ namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
 
         #endregion
 
+        #region Coast Info
+
+        #endregion //Coast Info
+
         #endregion //props
 
         #region Ctor
@@ -128,155 +170,23 @@ namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
             Min = 0;
             Max = 0;
             Name = "";
+            _list= new ObservableCollection<CircleMountain>();
             Type = TypeColor.None;
             _items = new AreaItems();
             _transitionTexture = new ObservableCollection<AreaTransitionTexture>();
             _transitionItems = new ObservableCollection<AreaTransitionItem>();
             _coast = new AreaTransitionItemCoast();
             _transitionCliff = new ObservableCollection<AreaTransitionCliffTexture>();
+            _SmoothCoast = new ObservableCollection<CircleMountain>();
+            _coastAltitude = 0;
+            _cliffCoast = false;
         }
 
         #endregion//ctor
 
-        //#region Implementation of IComparable
-
-        //public int CompareTo(AreaColor other)
-        //{
-        //    if (other.TextureIndex == TextureIndex)
-        //        return 0;
-        //    else
-        //    {
-        //        return -1;
-        //    }
-        //}
-
-        //#endregion //Implementation of IComparable
-
-        //#region Implementation of IEquatable
-
-        //public override bool Equals(object obj)
-        //{
-        //    if (ReferenceEquals(null, obj)) return false;
-        //    if (ReferenceEquals(this, obj)) return true;
-        //    if (obj.GetType() != this.GetType()) return false;
-        //    return Equals((AreaColor)obj);
-        //}
-
-
-
-        //public bool Equals(AreaColor other)
-        //{
-        //    if (ReferenceEquals(null, other)) return false;
-        //    if (ReferenceEquals(this, other)) return true;
-        //    return _automaticMode.Equals(other._automaticMode) && _textureIndex == other._textureIndex && _index == other._index && _min == other._min && _max == other._max && _indexTextureTop == other._indexTextureTop && _indexColorTop == other._indexColorTop && string.Equals(_name, other._name) && _typeColor.Equals(other._typeColor) && _color.Equals(other._color) && _colorMountain.Equals(other._colorMountain) && Equals(_coast, other._coast) && Equals(_transitionItems, other._transitionItems) && Equals(_items, other._items) && Equals(_transitionTexture, other._transitionTexture) && Equals(_transitionCliff, other._transitionCliff) && Equals(_list, other._list) && Equals(_transitionTextureFinding, other._transitionTextureFinding) && Equals(_transitionItemsFinding, other._transitionItemsFinding) && Initialized.Equals(other.Initialized);
-        //}
-
-
-        //public override int GetHashCode()
-        //{
-        //    unchecked
-        //    {
-        //        int hashCode = _automaticMode.GetHashCode();
-        //        hashCode = (hashCode * 397) ^ _textureIndex;
-        //        hashCode = (hashCode * 397) ^ _index;
-        //        hashCode = (hashCode * 397) ^ _min;
-        //        hashCode = (hashCode * 397) ^ _max;
-        //        hashCode = (hashCode * 397) ^ _indexTextureTop;
-        //        hashCode = (hashCode * 397) ^ _indexColorTop;
-        //        hashCode = (hashCode * 397) ^ (_name != null ? _name.GetHashCode() : 0);
-        //        hashCode = (hashCode * 397) ^ _typeColor.GetHashCode();
-        //        hashCode = (hashCode * 397) ^ _color.GetHashCode();
-        //        hashCode = (hashCode * 397) ^ _colorMountain.GetHashCode();
-        //        hashCode = (hashCode * 397) ^ (_coast != null ? _coast.GetHashCode() : 0);
-        //        hashCode = (hashCode * 397) ^ (_transitionItems != null ? _transitionItems.GetHashCode() : 0);
-        //        hashCode = (hashCode * 397) ^ (_items != null ? _items.GetHashCode() : 0);
-        //        hashCode = (hashCode * 397) ^ (_transitionTexture != null ? _transitionTexture.GetHashCode() : 0);
-        //        hashCode = (hashCode * 397) ^ (_transitionCliff != null ? _transitionCliff.GetHashCode() : 0);
-        //        hashCode = (hashCode * 397) ^ (_list != null ? _list.GetHashCode() : 0);
-        //        hashCode = (hashCode * 397) ^ Initialized.GetHashCode();
-        //        return hashCode;
-        //    }
-        //}
-
-        //#endregion //Implementation of IEquatable
-
         #region Override
 
         
-
-        //public override string ToString()
-        //{
-        //    return Name;
-        //}
-
-        //public override string this[string columnName]
-        //{
-        //    get
-        //    {
-        //        string result = null;
-
-        //        switch (columnName)
-        //        {
-        //            #region General Part
-        //            case "Index":
-        //                {
-        //                    if (MakeMapSDK.Colors.Keys.Contains(_index))
-        //                    {
-        //                        result = "Index MUST be a not used Index";
-        //                    }
-        //                }
-        //                break;
-        //            case "Min":
-        //                {
-        //                    if (_min < -128 || _min > 127)
-        //                    {
-        //                        result = "Min MUST be between -128 and 127";
-        //                    }
-        //                }
-        //                break;
-        //            case "Max":
-        //                {
-        //                    if (_max < -128 || _max > 127)
-        //                    {
-        //                        result = "Max MUST be between -128 and 127";
-        //                    }
-        //                }
-        //                break;
-        //            case "Color":
-        //                {
-        //                    if (MakeMapSDK.Colors.ContainsValue(_color))
-        //                    {
-        //                        result = "Color MUST be an unused one";
-        //                    }
-        //                }
-        //                break;
-
-        //            #endregion //General Part
-
-        //            #region Mountain Part
-
-        //            case "ColorTopMountain":
-        //                {
-        //                    if (!MakeMapSDK.Colors.ContainsValue(_colorMountain))
-        //                    {
-        //                        result = "Color of the mountain MUST be an used one";
-        //                    }
-        //                }
-        //                break;
-        //            case "IndexTextureTop":
-        //                {
-        //                    if (!MakeMapSDK.Colors.ContainsKey(_indexTextureTop))
-        //                    {
-        //                        result = "Color of the mountain MUST be an used one";
-        //                    }
-        //                }
-        //                break;
-
-        //            #endregion //Mountain Part
-        //        }
-        //        return result;
-        //    }
-        //}
 
         public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
         {
@@ -298,6 +208,11 @@ namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
             Serialize(() => Items, info);
             Serialize(() => TextureTransitions, info);
             Serialize(() => TransitionCliffTextures, info);
+            Serialize(()=>CoastAltitude,info);
+            Serialize(()=>CoastSmoothCircles,info);
+            Serialize(() => ItemsAltitude, info);
+            Serialize(()=>CliffCoast,info);
+            Serialize(() => MinCoastTextureZ,info);
         }
 
 
@@ -325,6 +240,45 @@ namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
             Items = Deserialize(() => Items, info);
             TextureTransitions = new ObservableCollection<AreaTransitionTexture>(Deserialize(() => TextureTransitions, info));
             TransitionCliffTextures = new ObservableCollection<AreaTransitionCliffTexture>(Deserialize(() => TransitionCliffTextures, info));
+            try
+            {
+                CoastSmoothCircles = new ObservableCollection<CircleMountain>(Deserialize(()=>CoastSmoothCircles,info));
+            }
+            catch (Exception)
+            {
+                
+                CoastSmoothCircles = new ObservableCollection<CircleMountain>();
+            }
+
+            try
+            {
+                CoastAltitude = Deserialize(() => CoastAltitude, info);
+            }
+            catch (Exception)
+            {
+                CoastAltitude = 0;
+            }
+
+            try
+            {
+                ItemsAltitude = Deserialize(() => CoastAltitude, info);
+                CliffCoast = Deserialize(() => CliffCoast, info);
+            }
+            catch (Exception)
+            {
+                ItemsAltitude = 0;
+                CliffCoast = true;
+            }
+
+            try
+            {
+                MinCoastTextureZ = Deserialize(() => MinCoastTextureZ, info);
+            }
+            catch (Exception)
+            {
+
+                MinCoastTextureZ = -15;
+            }
         }
 
         #endregion //ISerializable Ctor

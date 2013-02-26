@@ -8,15 +8,19 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml;
+using System.Linq;
 using EssenceUDK.MapMaker;
 using EssenceUDK.MapMaker.Elements;
+using EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes;
 using EssenceUDK.MapMaker.Elements.ColorArea;
 using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
+using EssenceUDK.MapMaker.Elements.ColorArea.ColorMountains;
 using EssenceUDK.MapMaker.Elements.Items;
-using EssenceUDK.MapMaker.Elements.Items.ItemText;
 using EssenceUDK.MapMaker.Elements.Items.Items;
+using EssenceUDK.MapMaker.Elements.Items.ItemsTransition;
 using EssenceUDK.MapMaker.Elements.Textures;
 using EssenceUDK.MapMaker.Elements.Textures.TextureArea;
+using EssenceUDK.MapMaker.Elements.Textures.TextureTransition;
 using EssenceUDK.MapMaker.Elements.Textures.TexureCliff;
 using EssenceUDK.MapMaker.MapMaking;
 using EssenceUDK.Platform.DataTypes;
@@ -46,12 +50,13 @@ namespace MapMakerApplication.ViewModel
         #region Declarations
 
         #region General
-        readonly MakeMapSDK _makeMapSDK;
+        readonly MapSdk _makeMapSDK;
         private object _selectedAreaColor;
         private int tmp;
         private int _collectionAreaSelectedIndex;
         private TransationEditorViewModel _transation;
-        #endregion
+
+       #endregion
 
         #region Area Textures
 
@@ -60,6 +65,16 @@ namespace MapMakerApplication.ViewModel
         private object _selectedAreaTextureTileInt;
 
         #endregion //Area Textures
+
+        #region CircleMountain
+
+        private object _selectedGrownCircle;
+
+        private object _selectedCoastSmoothCircle;
+
+        private int _indexGrownCircle;
+
+        #endregion //Circle Mountain
 
         #region Area Items
 
@@ -101,13 +116,20 @@ namespace MapMakerApplication.ViewModel
 
         #endregion //cliffs
 
+        #region ContexMenu Copy&Paste
+
+        private AreaColor _copiedAreaColor;
+
+        private AreaTextures _copiedTexture;
+
+        #endregion //ContexMenu Copy&Paste
 
         #endregion //Declarations
 
         #region Properties
 
         #region Inherited Props
-        public MakeMapSDK MakeMapSDK
+        public MapSdk MakeMapSdk
         {
             get { return _makeMapSDK; }
         }
@@ -273,6 +295,16 @@ namespace MapMakerApplication.ViewModel
 
         #region TextureIds
         public IEnumerable<int> TextureIds { get { return _makeMapSDK.TextureIds; } }
+
+        public IEnumerable<String> TextureNames { get
+        {
+            var list = new List<string>();
+            foreach (var texture in CollectionAreaTexture.List)
+            {
+                list.Add(texture.Name);
+            }
+            return list;
+        } } 
         #endregion
 
         #region AreaColorIndexes
@@ -297,7 +329,9 @@ namespace MapMakerApplication.ViewModel
             }
         }
 
-        public object SelectedAreaTexture { get { return _selectedAreaTexture; } set { _selectedAreaTexture = value; RaisePropertyChanged(() => SelectedAreaTexture); } }
+        public object SelectedAreaTexture { get { return _selectedAreaTexture; } set { _selectedAreaTexture = value; RaisePropertyChanged(() => SelectedAreaTexture); RaisePropertyChanged(()=>SelectedTextures); } }
+        public AreaTextures SelectedTextures { get { return SelectedAreaTexture as AreaTextures; } }
+
         public AreaColor CollectionAreaColorSelected
         {
             get { return _selectedAreaColor as AreaColor; }
@@ -314,6 +348,27 @@ namespace MapMakerApplication.ViewModel
         }
 
         #endregion //Area Color Props
+
+        #region Grown/ Smoothing
+
+        public object SelectedGrownCircle { get { return _selectedGrownCircle; } set { _selectedGrownCircle = value; RaisePropertyChanged(() => SelectedGrownCircle); } }
+
+        public object SelectedSmoothCoast { get { return _selectedCoastSmoothCircle; } set { _selectedCoastSmoothCircle = value; RaisePropertyChanged(() => SelectedSmoothCoast); } }
+
+
+        public int IndexGrownCircle { get { return _indexGrownCircle; } set { _indexGrownCircle = value; RaisePropertyChanged(()=>IndexGrownCircle); } }
+
+        public int IndexSmoothCircle { get { return _indexGrownCircle; } set { _indexGrownCircle = value; RaisePropertyChanged(() => IndexGrownCircle); } }
+
+        #endregion  //Grown/ Smoothing
+
+        #region ContexMenu Copy&Paste
+
+        public AreaColor AreaColorCopied { get { return _copiedAreaColor; } set { _copiedAreaColor = value; RaisePropertyChanged(()=>AreaColorCopied); } }
+
+        public AreaTextures AreaTextureCopied { get { return _copiedTexture; } set { _copiedTexture = value; RaisePropertyChanged(()=>AreaTextureCopied); } }
+
+        #endregion //ContexMenu Copy&Paste
 
         #region Area Texture
 
@@ -442,6 +497,15 @@ namespace MapMakerApplication.ViewModel
 
         #region Command Properties
 
+
+        #region ContexMenu Copy&Paste
+
+        public ICommand CommandCopyColor { get; private set; }
+
+        public ICommand CommandCopyTexture { get; private set; }
+
+        #endregion // ContexMenu Copy&Paste
+
         #region Color Area Collection Commands
         public ICommand CommandCollectionAreaColorRemove { get; private set; }
 
@@ -451,6 +515,43 @@ namespace MapMakerApplication.ViewModel
 
         public ICommand CommandCollectionAreaColorMoveUp { get; private set; }
         #endregion //Color Area Collection Commands
+
+        #region Grown/Smooth Circle Commands
+
+        public ICommand CommmandRemoveGrownCircle { get; private set; }
+
+        public ICommand CommandAddGrownCircle { get; private set; }
+
+        public ICommand CommandMoveUpGrownCircle { get; private set; }
+
+        public ICommand CommandMoveDownGrownCircle { get; private set; }
+
+        public ICommand CommmandRemoveSmoothCircle { get; private set; }
+
+        public ICommand CommandAddSmoothCircle { get; private set; }
+
+        public ICommand CommandMoveUpSmoothCircle { get; private set; }
+
+        public ICommand CommandMoveDownSmoothCircle { get; private set; }
+
+        #endregion // Grown/Smooth Circle Commands
+
+        #region ContexMenu Copy&Paste 
+
+        public ICommand CommandPasteCoast { get; private set; }
+        public ICommand CommandPasteWaterCoast { get; private set; }
+        public ICommand CommandPasteWaterCliff { get; private set; }
+        public ICommand CommandPasteCoastSpecialOptions { get; private set; }
+        public ICommand CommandPasteCliffs { get; private set; }
+
+        public ICommand CommandPasteTextures { get; private set; }
+        public ICommand CommandPasteTextureTransitions { get; private set; }
+        public ICommand CommandPasteItemTransitions { get; private set; }
+        public ICommand CommandPasteTextureId { get; private set; }
+
+
+
+        #endregion //ContexMenu Copy&Paste
 
         #region Texture Area commands
 
@@ -520,10 +621,7 @@ namespace MapMakerApplication.ViewModel
 
         #endregion //Export to Centred Commands
 
-
         public ICommand CommandOpenOptionWindow { get; private set; }
-
-
 
         #endregion //Command Properties
 
@@ -532,7 +630,7 @@ namespace MapMakerApplication.ViewModel
         /// <summary>
         /// Initializes a new instance of the SdkView class.
         /// </summary>
-        public SdkViewModel(MakeMapSDK makeMapSdk)
+        public SdkViewModel(MapSdk makeMapSdk)
             : this()
         {
             _makeMapSDK = makeMapSdk;
@@ -549,11 +647,13 @@ namespace MapMakerApplication.ViewModel
             else
             {
                 if (_makeMapSDK == null)
-                    _makeMapSDK = new MakeMapSDK();
+                    _makeMapSDK = new MapSdk();
             }
             _transation = new TransationEditorViewModel();
 
             #region Commands
+
+
             #region CollectionAreaColor
             #region Commands
 
@@ -567,6 +667,64 @@ namespace MapMakerApplication.ViewModel
 
             #endregion
             #endregion
+
+            #region Grown/Smooth Circle Commands
+
+            CommmandRemoveGrownCircle = new RelayCommand(() => CollectionAreaColorSelected.List.Remove((CircleMountain)SelectedGrownCircle), CommandCanRemoveGrownCircle);
+
+            CommandAddGrownCircle = new RelayCommand(CommandAddGrownCircleExecuted, CommandCanAddGrownCircle);
+            
+            
+            CommandMoveDownGrownCircle=
+                new RelayCommand(()=>
+                                                     {
+                                                         var selected = SelectedGrownCircle;
+                                                         CollectionAreaColorSelected.List.Remove((CircleMountain)selected);
+                                                         
+                                                         CollectionAreaColorSelected.List.Insert(IndexGrownCircle + 1, (CircleMountain)selected);
+                                                     },CommandCanMoveDownGrownCircle);
+
+            CommandMoveUpGrownCircle =
+                new RelayCommand(CommandGrownCircleMoveUpExecuted, CommandCanMoveUpGrownCircle);
+
+
+
+            CommmandRemoveSmoothCircle = new RelayCommand(() => CollectionAreaColorSelected.CoastSmoothCircles.Remove((CircleMountain)SelectedSmoothCoast), CommandCanRemoveSmoothCircle);
+
+            CommandAddSmoothCircle = new RelayCommand(CommandAddSmoothCircleExecuted, CommandCanAddSmoothCircle);
+
+
+            CommandMoveDownSmoothCircle =
+                new RelayCommand(() =>
+                {
+                    var selected = SelectedSmoothCoast;
+                    CollectionAreaColorSelected.CoastSmoothCircles.Remove((CircleMountain)selected);
+
+                    CollectionAreaColorSelected.CoastSmoothCircles.Insert(IndexSmoothCircle + 1, (CircleMountain)selected);
+                }, CommandCanMoveDownSmoothCircle);
+
+            CommandMoveUpSmoothCircle =
+                new RelayCommand(CommandSmoothCircleMoveUpExecuted, CommandCanMoveUpSmoothCircle);
+
+
+
+            #endregion //Grown/Smooth Circle Commands
+
+            #region ContexMenu Copy&Paste
+
+            CommandCopyColor = new RelayCommand(()=>
+                                                    {
+                                                        AreaColorCopied = CollectionAreaColorSelected;
+
+                                                    },()=> CollectionAreaColorSelected != null);
+
+            CommandCopyTexture = new RelayCommand(() =>
+            {
+                AreaTextureCopied = (AreaTextures)SelectedAreaTexture;
+
+            }, () => SelectedAreaTexture as AreaTextures != null);
+
+            #endregion //ContexMenu Copy&Paste
 
             #region Collection Area Textures
             CommandTextureAdd = new RelayCommand(CommandAreaTextureAddExecuted);
@@ -600,6 +758,40 @@ namespace MapMakerApplication.ViewModel
             CommandCoastSetAsDefault = new RelayCommand(CommandCoastSetAsDefaultExecuted, CommandCoastSetAsDefaultCan);
             #endregion //Coasts
 
+            #region ContexMenu Copy&Paste
+            CommandPasteCoast = new RelayCommand(CommandPasteCoastExecuted, CommandCanPasteCoast);
+            CommandPasteWaterCoast = new RelayCommand(CommandPasteWaterCoastExecuted, CommandCanPasteCoast);
+            CommandPasteCoastSpecialOptions = new RelayCommand(CommandPasteCoastSpecialOptionsExecuted, CommandCanPasteCoast);
+            CommandPasteWaterCliff = new RelayCommand(CommandPasteWaterCliffExecuted,CommandCanPasteCoast);
+            CommandPasteCliffs = new RelayCommand(() =>
+                                                      {
+                                                          CollectionAreaColorSelected.TransitionCliffTextures =
+                                                              new ObservableCollection<AreaTransitionCliffTexture>(
+                                                                  AreaColorCopied.TransitionCliffTextures);
+
+                                                      },
+                                                  () => CollectionAreaColorSelected != null && AreaColorCopied != null);
+
+
+            CommandPasteTextureTransitions = new RelayCommand(() => 
+                                                 {
+                                                     SelectedTextures.AreaTransitionTexture.List = new ObservableCollection<AreaTransitionTexture>(AreaTextureCopied.AreaTransitionTexture.List.ToList());
+                                                     
+                                                 },()=>SelectedAreaTexture != null && AreaTextureCopied!=null);
+            CommandPasteItemTransitions = new RelayCommand(() =>
+            {
+                SelectedTextures.CollectionAreaItems.List = new ObservableCollection<AreaTransitionItem>(AreaTextureCopied.CollectionAreaItems.List);
+
+            }, () => SelectedAreaTexture != null && AreaTextureCopied != null);
+
+
+            CommandPasteTextureId = new RelayCommand(() => CollectionAreaColorSelected.TextureIndex = AreaTextureCopied.Index, () => CollectionAreaColorSelected != null && AreaTextureCopied!=null);
+
+            CommandPasteTextures=new RelayCommand(()=>
+                                                      {
+                                                          SelectedTextures.List=new ObservableCollection<int>(AreaTextureCopied.List);
+                                                      },()=>SelectedTextures!=null && _copiedTexture != null);
+            #endregion //ContexMenu Copy&Paste
             #endregion //Commands
 
             #region Save Commands
@@ -620,7 +812,7 @@ namespace MapMakerApplication.ViewModel
             #endregion //Save Commands
 
             #region Cliffs Commands
-            CommandAddCliff = new RelayCommand(() => CollectionAreaColorSelected.TransitionCliffTextures.Add(new AreaTransitionCliffTexture()));
+            CommandAddCliff = new RelayCommand(() => CollectionAreaColorSelected.TransitionCliffTextures.Add(new AreaTransitionCliffTexture()), () => CollectionAreaColorSelected!=null);
 
             CommandDeleteCliff = new RelayCommand(() =>
             {
@@ -676,19 +868,18 @@ namespace MapMakerApplication.ViewModel
             #endregion //Cliff Commands
 
 
-            CommandExportTransations = new RelayCommand(() => AppMessages.DialogRequest.Send(new MessageDialogRequest("OpenFileXmlExport")),
-                () =>
-                {
-                    return _selectedAreaColor != null;
-                });
+            CommandExportTransations =
+                new RelayCommand(
+                    () => AppMessages.DialogRequest.Send(
+                        new MessageDialogRequest("OpenFileXmlExport")),
+                    () => _selectedAreaColor != null
+                    );
 
             CommandOpenOptionWindow = new RelayCommand(() => AppMessages.DialogRequest.Send(new MessageDialogRequest("OpenOptionWindow")));
 
             AppMessages.OptionAnswer.Register(this, HandlerOptionResults);
             AppMessages.DialogAnwer.Register(this, HandlerDialogResults);
             AppMessages.MapGeneratorMessage.Register(this, HandlerGenerateMap);
-
-
 
         }
 
@@ -764,6 +955,83 @@ namespace MapMakerApplication.ViewModel
         }
 
         #endregion
+
+        #region Grown / Smooth Circles
+
+        private bool CommandCanAddGrownCircle()
+        {
+            return CollectionAreaColorSelected != null;
+        }
+
+        private void CommandGrownCircleMoveUpExecuted()
+        {
+            var selected = SelectedGrownCircle;
+            var tmpIndex = IndexGrownCircle;
+            CollectionAreaColorSelected.List.Remove((CircleMountain)SelectedGrownCircle);
+            CollectionAreaColorSelected.List.Insert(tmpIndex - 1, (CircleMountain)selected);
+        }
+
+        private void CommandAddGrownCircleExecuted()
+        {
+            if (!CommandCanAddGrownCircle())
+                return;
+
+            CollectionAreaColorSelected.List.Add(new CircleMountain(){From=0, To=0});
+        }
+
+        private bool CommandCanRemoveGrownCircle()
+        {
+            return CommandCanAddGrownCircle() && SelectedGrownCircle as CircleMountain != null;
+        }
+
+        private bool CommandCanMoveDownGrownCircle()
+        {
+            return CommandCanRemoveGrownCircle() && IndexGrownCircle < CollectionAreaColorSelected.List.Count-1 && CollectionAreaColorSelected.List.Count>1;
+        }
+
+        private bool CommandCanMoveUpGrownCircle()
+        {
+            return CommandCanRemoveGrownCircle() && IndexGrownCircle > 0;
+        }
+
+
+        private bool CommandCanAddSmoothCircle()
+        {
+            return CollectionAreaColorSelected != null;
+        }
+
+        private void CommandSmoothCircleMoveUpExecuted()
+        {
+            var selected = SelectedSmoothCoast;
+            var tmpIndex = IndexSmoothCircle;
+            CollectionAreaColorSelected.CoastSmoothCircles.Remove((CircleMountain)SelectedSmoothCoast);
+            CollectionAreaColorSelected.CoastSmoothCircles.Insert(tmpIndex - 1, (CircleMountain)selected);
+        }
+
+        private void CommandAddSmoothCircleExecuted()
+        {
+            if (!CommandCanAddSmoothCircle())
+                return;
+
+            CollectionAreaColorSelected.CoastSmoothCircles.Add(new CircleMountain() { From = 0, To = 0 });
+        }
+
+        private bool CommandCanRemoveSmoothCircle()
+        {
+            return CommandCanAddSmoothCircle() && SelectedSmoothCoast as CircleMountain != null;
+        }
+
+        private bool CommandCanMoveDownSmoothCircle()
+        {
+            return CommandCanRemoveSmoothCircle() && IndexGrownCircle < CollectionAreaColorSelected.CoastSmoothCircles.Count - 1 && CollectionAreaColorSelected.CoastSmoothCircles.Count > 1;
+        }
+
+        private bool CommandCanMoveUpSmoothCircle()
+        {
+            return CommandCanRemoveSmoothCircle() && IndexSmoothCircle > 0;
+        }
+
+        #endregion //Grown / Smooth Circles
 
         #region Area Texture Commands
 
@@ -1070,8 +1338,39 @@ namespace MapMakerApplication.ViewModel
 
         #endregion //Coasts Commands
 
+        #region ContexMenu Copy&Paste
 
+        private void CommandPasteCoastExecuted()
+        {
+            CollectionAreaColorSelected.Coasts.Coast.Lines = new ObservableCollection<CollectionLine>(AreaColorCopied.Coasts.Coast.Lines.ToList());
+            CollectionAreaColorSelected.Coasts.Ground.Lines= new ObservableCollection<CollectionLine>(AreaColorCopied.Coasts.Ground.Lines.ToList());
+            CollectionAreaColorSelected.CoastSmoothCircles = new ObservableCollection<CircleMountain>(AreaColorCopied.CoastSmoothCircles.ToList());
+            CollectionAreaColorSelected.ItemsAltitude = AreaColorCopied.ItemsAltitude;
+            CollectionAreaColorSelected.CoastAltitude = AreaColorCopied.CoastAltitude;
+        }
 
+        private bool CommandCanPasteCoast()
+        {
+            return CollectionAreaColorSelected != null && AreaColorCopied != null;
+        }
+
+        private void CommandPasteWaterCoastExecuted()
+        {
+            CollectionAreaColorSelected.Coasts.Coast.Lines = new ObservableCollection<CollectionLine>(AreaColorCopied.Coasts.Coast.Lines.ToList());
+        }
+
+        private void CommandPasteWaterCliffExecuted()
+        {
+            CollectionAreaColorSelected.Coasts.Ground.Lines = new ObservableCollection<CollectionLine>(AreaColorCopied.Coasts.Ground.Lines.ToList());
+        }
+
+        private void CommandPasteCoastSpecialOptionsExecuted()
+        {
+            CollectionAreaColorSelected.CoastSmoothCircles = new ObservableCollection<CircleMountain>(AreaColorCopied.CoastSmoothCircles.ToList());
+            CollectionAreaColorSelected.ItemsAltitude = AreaColorCopied.ItemsAltitude;
+            CollectionAreaColorSelected.CoastAltitude = AreaColorCopied.CoastAltitude;
+        }
+        #endregion //ContexMenu Copy&Paste
 
         #endregion //Command Methods
 

@@ -7,6 +7,7 @@ using EssenceUDK.MapMaker.Elements.Textures.TextureTransition;
 using EssenceUDK.Platform.DataTypes;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using System.Linq;
 
 namespace MapMakerApplication.ViewModel
 {
@@ -55,6 +56,8 @@ namespace MapMakerApplication.ViewModel
                 _selectedTransition = value;
                 RaisePropertyChanged(() => SelectedTransition);
                 RaisePropertyChanged(() => SelectedLineTransition);
+                RaisePropertyChanged(() => SelectedTextureName);
+                RaisePropertyChanged(() => IndexTextureTo);
             }
         }
 
@@ -105,6 +108,53 @@ namespace MapMakerApplication.ViewModel
             }
         }
 
+        public int IndexTextureTo
+        {
+            get
+            {
+                var transition = _selectedTransition as AreaTransitionTexture;
+                if (transition != null)
+                    return transition.TextureIdTo;
+                var areaTransitionItem = _selectedTransition as AreaTransitionItem;
+                if (areaTransitionItem != null)
+                    return areaTransitionItem.TextureIdTo;
+                return -1;
+            }
+
+            set
+            {
+                var transition = _selectedTransition as AreaTransitionTexture;
+                if (transition != null)
+                    transition.TextureIdTo = value;
+                else
+                ((AreaTransitionItem) _selectedTransition).TextureIdTo = value;
+
+                RaisePropertyChanged(() => IndexTextureTo);
+                RaisePropertyChanged(() => SelectedTextureName);
+            }
+        }
+
+        public string SelectedTextureName
+        {
+            get
+            {
+                var areaTextures = ViewModelLocator._sdk.CollectionAreaTexture.List.FirstOrDefault(textures => textures.Index == IndexTextureTo);
+                if (
+                    areaTextures != null)
+                    return
+                        areaTextures.
+                            Name;
+                return "";
+            }
+
+            set
+            {
+                var name = value;
+                var texture = ViewModelLocator._sdk.CollectionAreaTexture.List.FirstOrDefault(o => o.Name == name).Index;
+                IndexTextureTo = texture;
+            }
+        }
+
         #endregion
 
         #region Ctor
@@ -112,7 +162,7 @@ namespace MapMakerApplication.ViewModel
         {
 
             #region Commands
-            TransitionAdd = new RelayCommand(TransitionAddExecuted);
+            TransitionAdd = new RelayCommand(TransitionAddExecuted, TransitionCanAdd);
             TransitionRemove = new RelayCommand(TransitionRemoveExecuted, TransitionCanExecuteRemove);
 
             TileAdd = new RelayCommand(TileAddExecuted, TileAddCanExecute);
@@ -139,8 +189,8 @@ namespace MapMakerApplication.ViewModel
 
         private void TransitionRemoveExecuted()
         {
-            ViewModelLocator._sdk.CollectionAreaColorSelected.TextureTransitions.Remove(SelectedTransition as AreaTransitionTexture);
-            ViewModelLocator._sdk.CollectionAreaColorSelected.TransitionItems.Remove(SelectedTransition as AreaTransitionItem);
+            ViewModelLocator._sdk.SelectedTextures.AreaTransitionTexture.List.Remove(SelectedTransition as AreaTransitionTexture);
+            ViewModelLocator._sdk.SelectedTextures.CollectionAreaItems.List.Remove(SelectedTransition as AreaTransitionItem);
         }
 
         private Boolean TransitionCanExecuteRemove()
@@ -149,15 +199,20 @@ namespace MapMakerApplication.ViewModel
 
         }
 
+        private Boolean TransitionCanAdd()
+        {
+            return ViewModelLocator._sdk.SelectedTextures != null;
+        }
+
         private void TransitionAddExecuted()
         {
             if (SelectedKindOfTransition == 0)
             {
-                ViewModelLocator._sdk.CollectionAreaColorSelected.TextureTransitions.Add(new AreaTransitionTexture());
+                ViewModelLocator._sdk.SelectedTextures.AreaTransitionTexture.List.Add(new AreaTransitionTexture());
             }
             if (SelectedKindOfTransition == 1)
             {
-                ViewModelLocator._sdk.CollectionAreaColorSelected.TransitionItems.Add(new AreaTransitionItem());
+                ViewModelLocator._sdk.SelectedTextures.CollectionAreaItems.List.Add(new AreaTransitionItem());
             }
 
         }
@@ -198,9 +253,6 @@ namespace MapMakerApplication.ViewModel
         #endregion
 
         #endregion // commands Methods
-
-
-
 
 
     }

@@ -76,7 +76,7 @@ namespace MapMakerApplication.ViewModel
         public ViewModelLocator()
         {
             CreateSdkView();
-            CreateMapMakerView(_sdk.MakeMapSDK);
+            CreateMapMakerView(_sdk.MakeMapSdk);
             CreateOptionView();
             AppMessages.OptionAnswer.Register(this,MessageHandler);
         }
@@ -98,7 +98,8 @@ namespace MapMakerApplication.ViewModel
             Justification = "This non-static member is needed for data binding purposes.")]
         public SdkViewModel Sdk
         {
-            get { return _sdk; }
+            get { return _sdk ?? (_sdk=new SdkViewModel());
+            }
         }
 
 
@@ -111,7 +112,7 @@ namespace MapMakerApplication.ViewModel
 
         #region Map Maker ViewModel
 
-        public static void CreateMapMakerView(MakeMapSDK sdk)
+        public static void CreateMapMakerView(MapSdk sdk)
         {
             if (_mapMaker == null)
             {
@@ -127,7 +128,7 @@ namespace MapMakerApplication.ViewModel
             Justification = "This non-static member is needed for data binding purposes.")]
         public MapMakerViewModel MapMaker
         {
-            get { return _mapMaker; }
+            get { return _mapMaker??(_mapMaker=new MapMakerViewModel(_sdk.MakeMapSdk)); }
         }
 
 

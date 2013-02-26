@@ -11,6 +11,7 @@ namespace EssenceUDK.MapMaker.Elements.Textures.TextureTransition
         private Color _colorFrom, _colorTo;
         private string _name;
         private int _indexTo;
+        private int _textureIdTo;
 
 
         #region Props
@@ -27,10 +28,12 @@ namespace EssenceUDK.MapMaker.Elements.Textures.TextureTransition
             set
             {
                 _indexTo = value;
-                ColorTo = MakeMapSDK.Colors[value];
+                ColorTo = MapSdk.Colors[value];
                 RaisePropertyChanged(()=>IndexTo);
             }
         }
+
+        public int TextureIdTo { get { return _textureIdTo; } set { _textureIdTo = value; RaisePropertyChanged(() => TextureIdTo); } }
 
         #endregion //Props
 
@@ -52,6 +55,7 @@ namespace EssenceUDK.MapMaker.Elements.Textures.TextureTransition
             Serialize(()=>ColorFrom,info);
             Serialize(()=>ColorTo,info);
             Serialize(()=>IndexTo,info);
+            Serialize(()=>TextureIdTo,info);
         }
 
         protected AreaTransitionTexture(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
@@ -61,6 +65,15 @@ namespace EssenceUDK.MapMaker.Elements.Textures.TextureTransition
             ColorFrom = Deserialize(() => ColorFrom, info);
             ColorTo = Deserialize(() => ColorTo, info);
             _indexTo = info.GetInt32("IndexTo");
+
+            try
+            {
+                TextureIdTo = Deserialize(() => TextureIdTo, info);
+            }
+            catch (Exception)
+            {
+                TextureIdTo = 0;
+            }
         }
 
         

@@ -7,38 +7,61 @@
     </ResourceDictionary.MergedDictionaries>
 
     <DataTemplate x:Key="MyImagesItemTemplateStatic">
-        <Grid Width="44" Height="44" HorizontalAlignment="Center">
-            <Image Source="{Binding Path=Surface,Converter={StaticResource ImageFromISurface}}" Stretch="Uniform" />
+        <Grid Width="{DynamicResource Height}" Height="{DynamicResource Height}" HorizontalAlignment="Center">
+        	<Border BorderBrush="Black" BorderThickness="2.0" CornerRadius="5" Margin="1,1,1,1">
+            <Grid Background="Black">
+			<Image Source="{Binding Path=Surface,Converter={StaticResource ImageFromISurface}}" Stretch="Uniform" />
             <TextBlock Text="{Binding TileId}" Foreground="Gold" />
-        </Grid>
+			</Grid>
+			</Border>
+		</Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="MyImagesItemTemplateTexture">
-        <Grid Height="128" Width="128"  HorizontalAlignment="Center" Margin="2,2,2,2">
-            <Image Source="{Binding Path=Texture,Converter={StaticResource ImageFromISurface}}" Stretch="Uniform" />
-            <TextBlock Text="{Binding TileId}" Foreground="Gold" />
-        </Grid>
+        <Grid Height="{DynamicResource Height}" Width="{DynamicResource Height}"  HorizontalAlignment="Center" Margin="2,2,2,2">
+            <Border BorderBrush="Black" BorderThickness="2.0" CornerRadius="5" Margin="1,1,1,1" >
+			<Grid Background="Black">
+			<Image Source="{Binding Path=Texture,Converter={StaticResource ImageFromISurface}}" Stretch="Uniform" />
+	        <TextBlock Text="{Binding TileId}" Foreground="Gold" />
+	        </Grid>
+		</Border>
+		</Grid>
+		
     </DataTemplate>
 
     <DataTemplate x:Key="MyImagesItemTemplateTextureFromInt">
-        <Grid Width="128" Height="128" HorizontalAlignment="Center" Margin="2,2,2,2">
-            <Image Source="{Binding Converter={StaticResource ImageTextureFromIntConverter}}" Stretch="Uniform" />
+        
+		<Grid Width="{DynamicResource Height}" Height="{DynamicResource Height}" HorizontalAlignment="Center" Margin="2,2,2,2">
+            <Border BorderBrush="Black" BorderThickness="2.0" CornerRadius="5" Margin="1,1,1,1" >
+			<Grid Background="Black">
+			<Image Source="{Binding Converter={StaticResource ImageTextureFromIntConverter}}" Stretch="Uniform" />
             <TextBlock Text="{Binding}" Foreground="Gold" />
-        </Grid>
+        	</Grid>
+			</Border>
+		</Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="MyImagesItemTemplateItemFromInt">
-        <Grid Width="44" Height="44" HorizontalAlignment="Center" Margin="2,2,2,2">
-            <Image Source="{Binding Converter={StaticResource converterImageSourceItemFromInt}}" Stretch="Uniform" />
+        <Grid Width="{DynamicResource Height}" Height="{DynamicResource Height}" HorizontalAlignment="Center" Margin="2,2,2,2">
+            <Border BorderBrush="Black" BorderThickness="2.0" CornerRadius="5" Margin="1,1,1,1" >
+			<Grid Background="Black">
+			<Image Source="{Binding Converter={StaticResource converterImageSourceItemFromInt}}" Stretch="Uniform" />
             <TextBlock Text="{Binding}" Foreground="Gold" />
-        </Grid>
+        	</Grid>
+			</Border>
+			</Grid>
     </DataTemplate>
     
     <DataTemplate x:Key="MyImagesItemTemplateLandFromInt">
-        <Grid Width="44" Height="44" HorizontalAlignment="Center" Margin="2,2,2,2">
-            <Image Source="{Binding Converter={StaticResource ConverterImageSourceLandFromInt}}" Stretch="Uniform" />
+        
+		<Grid Width="{DynamicResource Height}" Height="{DynamicResource Height}" HorizontalAlignment="Center" Margin="2,2,2,2">
+              <Border BorderBrush="Black" BorderThickness="2.0" CornerRadius="5" Margin="1,1,1,1" >
+			<Grid Background="Black">
+			<Image Source="{Binding Converter={StaticResource ConverterImageSourceLandFromInt}}" Stretch="Uniform" />
             <TextBlock Text="{Binding}" Foreground="Gold" />
         </Grid>
+		</Border>
+		</Grid>
     </DataTemplate>
     
     <Style TargetType="ListView" x:Key="ListViewTiles">
@@ -86,7 +109,7 @@
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="ListBox.Background" Value="Black"/>
+        <Setter Property="ListBox.Background" Value="{DynamicResource BackGroundGreed}"/>
 
         <Setter Property="ItemTemplate" Value="{StaticResource MyImagesItemTemplateStatic}" />
         <Setter Property="SelectionMode" Value="Extended"/>

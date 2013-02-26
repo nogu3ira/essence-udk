@@ -29,7 +29,7 @@ using EssenceUDK.Resources.Libraries.MiscUtil.IO;
 
 namespace EssenceUDK.MapMaker
 {
-    public class MakeMapSDK 
+    public class MapSdk 
     {
         public static Dictionary<int, Color> Colors { get; set; }
 
@@ -68,6 +68,8 @@ namespace EssenceUDK.MapMaker
         #region Utilities
 
         public IEnumerable<int> TextureIds { get { return CollectionAreaTexture.List.Select(o => o.Index); } }
+
+        public IEnumerable<String> TextureName { get { return CollectionColorArea.List.Distinct().Select(o=>o.Name);  } } 
 
         public IEnumerable<Color> AreaColorColors { get { return CollectionColorArea.List.Select(o => o.Color); } }
 
@@ -130,7 +132,7 @@ namespace EssenceUDK.MapMaker
         #endregion
 
         #region Ctor
-        public MakeMapSDK(string directory)
+        public MapSdk(string directory)
         {
             #region initialize props
 
@@ -192,7 +194,7 @@ namespace EssenceUDK.MapMaker
 
         }
         
-        public MakeMapSDK()
+        public MapSdk()
         {
             #region initialize props
 
@@ -529,6 +531,29 @@ namespace EssenceUDK.MapMaker
 
             #endregion
 
+
+            if (CollectionAreaTexture != null)
+                CollectionAreaTexture.InitializeSeaches();
+            if (CollectionColorArea != null)
+                CollectionColorArea.InitializeSeaches();
+
+            EventUpdateList(this, null);
+
+            if (CollectionAreaTexture != null && CollectionAreaTexture.List.First().AreaTransitionTexture.List.Count == 0)
+                foreach (var area in CollectionColorArea.List)
+                {
+                    foreach (var transition in area.TextureTransitions)
+                    {
+                        var texture = CollectionAreaTexture.FindByIndex(area.TextureIndex);
+                        var chiappa = CollectionColorArea.FindByColor(transition.ColorTo);
+                        if (chiappa != null)
+                            transition.TextureIdTo = chiappa.TextureIndex;
+
+                        if (!texture.AreaTransitionTexture.List.Contains(transition))
+                            texture.AreaTransitionTexture.List.Add(transition);
+
+                    }
+                }
         }
 
         
@@ -754,9 +779,43 @@ namespace EssenceUDK.MapMaker
             }
 
             if(CollectionAreaTexture!= null)
-            CollectionAreaTexture.InitializeSeaches();
+                CollectionAreaTexture.InitializeSeaches();
+            if(CollectionColorArea!=null)
+                CollectionColorArea.InitializeSeaches();
             
             EventUpdateList(this, null);
+
+            if (CollectionAreaTexture != null && CollectionAreaTexture.List.First().AreaTransitionTexture.List.Count==0)
+                foreach (var area in CollectionColorArea.List)
+                {
+                    foreach (var transition in area.TextureTransitions)
+                    {
+                        var texture = CollectionAreaTexture.FindByIndex(area.TextureIndex);
+                        var areaTo = CollectionColorArea.FindByColor(transition.ColorTo);
+                        if(areaTo!=null)
+                            transition.TextureIdTo = areaTo.TextureIndex;
+
+                        if (!texture.AreaTransitionTexture.List.Contains(transition))
+                            texture.AreaTransitionTexture.List.Add(transition);
+                    }
+                    area.TextureTransitions.Clear();
+
+                    foreach (var transitem in area.TransitionItems)
+                    {
+                        var texture = CollectionAreaTexture.FindByIndex(area.TextureIndex);
+                        if (texture == null) continue;
+                        var areaTo = CollectionColorArea.FindByColor(transitem.ColorTo);
+                        if (areaTo != null)
+                            transitem.TextureIdTo = areaTo.TextureIndex;
+                        if (texture.CollectionAreaItems==null)
+                            texture.CollectionAreaItems= new CollectionAreaTransitionItems();
+                        if (!texture.CollectionAreaItems.List.Contains(transitem))
+                            texture.CollectionAreaItems.List.Add(transitem);
+                    }
+
+                    area.TransitionItems.Clear();
+                }
+
         }
 
         #endregion //Save/Load functions

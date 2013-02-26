@@ -24,35 +24,42 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="21.582" />
         	<RowDefinition Height="19.92"/>
-        	<RowDefinition Height="0.096*"/>
-        	<RowDefinition Height="0.41*"/>
-            <RowDefinition Height="0.092*" />
-            <RowDefinition Height="19.718" />
-            <RowDefinition Height="0.061*" />
-            <RowDefinition Height="0.341*" />
+        	<RowDefinition Height="0.467*"/>
+            <RowDefinition Height="0.085*" />
+            <RowDefinition Height="0.447*" />
         </Grid.RowDefinitions>
-                <ListBox 
+        <ListBox 
                     x:Name="ListBoxNumericTexture" 
                     Style="{StaticResource TileStyleMiniList}"
                     ItemTemplate="{StaticResource MyImagesItemTemplateTextureFromInt}"
                     ItemsSource="{Binding Sdk.SelectedAreaTexture.List, Source={StaticResource Locator}}" 
-                    Grid.Row="7" Grid.ColumnSpan="5" ItemsPanel="{DynamicResource ItemsPanelTemplate1}"
-                    SelectedItem="{Binding Path=Sdk.SelectedAreaTextureTileInt}"
-            />
+                    Grid.Row="4" Grid.ColumnSpan="5" ItemsPanel="{DynamicResource ItemsPanelTemplate1}"
+                    SelectedItem="{Binding Path=Sdk.SelectedAreaTextureTileInt}" Background="{DynamicResource BackGroundGreed}" Margin="5"
+            >
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Remove" Command="{Binding Path=Sdk.CommandTextureTileRemove}"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
 
         <ListBox
             x:Name="ListBoxLandTexture" Style="{StaticResource TileStyle}" 
             ItemsSource="{Binding Lands, Mode=OneWay}" 
             Grid.ColumnSpan="5"
             ItemTemplate="{StaticResource MyImagesItemTemplateTexture}" 
-            Grid.Row="3"
-            SelectedItem="{Binding Path=Sdk.SelectedAreaTextureTile}"
-            />
-        <Button Content="Add" Grid.Row="5" x:Name="button1" Grid.Column="1" Command="{Binding Path=Sdk.CommandTextureTileAdd}"/>
-        <Button Content="Remove" Grid.Column="3" Grid.Row="5" x:Name="button2" Command="{Binding Path=Sdk.CommandTextureTileRemove}"/>
+            Grid.Row="2"
+            SelectedItem="{Binding Path=Sdk.SelectedAreaTextureTile}" Background="{DynamicResource BackGroundGreed}" Margin="5"
+            >
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add" Command="{Binding Path=Sdk.CommandTextureTileAdd}"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+            </ListBox>
         <TextBlock TextWrapping="Wrap"><Run Language="it-it" Text="Name"/></TextBlock>
         <TextBlock Grid.Row="1" TextWrapping="Wrap"><Run Language="it-it" Text="Index"/></TextBlock>
-        <TextBox Grid.ColumnSpan="4" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Sdk.SelectedAreaTexture.Name}"/>
-    	<xctk:IntegerUpDown Grid.Column="1" Grid.Row="1" Minimum="0" Value="{Binding Sdk.SelectedAreaTexture.Index}"/>
+        <TextBox Grid.ColumnSpan="4" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Sdk.SelectedAreaTexture.Name,UpdateSourceTrigger=PropertyChanged}"/>
+    	<xctk:IntegerUpDown Grid.Column="1" Grid.Row="1" Minimum="0" Value="{Binding Sdk.SelectedAreaTexture.Index,UpdateSourceTrigger=PropertyChanged}"/>
     </Grid>
 </UserControl>

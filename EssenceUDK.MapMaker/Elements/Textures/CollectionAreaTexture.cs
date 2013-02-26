@@ -14,7 +14,7 @@ namespace EssenceUDK.MapMaker.Elements.Textures
         public ObservableCollection<AreaTextures> List { get { return _list; } set { _list = value; RaisePropertyChanged(()=>List); } }
         
         [XmlIgnore]
-        [NonSerialized] private Dictionary<int, AreaTextures> _fast; 
+        [NonSerialized] public Dictionary<int, AreaTextures> _fast; 
         public CollectionAreaTexture()
         {
             List = new ObservableCollection<AreaTextures>();

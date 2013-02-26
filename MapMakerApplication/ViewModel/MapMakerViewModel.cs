@@ -16,7 +16,7 @@ namespace MapMakerApplication.ViewModel
         #region Fields
 
         private int _selectedIndex;
-        private readonly MakeMapSDK _sdk;
+        private readonly MapSdk _sdk;
 
         #endregion //Fields
 
@@ -24,9 +24,9 @@ namespace MapMakerApplication.ViewModel
 
         public List<string> Names { get { return Globals.names; } }
 
-        public string LocationBitmapZ { get { return _sdk.BitmapLocationMapZ; } set { _sdk.BitmapLocationMapZ = value; RaisePropertyChanged(()=>LocationBitmapZ); } }
+        public string LocationBitmapZ { get { return _sdk.BitmapLocationMapZ??""; } set { _sdk.BitmapLocationMapZ = value; RaisePropertyChanged(()=>LocationBitmapZ); } }
 
-        public string LocationBitmapMap { get { return _sdk.BitmapLocationMap; } set { _sdk.BitmapLocationMap = value;RaisePropertyChanged(()=>LocationBitmapMap); } }
+        public string LocationBitmapMap { get { return _sdk.BitmapLocationMap ?? ""; } set { _sdk.BitmapLocationMap = value; RaisePropertyChanged(() => LocationBitmapMap); } }
 
         public string OutputFolder { get { return ApplicationController.OutputFolder; } set { ApplicationController.OutputFolder = value;RaisePropertyChanged(()=>OutputFolder); } }
 
@@ -55,7 +55,7 @@ namespace MapMakerApplication.ViewModel
         #endregion //Command Properties
 
         #region Ctor
-        public MapMakerViewModel(MakeMapSDK sdk)
+        public MapMakerViewModel(MapSdk sdk)
         {
             _sdk = sdk;
             AppMessages.DialogAnwer.Register(this, MessageHandler);

@@ -18,7 +18,6 @@ namespace MapMakerApplication.ViewModel
         private string _selectedFolder;
         private int _selectedDataTypeIndex;
         private UODataType _data = UODataType.UseOldDatas;
-        private string _outputFolder;
 
         #endregion //Fields
 
@@ -64,6 +63,11 @@ namespace MapMakerApplication.ViewModel
                                                 {
                                                     try
                                                     {
+                                                        if (ApplicationController.manager != null)
+                                                        {
+                                                            ApplicationController.manager.Dispose();
+                                                            ApplicationController.manager = null;
+                                                        }
                                                         ApplicationController.manager =
                                                        new UODataManager(new Uri(SelectedFolder),
                                                                          _data, Language.English);
@@ -74,27 +78,14 @@ namespace MapMakerApplication.ViewModel
                                                         AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
                                                     }
                                                    
-                                                }, () =>
-                                                       {
-                                                           return !string.IsNullOrEmpty(SelectedFolder) &&
-                                                               (
-                                                                  ApplicationController.manager == null ||
-                                                                  (ApplicationController.manager != null
-                                                                   &&
-                                                                   ApplicationController.manager.Location.LocalPath != SelectedFolder)
-                                                                )
-                                                                   ;
-                                                       });
+                                                }, () => !string.IsNullOrEmpty(SelectedFolder));
 
             CommandCancel = new RelayCommand(() => AppMessages.OptionAnswer.Send(new OptionMessage() { Success = false }));
 
-            
 
-            if (ClientInfoSources.Any() && ClientInfoSources[0] != null)
-            {
-                SelectedFolder = ClientInfoSources[0].DirectoryPath;
-                SelectedDataTypeIndex = (int)DataSelector(ClientInfoSources[0].ProductVersion);
-            }
+            if (!ClientInfoSources.Any() || ClientInfoSources[0] == null) return;
+            SelectedFolder = ClientInfoSources[0].DirectoryPath;
+            SelectedDataTypeIndex = (int)DataSelector(ClientInfoSources[0].ProductVersion);
         }
         #endregion //Ctor
 
@@ -124,7 +115,6 @@ namespace MapMakerApplication.ViewModel
                 
             }
         }
-
 
         #endregion //Message Handler
 

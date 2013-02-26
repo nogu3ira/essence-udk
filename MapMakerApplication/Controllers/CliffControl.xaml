@@ -82,58 +82,60 @@
 
     <Grid x:Name="LayoutRoot" DataContext="{Binding}" d:DataContext="{Binding Source={StaticResource Locator},Path=Sdk.CollectionColorArea.List[0].TransitionCliffTextures[0]}">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="0.5*"/>
-			<ColumnDefinition Width="0.5*"/>
-			<ColumnDefinition Width="0.163*"/>
-			<ColumnDefinition Width="0.172*"/>
+			<ColumnDefinition Width="0.501*"/>
+			<ColumnDefinition Width="Auto" MinWidth="320.64"/>
 			<ColumnDefinition Width="0.166*"/>
-			<ColumnDefinition Width="0.167*"/>
-			<ColumnDefinition Width="0.332*"/>
+			<ColumnDefinition Width="0.333*"/>
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="20"/>
 			<RowDefinition Height="20"/>
 			<RowDefinition Height="20"/>
-			<RowDefinition Height="14*"/>
-			<RowDefinition Height="180*"/>
-			<RowDefinition Height="28*"/>
+			<RowDefinition Height="0.033*"/>
+			<RowDefinition Height="0.427*"/>
+			<RowDefinition Height="0.066*"/>
             <RowDefinition Height="0*" />
-            <RowDefinition Height="15*"/>
-			<RowDefinition Height="20"/>
-			<RowDefinition Height="41*"/>
-			<RowDefinition Height="44*"/>
-			<RowDefinition Height="38*"/>
-			<RowDefinition Height="40.846"/>
+            <RowDefinition Height="0.473*"/>
 		</Grid.RowDefinitions>
-        <CollectionManager:CollectionManager 
-            Grid.Row="1" Grid.RowSpan="10" Grid.Column="6" 
+        <CollectionManager:CollectionManager Grid.RowSpan="8" Grid.Column="3" 
             CommandAdd="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddCliff}" 
             CommandRemove="{Binding Source={StaticResource Locator},Path=Sdk.CommandDeleteCliff}" 
             SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff,Mode=TwoWay}" 
             Style="{DynamicResource CollectionManagerStyleCliff}" 
-            ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected.TransitionCliffTextures}"/>
-        
-        <ListBox Grid.Row="10" Grid.RowSpan="3" Grid.ColumnSpan="5" 
+            ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected.TransitionCliffTextures}" Margin="{DynamicResource DefaultMargin}">
+            <CollectionManager:CollectionManager.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Remove" Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandDeleteCliff}"/>
+                </ContextMenu>
+            </CollectionManager:CollectionManager.ContextMenu>    
+        </CollectionManager:CollectionManager>
+
+        <ListBox Grid.Row="6" Grid.ColumnSpan="3" 
                  Style="{DynamicResource TileStyleMiniList}" 
                  ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.CliffList}" 
                  ItemTemplate="{DynamicResource MyImagesItemTemplateTextureFromInt}"
-                 SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedTextureInCliffList}"/>
-        
+                 SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedTextureInCliffList}" Background="{DynamicResource BackGroundGreed}" Grid.RowSpan="2" Margin="{DynamicResource DefaultMargin}">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Remove" Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandRemoveCliffTexture}"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
+
         <ListBox Style="{DynamicResource TileStyle}" Grid.Row="4" 
                  SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedTextureForCliff,Mode=TwoWay}" 
-                 Grid.ColumnSpan="5" 
+                 Grid.ColumnSpan="3" 
                  ItemsSource="{Binding Source={StaticResource Locator},Path=Lands}" 
-                 ItemTemplate="{DynamicResource MyImagesItemTemplateTexture}"/>
-        
-        <Button Content="Add" Grid.Row="8" 
-                Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddCliffTexture}"/>
-        
-        <Button Content="Remove" Grid.Row="8" Grid.Column="1" 
-                Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandRemoveCliffTexture}"/>
-		
+                 ItemTemplate="{DynamicResource MyImagesItemTemplateTexture}" Background="{DynamicResource BackGroundGreed}" Margin="{DynamicResource DefaultMargin}">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add" Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddCliffTexture}"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
         <TextBlock Grid.Row="1" TextWrapping="Wrap"><Run Language="it-it" Text="Direction"/></TextBlock>
-        <ComboBox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="4" ItemsSource="{Binding Source={StaticResource ObjectProviderDirectionCliff}}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.Directions,Mode=TwoWay}"/>
+        <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource ObjectProviderDirectionCliff}}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.Directions,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
 		<TextBlock Grid.Row="2" TextWrapping="Wrap"><Run Language="it-it" Text="Index Color To"/></TextBlock>
-        <ComboBox Grid.ColumnSpan="4" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.AreaColorIndexes}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.IdTo}"/>
+        <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.AreaColorIndexes, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.IdTo}"/>
 	</Grid>
 </UserControl>
