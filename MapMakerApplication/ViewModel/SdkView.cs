@@ -766,8 +766,12 @@ namespace MapMakerApplication.ViewModel
             CommandPasteCliffs = new RelayCommand(() =>
                                                       {
                                                           CollectionAreaColorSelected.TransitionCliffTextures =
-                                                              new ObservableCollection<AreaTransitionCliffTexture>(
-                                                                  AreaColorCopied.TransitionCliffTextures);
+                                                              new ObservableCollection<AreaTransitionCliffTexture>();
+                                                          foreach (var textureName in 
+                                                                  AreaColorCopied.TransitionCliffTextures)
+                                                          {
+                                                              CollectionAreaColorSelected.TransitionCliffTextures.Add(textureName);
+                                                          }
 
                                                       },
                                                   () => CollectionAreaColorSelected != null && AreaColorCopied != null);
@@ -775,12 +779,20 @@ namespace MapMakerApplication.ViewModel
 
             CommandPasteTextureTransitions = new RelayCommand(() => 
                                                  {
-                                                     SelectedTextures.AreaTransitionTexture.List = new ObservableCollection<AreaTransitionTexture>(AreaTextureCopied.AreaTransitionTexture.List.ToList());
+                                                     SelectedTextures.AreaTransitionTexture.List = new ObservableCollection<AreaTransitionTexture>();
+                                                     foreach (var textureName in AreaTextureCopied.AreaTransitionTexture.List)
+                                                     {
+                                                         SelectedTextures.AreaTransitionTexture.List.Add(textureName);
+                                                     }
                                                      
                                                  },()=>SelectedAreaTexture != null && AreaTextureCopied!=null);
             CommandPasteItemTransitions = new RelayCommand(() =>
             {
-                SelectedTextures.CollectionAreaItems.List = new ObservableCollection<AreaTransitionItem>(AreaTextureCopied.CollectionAreaItems.List);
+                SelectedTextures.CollectionAreaItems.List = new ObservableCollection<AreaTransitionItem>();
+                foreach (var textureName in AreaTextureCopied.CollectionAreaItems.List)
+                {
+                    SelectedTextures.CollectionAreaItems.List.Add(textureName);
+                }
 
             }, () => SelectedAreaTexture != null && AreaTextureCopied != null);
 
@@ -789,7 +801,11 @@ namespace MapMakerApplication.ViewModel
 
             CommandPasteTextures=new RelayCommand(()=>
                                                       {
-                                                          SelectedTextures.List=new ObservableCollection<int>(AreaTextureCopied.List);
+                                                          SelectedTextures.List=new ObservableCollection<int>();
+                                                          foreach (var textureName in AreaTextureCopied.List)
+                                                          {
+                                                              SelectedTextures.List.Add(textureName);
+                                                          }
                                                       },()=>SelectedTextures!=null && _copiedTexture != null);
             #endregion //ContexMenu Copy&Paste
             #endregion //Commands
@@ -1342,9 +1358,24 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandPasteCoastExecuted()
         {
-            CollectionAreaColorSelected.Coasts.Coast.Lines = new ObservableCollection<CollectionLine>(AreaColorCopied.Coasts.Coast.Lines.ToList());
-            CollectionAreaColorSelected.Coasts.Ground.Lines= new ObservableCollection<CollectionLine>(AreaColorCopied.Coasts.Ground.Lines.ToList());
-            CollectionAreaColorSelected.CoastSmoothCircles = new ObservableCollection<CircleMountain>(AreaColorCopied.CoastSmoothCircles.ToList());
+            CollectionAreaColorSelected.Coasts.Coast.Lines = new ObservableCollection<CollectionLine>();
+            foreach (var textureName in AreaColorCopied.Coasts.Coast.Lines)
+            {
+                CollectionAreaColorSelected.Coasts.Coast.Lines.Add(textureName);
+            }
+
+            CollectionAreaColorSelected.Coasts.Ground.Lines = new ObservableCollection<CollectionLine>();
+            foreach (var textureName in AreaColorCopied.Coasts.Ground.Lines)
+            {
+                CollectionAreaColorSelected.Coasts.Ground.Lines.Add(textureName);
+            }
+            
+            CollectionAreaColorSelected.CoastSmoothCircles = new ObservableCollection<CircleMountain>();
+            foreach (var textureName in AreaColorCopied.CoastSmoothCircles)
+            {
+                CollectionAreaColorSelected.CoastSmoothCircles.Add(textureName);
+            }
+
             CollectionAreaColorSelected.ItemsAltitude = AreaColorCopied.ItemsAltitude;
             CollectionAreaColorSelected.CoastAltitude = AreaColorCopied.CoastAltitude;
         }
@@ -1356,17 +1387,29 @@ namespace MapMakerApplication.ViewModel
 
         private void CommandPasteWaterCoastExecuted()
         {
-            CollectionAreaColorSelected.Coasts.Coast.Lines = new ObservableCollection<CollectionLine>(AreaColorCopied.Coasts.Coast.Lines.ToList());
+            CollectionAreaColorSelected.Coasts.Coast.Lines = new ObservableCollection<CollectionLine>();
+            foreach (var textureName in AreaColorCopied.Coasts.Coast.Lines)
+            {
+                CollectionAreaColorSelected.Coasts.Coast.Lines.Add(textureName);
+            }
         }
 
         private void CommandPasteWaterCliffExecuted()
         {
-            CollectionAreaColorSelected.Coasts.Ground.Lines = new ObservableCollection<CollectionLine>(AreaColorCopied.Coasts.Ground.Lines.ToList());
+            CollectionAreaColorSelected.Coasts.Ground.Lines = new ObservableCollection<CollectionLine>();
+            foreach (var textureName in AreaColorCopied.Coasts.Ground.Lines)
+            {
+                CollectionAreaColorSelected.Coasts.Ground.Lines.Add(textureName);
+            }
         }
 
         private void CommandPasteCoastSpecialOptionsExecuted()
         {
-            CollectionAreaColorSelected.CoastSmoothCircles = new ObservableCollection<CircleMountain>(AreaColorCopied.CoastSmoothCircles.ToList());
+            CollectionAreaColorSelected.CoastSmoothCircles = new ObservableCollection<CircleMountain>();
+            foreach (var textureName in AreaColorCopied.CoastSmoothCircles)
+            {
+                CollectionAreaColorSelected.CoastSmoothCircles.Add(textureName);
+            }
             CollectionAreaColorSelected.ItemsAltitude = AreaColorCopied.ItemsAltitude;
             CollectionAreaColorSelected.CoastAltitude = AreaColorCopied.CoastAltitude;
         }

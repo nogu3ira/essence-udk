@@ -382,6 +382,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
                         <Button Content="Add" Grid.Column="1"  Command="{TemplateBinding CommandAdd}"/>
+                        <Button Content="Remove" Command="{TemplateBinding CommandRemove}" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0" Grid.Row="1" Width="Auto"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
