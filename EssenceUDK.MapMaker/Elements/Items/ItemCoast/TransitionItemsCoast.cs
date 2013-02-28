@@ -13,6 +13,7 @@ namespace EssenceUDK.MapMaker.Elements.Items.ItemCoast
 
         private int _texture;
 
+
         #endregion //Fields
 
         #region Props
@@ -36,6 +37,9 @@ namespace EssenceUDK.MapMaker.Elements.Items.ItemCoast
                 RaisePropertyChanged(() => Texture);
             }
         }
+
+
+
 
         #endregion //Props
 
