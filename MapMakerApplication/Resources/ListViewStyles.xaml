@@ -131,16 +131,15 @@
             <Setter.Value>
                 <ItemsPanelTemplate>
                     <DataVirtualization1:VirtualizingWrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"
-                                   MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"
-                               />
+                                   MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="ListBox.Background" Value="Black"/>
-
         <Setter Property="ItemTemplate" Value="{StaticResource MyImagesItemTemplateStatic}" />
         <Setter Property="SelectionMode" Value="Extended"/>
     </Style>
+    
+    
     <DataTemplate x:Key="ListBoxCliffTexture">
     	<Grid Width="Auto" Height="Auto">
     		<Grid.ColumnDefinitions>

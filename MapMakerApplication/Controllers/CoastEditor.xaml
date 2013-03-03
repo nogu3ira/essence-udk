@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:CollectionManager="clr-namespace:MapMakerApplication.Controllers.CollectionManager"
+             xmlns:Ultima="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls"
              x:Class="MapMakerApplication.Controllers.CoastEditor" 
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="600">
@@ -80,8 +81,26 @@
 					</MultiDataTrigger>
 				</Style.Triggers>
 			</Style>
+            <Style TargetType="{x:Type Ultima:ListBoxViewTiles}" x:Key="LocalTransitionListboxViewTile">
+                <Style.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding SelectedIndex, ElementName=ComboBoxSelector}" Value="1"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="ItemsSource" Value="{Binding Lands, Source={StaticResource Locator}}"/>
+                        <Setter Property="Texture" Value="True"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding SelectedIndex, ElementName=ComboBoxSelector}" Value="0"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="ItemsSource" Value="{Binding Items, Source={StaticResource Locator}}"/>
+                        <Setter Property="Texture" Value="False"/>
+                    </MultiDataTrigger>
+                </Style.Triggers>
+            </Style>
 
-			<Style TargetType="{x:Type ListBox}" x:Key="LocalCoastGroundListbox" BasedOn="{StaticResource TileStyleMiniList}">
+            <Style TargetType="{x:Type ListBox}" x:Key="LocalCoastGroundListbox" BasedOn="{StaticResource TileStyleMiniList}">
 				<Style.Triggers>
 					<MultiDataTrigger>
 						<MultiDataTrigger.Conditions>
@@ -177,7 +196,7 @@
 			<RowDefinition Height="5"/>
 
 		</Grid.RowDefinitions>
-		<ListBox Grid.Row="3" Style="{StaticResource LocalTransitionListbox}" SelectedItem="{Binding SelectedCoastTile}" Background="{DynamicResource BackGroundGreed}" Margin="0">
+		<!--<ListBox Grid.Row="3" Style="{StaticResource LocalTransitionListbox}" SelectedItem="{Binding SelectedCoastTile}" Background="{DynamicResource BackGroundGreed}" Margin="0">
 			<ListBox.ContextMenu>
 				<ContextMenu>
 					<MenuItem Header="Add" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}"/>
@@ -188,7 +207,21 @@
 				<KeyBinding Key="Add" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}"/>
                 <MouseBinding MouseAction="MiddleClick" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}" />
             </ListBox.InputBindings>
-		</ListBox>
+		</ListBox>-->
+        <Ultima:ListBoxViewTiles  Grid.Row="3" Margin="5" SelectedItem="{Binding SelectedCoastTile,Mode=TwoWay}"
+                                 Style="{StaticResource LocalTransitionListboxViewTile}"
+                                  >
+            <Ultima:ListBoxViewTiles.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}"/>
+                    <MenuItem Header="Set As Default Item" Command="{Binding CommandCoastSetAsDefault}"/>
+                </ContextMenu>
+               </Ultima:ListBoxViewTiles.ContextMenu>
+            <Ultima:ListBoxViewTiles.InputBindings>
+                <KeyBinding Key="Add" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}"/>
+                <MouseBinding MouseAction="MiddleClick" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}" />
+            </Ultima:ListBoxViewTiles.InputBindings>
+        </Ultima:ListBoxViewTiles>
 		<ComboBox SelectedIndex="{Binding SelectedCoastType}" x:Name="ComboBoxSelector" Grid.Row="1" HorizontalAlignment="Left" Width="120" Margin="5,0,0,0">
 			<ComboBoxItem Content="Water"/>
 			<ComboBoxItem Content="Coast"/>

@@ -6,6 +6,7 @@
              xmlns:CollectionManager="clr-namespace:MapMakerApplication.Controllers.CollectionManager"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:ViewModel="clr-namespace:MapMakerApplication.ViewModel"
+             xmlns:Ultima="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls"
              x:Class="MapMakerApplication.Controllers.TransationEditor"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="600">
@@ -41,6 +42,26 @@
                             <Setter Property="ItemTemplate" Value="{StaticResource MyImagesItemTemplateTexture}"/>
                         </MultiDataTrigger>
                         
+                    </Style.Triggers>
+                </Style>
+
+                <Style TargetType="{x:Type Ultima:ListBoxViewTiles}" x:Key="LocalListBoxViewTile">
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding SelectedIndex, ElementName=ComboBoxSelector}" Value="1"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="ItemsSource" Value="{Binding Items, Source={StaticResource Locator}}"/>
+                            <Setter Property="Texture" Value="False"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding SelectedIndex, ElementName=ComboBoxSelector}" Value="0"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="ItemsSource" Value="{Binding Lands, Source={StaticResource Locator}}"/>
+                            <Setter Property="Texture" Value="True"/>
+                         </MultiDataTrigger>
+
                     </Style.Triggers>
                 </Style>
 
@@ -181,7 +202,7 @@
 			Grid.ColumnSpan="8"
 			Margin="5"
 			>
-            <ListBox  
+            <!--<ListBox  
                 x:Name="ListBoxData"
                 Style="{StaticResource localChanginAll}" 
                 SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTile, Source={StaticResource Locator}}" 
@@ -191,8 +212,19 @@
                         <MenuItem Header="Add" Command="{Binding Sdk.TransationEditorViewModel.TileAdd, Source={StaticResource Locator}}"/>
                     </ContextMenu>
                 </ListBox.ContextMenu>
-                </ListBox>
-			</Border>
+                </ListBox>-->
+
+                <Ultima:ListBoxViewTiles 
+                    SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTile, Source={StaticResource Locator},Mode=TwoWay}"
+                    Style="{StaticResource LocalListBoxViewTile}"
+                    >
+                    <Ultima:ListBoxViewTiles.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add" Command="{Binding Sdk.TransationEditorViewModel.TileAdd, Source={StaticResource Locator}}"/>
+                        </ContextMenu>
+                    </Ultima:ListBoxViewTiles.ContextMenu>
+                </Ultima:ListBoxViewTiles>
+            </Border>
             <ListBox 
         		Grid.ColumnSpan="6" 
         		Grid.Row="5" 

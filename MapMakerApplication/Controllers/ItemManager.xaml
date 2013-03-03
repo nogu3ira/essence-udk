@@ -4,7 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:CollectionManager="clr-namespace:MapMakerApplication.Controllers.CollectionManager" 
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="MapMakerApplication.Controllers.ItemManager" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:Ultima="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls"
+             xmlns:CustomControls="clr-namespace:CustomControls;assembly=EssenceUDK.Controls"
+             x:Class="MapMakerApplication.Controllers.ItemManager" 
              mc:Ignorable="d" 
     d:DesignHeight="500" d:DesignWidth="300">
 	<UserControl.Resources>
@@ -50,15 +53,17 @@
             CommandAdd="{Binding Source={StaticResource Locator},Path=Sdk.CommandAreaItemCollectionAdd}"
             CommandRemove="{Binding Source={StaticResource Locator},Path=Sdk.CommandAreaItemCollectionRemove}"
             ItemsSource="{Binding Sdk.CollectionAreaColorSelected.Items.List, Source={StaticResource Locator}}"/>
-        <ListBox 
-            Grid.Column="0"
-            Style="{StaticResource TileStyle}" 
-            SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedAreaItemTile}"
-            ItemsSource="{Binding Items, Source={StaticResource Locator}}" 
-            ItemTemplate="{StaticResource MyImagesItemTemplateStatic}" 
+        
+        <Ultima:ListBoxViewTiles 
+            Texture="False" 
+            Grid.Column="0" 
             Grid.ColumnSpan="4" 
-            Grid.Row="5"
+            ItemsSource="{Binding Items, Source={StaticResource Locator}}"   
+            Grid.Row="5" 
+            SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedAreaItemTile,Mode=TwoWay}"
             />
+           
+
         <ListView 
             Name="ListItems"
             Grid.Row="9" 

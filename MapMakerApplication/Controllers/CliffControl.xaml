@@ -7,8 +7,7 @@
 	x:Class="MapMakerApplication.CliffControl"
 	x:Name="UserControl"
 	d:DesignWidth="640" d:DesignHeight="480"
-    DataContext="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected}"
-    >
+    DataContext="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected}" xmlns:my="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls">
 	<UserControl.Resources>
 
 		<Style x:Key="CollectionManagerStyleCliff" TargetType="{x:Type CollectionManager:CollectionManager}">
@@ -114,7 +113,10 @@
                  Style="{DynamicResource TileStyleMiniList}" 
                  ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.CliffList}" 
                  ItemTemplate="{DynamicResource MyImagesItemTemplateTextureFromInt}"
-                 SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedTextureInCliffList}" Background="{DynamicResource BackGroundGreed}" Grid.RowSpan="2" Margin="{DynamicResource DefaultMargin}">
+                 SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedTextureInCliffList}" 
+                 Background="{DynamicResource BackGroundGreed}" 
+                 Grid.RowSpan="2" 
+                 Margin="{DynamicResource DefaultMargin}">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Remove" Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandRemoveCliffTexture}"/>
@@ -122,20 +124,23 @@
             </ListBox.ContextMenu>
         </ListBox>
 
-        <ListBox Style="{DynamicResource TileStyle}" Grid.Row="4" 
-                 SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedTextureForCliff,Mode=TwoWay}" 
-                 Grid.ColumnSpan="3" 
-                 ItemsSource="{Binding Source={StaticResource Locator},Path=Lands}" 
-                 ItemTemplate="{DynamicResource MyImagesItemTemplateTexture}" Background="{DynamicResource BackGroundGreed}" Margin="{DynamicResource DefaultMargin}">
-            <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Add" Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddCliffTexture}"/>
-                </ContextMenu>
-            </ListBox.ContextMenu>
-        </ListBox>
         <TextBlock Grid.Row="1" TextWrapping="Wrap"><Run Language="it-it" Text="Direction"/></TextBlock>
         <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource ObjectProviderDirectionCliff}}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.Directions,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
 		<TextBlock Grid.Row="2" TextWrapping="Wrap"><Run Language="it-it" Text="Index Color To"/></TextBlock>
         <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.AreaColorIndexes, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.IdTo}"/>
-	</Grid>
+        <my:ListBoxViewTiles 
+            Grid.Row="4" 
+            Name="listBoxViewTiles1" 
+            Grid.ColumnSpan="3" 
+            Texture="True"
+            SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedTextureForCliff,Mode=TwoWay}"
+            Margin="{DynamicResource DefaultMargin}"
+            ItemsSource="{Binding Source={StaticResource Locator},Path=Lands}">
+            <my:ListBoxViewTiles.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add" Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddCliffTexture}"/>
+                </ContextMenu>
+            </my:ListBoxViewTiles.ContextMenu>
+        </my:ListBoxViewTiles>
+    </Grid>
 </UserControl>

@@ -1,15 +1,8 @@
 ﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="MapMakerApplication.Controllers.TextureEditor" 
              d:DesignHeight="300" 
              d:DesignWidth="300"
-             mc:Ignorable="d"
-             >
-	<UserControl.Resources>
-		<ItemsPanelTemplate x:Key="ItemsPanelTemplate1">
-			<WrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"
-				MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"
-                               />
-		</ItemsPanelTemplate>
-	</UserControl.Resources>
+             mc:Ignorable="d" xmlns:my="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls">
+
 	<UserControl.DataContext>
 		<Binding Source="{StaticResource ResourceKey=Locator}"/>
 	</UserControl.DataContext>
@@ -33,7 +26,7 @@
                     Style="{StaticResource TileStyleMiniList}"
                     ItemTemplate="{StaticResource MyImagesItemTemplateTextureFromInt}"
                     ItemsSource="{Binding Sdk.SelectedAreaTexture.List, Source={StaticResource Locator}}" 
-                    Grid.Row="4" Grid.ColumnSpan="5" ItemsPanel="{DynamicResource ItemsPanelTemplate1}"
+                    Grid.Row="4" Grid.ColumnSpan="5"
                     SelectedItem="{Binding Path=Sdk.SelectedAreaTextureTileInt}" Background="{DynamicResource BackGroundGreed}" Margin="5"
             >
             <ListBox.ContextMenu>
@@ -43,23 +36,24 @@
             </ListBox.ContextMenu>
         </ListBox>
 
-        <ListBox
-            x:Name="ListBoxLandTexture" Style="{StaticResource TileStyle}" 
-            ItemsSource="{Binding Lands, Mode=OneWay}" 
-            Grid.ColumnSpan="5"
-            ItemTemplate="{StaticResource MyImagesItemTemplateTexture}" 
-            Grid.Row="2"
-            SelectedItem="{Binding Path=Sdk.SelectedAreaTextureTile}" Background="{DynamicResource BackGroundGreed}" Margin="5"
-            >
-            <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Add" Command="{Binding Path=Sdk.CommandTextureTileAdd}"/>
-                </ContextMenu>
-            </ListBox.ContextMenu>
-            </ListBox>
         <TextBlock TextWrapping="Wrap"><Run Language="it-it" Text="Name"/></TextBlock>
         <TextBlock Grid.Row="1" TextWrapping="Wrap"><Run Language="it-it" Text="Index"/></TextBlock>
         <TextBox Grid.ColumnSpan="4" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Sdk.SelectedAreaTexture.Name,UpdateSourceTrigger=PropertyChanged}"/>
     	<xctk:IntegerUpDown Grid.Column="1" Grid.Row="1" Minimum="0" Value="{Binding Sdk.SelectedAreaTexture.Index,UpdateSourceTrigger=PropertyChanged}"/>
+        <my:ListBoxViewTiles 
+            Grid.ColumnSpan="5" 
+            Grid.Row="2" 
+            Margin="5"
+            Name="listBoxViewTiles1"
+            ItemsSource="{Binding Lands, Mode=OneWay}" 
+            SelectedItem="{Binding Path=Sdk.SelectedAreaTextureTile,Mode=TwoWay}"
+            Texture="True"
+            >
+            <my:ListBoxViewTiles.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add" Command="{Binding Path=Sdk.CommandTextureTileAdd}"/>
+                </ContextMenu>
+            </my:ListBoxViewTiles.ContextMenu>
+        </my:ListBoxViewTiles>
     </Grid>
 </UserControl>

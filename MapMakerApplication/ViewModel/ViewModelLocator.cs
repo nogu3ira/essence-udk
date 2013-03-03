@@ -17,10 +17,12 @@
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
+using System.Windows;
 using EssenceUDK.MapMaker;
 using EssenceUDK.Platform;
 using EssenceUDK.Platform.DataTypes;
 using EssenceUDK.Platform.MiscHelper;
+using EssenceUDK.Resources;
 using EssenceUDK.Resources.Libraries.MiscUtil.DataVirtualization;
 using GalaSoft.MvvmLight;
 using MapMakerApplication.Messages;
@@ -79,6 +81,7 @@ namespace MapMakerApplication.ViewModel
             CreateMapMakerView(_sdk.MakeMapSdk);
             CreateOptionView();
             AppMessages.OptionAnswer.Register(this,MessageHandler);
+
         }
 
         #region SDK

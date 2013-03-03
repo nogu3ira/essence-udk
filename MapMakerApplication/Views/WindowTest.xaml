@@ -43,7 +43,7 @@
         
         <avalondock:DockingManager Grid.Row="1" x:Name="dockManager" AllowMixedOrientation="True" Visibility="{Binding Source={StaticResource Locator},Path=Sdk.Visibility,Converter={StaticResource VisibilityInverter}}">
             <avalondock:DockingManager.Theme>
-                <avalondock:AeroTheme/>
+                <avalondock:ExpressionDarkTheme/>
             </avalondock:DockingManager.Theme>
             <avalondock:LayoutRoot>
                 <avalondock:LayoutPanel Orientation="Horizontal">

@@ -31,7 +31,7 @@ using System.Windows;
 //[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
 
 [assembly: ThemeInfo(
-    ResourceDictionaryLocation.None, //где расположены словари ресурсов по конкретным тематикам
+    ResourceDictionaryLocation.SourceAssembly, //где расположены словари ресурсов по конкретным тематикам
     //(используется, если ресурс не найден на странице 
     // или в словарях ресурсов приложения)
     ResourceDictionaryLocation.SourceAssembly //где расположен словарь универсальных ресурсов
@@ -54,3 +54,5 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+
