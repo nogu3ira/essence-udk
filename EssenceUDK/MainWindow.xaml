@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:contr="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls"
         xmlns:EssenceUDK="clr-namespace:EssenceUDK" Title="Essence UDK (Ultima Developer Kit)" Height="385" Width="853"
-        Icon="/EssenceUDK;component/EssenceUDK.ico">
+        Icon="/EssenceUDK;component/EssenceUDK.ico" xmlns:my="clr-namespace:EssenceUDK.Controllers">
     <Window.Resources />
         
     <Grid ShowGridLines="False">
@@ -30,6 +30,9 @@
                     <contr:TileLandView Name="tileLandView1" Grid.Column="0" ItemWidth="44" ItemHeight="44" />
                     <contr:TileTexmView Name="tileTexmView1" Grid.Column="1" ItemHeight="44" ItemWidth="44" />
                 </Grid>
+            </TabItem>
+            <TabItem Header="tabItem2" Name="tabItem2">
+                <my:UserControlPreferences x:Name="userControlPreferences1" />
             </TabItem>
         </TabControl>
     </Grid>

@@ -51,9 +51,6 @@ namespace EssenceUDK.Controls.Ultima
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ListBoxViewTiles), new FrameworkPropertyMetadata(typeof(ListBoxViewTiles)));
         }
 
-        private object _source;
-        private object _itemssource;
-
         public bool Texture
         {
             get { return (bool)GetValue(TextureProperty); }
@@ -76,11 +73,11 @@ namespace EssenceUDK.Controls.Ultima
         /// Gets or sets the value of the <see cref="ItemsSource" />
         /// property. This is a dependency property.
         /// </summary>
-        public IList ItemsSource
+        public IEnumerable ItemsSource
         {
             get
             {
-                return (IList)GetValue(ItemsSourceProperty);
+                return (IEnumerable)GetValue(ItemsSourceProperty);
             }
             set
             {
