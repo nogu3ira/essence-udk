@@ -266,8 +266,8 @@
 		<TabItem Header="Default Water Item" Name="TabItemDefault" Style="{StaticResource InvisibleTab}">
 		<StackPanel MinWidth="{DynamicResource Height}" MinHeight="{DynamicResource Height}" Background="{DynamicResource BackGroundGreed}">
 				<Border BorderBrush="Black" BorderThickness="2.0" CornerRadius="5" Width="{DynamicResource Height}" Height="{DynamicResource Height}" >
-					<Grid Width="{DynamicResource Height}" Height="{DynamicResource Height}">
-						<Image  Stretch="Uniform" Source="{Binding CollectionAreaColorSelected.Coasts.Coast.Texture, Converter={StaticResource converterImageSourceItemFromInt}}" Margin="5" />
+					<Grid>
+						<Image  Stretch="Uniform" Source="{Binding CollectionAreaColorSelected.Coasts.Coast.Texture, Converter={StaticResource converterImageSourceItemFromInt}}"/>
 						<TextBlock Foreground="Gold" TextWrapping="Wrap" Text="{Binding CollectionAreaColorSelected.Coasts.Coast.Texture}"/>
 					</Grid>
 				</Border>
@@ -305,7 +305,7 @@
                         Minimum="-128"
                         />
                     <CheckBox Content="Cliff Coast" Grid.Row="2" Name="CliffCheckBox" IsChecked="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected.CliffCoast}"/>
-				<GroupBox Header="Sand Coast Smooth Circles" Grid.Row="3" Grid.ColumnSpan="5" Grid.RowSpan="9" >
+				<GroupBox Header="Sand Coast Smooth Circles" Grid.Row="3" Grid.ColumnSpan="5" Grid.RowSpan="9" Style="{StaticResource InvisibleGroup}" >
 					
 					<Grid>
 						<Grid.ColumnDefinitions>

@@ -1055,7 +1055,10 @@ namespace MapMakerApplication.ViewModel
         {
             try
             {
-                CollectionAreaTexture.List.Add(new AreaTextures());
+                var areatexture = new AreaTextures();
+                areatexture.PropertyChanged += (s,e) => RaisePropertyChanged(null);
+            CollectionAreaTexture.List.Add(areatexture);
+
                 RaisePropertyChanged(null);
             }
             catch (Exception e)
@@ -1554,14 +1557,19 @@ namespace MapMakerApplication.ViewModel
                 xml.Load(filename);
                 CollectionAreaTexture.InitializeSeaches();
                 var node = xml.SelectSingleNode("./TilesBrush");
-
-                foreach (var areaColorColor in CollectionColorArea.List)
+                var nodes = node.SelectNodes("//Brush");
+               
+                for (int i = 0; i < nodes.Count; i++ )
                 {
-                    ParseColorToXml(xml, areaColorColor, node, CollectionAreaTexture);
+                    node.RemoveChild(nodes.Item(i));
                 }
-                foreach (var area in CollectionColorArea.List)
+                foreach (var texture in CollectionAreaTexture.List)
                 {
-                    ReParseColorToXml(xml, area, node, CollectionAreaTexture);
+                    ParseColorToXml(xml, texture, node);
+                }
+                foreach (var texture in CollectionAreaTexture.List)
+                {
+                    ReParseColorToXml(xml,texture);
                 }
 
                 xml.Save(filename);
@@ -1574,11 +1582,10 @@ namespace MapMakerApplication.ViewModel
 
         }
 
-        private static void ParseColorToXml(XmlDocument xml, AreaColor area, XmlNode root, CollectionAreaTexture collectionAreaTexture)
+        private static void ParseColorToXml(XmlDocument xml, AreaTextures area, XmlNode root)
         {
 
-            var texture = collectionAreaTexture.FindByIndex(area.TextureIndex);
-            if (texture == null) return;
+            if (area == null) return;
 
 
             var thisNode = xml.CreateNode(XmlNodeType.Element, "Brush", xml.NamespaceURI);
@@ -1591,20 +1598,20 @@ namespace MapMakerApplication.ViewModel
             thisNode.Attributes.Append(Attribute);
 
 
-            foreach (var VARIABLE in texture.List)
+            foreach (var textureId in area.List)
             {
                 var landNode = xml.CreateNode(XmlNodeType.Element, "Land", xml.NamespaceURI);
                 Attribute = xml.CreateAttribute("ID");
-                Attribute.Value = "0x" + VARIABLE.ToString("X4");
+                Attribute.Value = "0x" + textureId.ToString("X4");
                 landNode.Attributes.Append(Attribute);
                 thisNode.AppendChild(landNode);
             }
 
-            foreach (var transition in area.TextureTransitions)
+            foreach (var transition in area.AreaTransitionTexture.List)
             {
                 var edgenode = xml.CreateNode(XmlNodeType.Element, "Edge", xml.NamespaceURI);
                 Attribute = xml.CreateAttribute("To");
-                Attribute.Value = String.Format("{0:0000}", transition.IndexTo);
+                Attribute.Value = String.Format("{0:0000}", transition.TextureIdTo);
                 edgenode.Attributes.Append(Attribute);
 
                 InsertEdgesToXml(xml, "DR", edgenode, transition.BorderSouthEast.List);
@@ -1622,15 +1629,14 @@ namespace MapMakerApplication.ViewModel
             root.AppendChild(thisNode);
         }
 
-        private void ReParseColorToXml(XmlDocument xml, AreaColor area, XmlNode root, CollectionAreaTexture collectionAreaTexture)
+        private void ReParseColorToXml(XmlDocument xml, AreaTextures area)
         {
 
-            var texture = collectionAreaTexture.FindByIndex(area.TextureIndex);
-            if (texture == null) return;
+            if (area == null) return;
 
-            foreach (var transition in area.TextureTransitions)
+            foreach (var transition in area.AreaTransitionTexture.List)
             {
-                var xpathquery = "//Brush[@Id=" + "'" + String.Format("{0:0000}", transition.IndexTo) + "'" + "]";
+                var xpathquery = "//Brush[@Id=" + "'" + String.Format("{0:0000}", transition.TextureIdTo) + "'" + "]";
                 var node = xml.SelectSingleNode(xpathquery);
                 if (node == null) continue;
                 var edgenode = xml.CreateNode(XmlNodeType.Element, "Edge", xml.NamespaceURI);
@@ -1678,9 +1684,27 @@ namespace MapMakerApplication.ViewModel
             xml.Load(filename);
 
             var root = xml.SelectSingleNode("/TilesGroup");
+            try
+            {
+                var removeNode =root.SelectNodes("//*[@Name='Brushes']");
+                if (removeNode != null)
+                {
+                    var enumerator = removeNode.GetEnumerator();
+                    while(enumerator.MoveNext()!=null)
+                    {
+                        root.RemoveChild((XmlNode) enumerator.Current);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                ;
+            }
+           
             var node = xml.CreateNode(XmlNodeType.Element, "Group", xml.NamespaceURI);
             root.AppendChild(node);
-
+          
+            
             var attribute = xml.CreateAttribute("Name");
             attribute.Value = "Brushes";
             node.Attributes.Append(attribute);
@@ -1695,11 +1719,11 @@ namespace MapMakerApplication.ViewModel
 
             var parent = node;
 
-            foreach (var area in CollectionColorArea.List)
+            foreach (var area in CollectionAreaTexture.List)
             {
                 node = xml.CreateNode(XmlNodeType.Element, "Group", xml.NamespaceURI);
                 attribute = xml.CreateAttribute("color");
-                attribute.Value = area.Color.ToString();
+                attribute.Value = "#000000";
                 node.Attributes.Append(attribute);
                 attribute = xml.CreateAttribute("Name");
                 attribute.Value = area.Name;

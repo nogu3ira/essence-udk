@@ -54,10 +54,7 @@ namespace MapMakerApplication.ViewModel
             set
             {
                 _selectedTransition = value;
-                RaisePropertyChanged(() => SelectedTransition);
-                RaisePropertyChanged(() => SelectedLineTransition);
-                RaisePropertyChanged(() => SelectedTextureName);
-                RaisePropertyChanged(() => IndexTextureTo);
+                RaisePropertyChanged(null);
             }
         }
 
@@ -124,9 +121,10 @@ namespace MapMakerApplication.ViewModel
             set
             {
                 var transition = _selectedTransition as AreaTransitionTexture;
+                var trainsitionItem = _selectedTransition as AreaTransitionItem;
                 if (transition != null)
                     transition.TextureIdTo = value;
-                else
+                else if (trainsitionItem!=null)
                 ((AreaTransitionItem) _selectedTransition).TextureIdTo = value;
 
                 RaisePropertyChanged(() => IndexTextureTo);
@@ -150,8 +148,12 @@ namespace MapMakerApplication.ViewModel
             set
             {
                 var name = value;
-                var texture = ViewModelLocator._sdk.CollectionAreaTexture.List.FirstOrDefault(o => o.Name == name).Index;
-                IndexTextureTo = texture;
+                var firstOrDefault = ViewModelLocator._sdk.CollectionAreaTexture.List.FirstOrDefault(o => o.Name == name);
+                if (firstOrDefault != null)
+                {
+                    var texture = firstOrDefault.Index;
+                    IndexTextureTo = texture;
+                }
             }
         }
 
