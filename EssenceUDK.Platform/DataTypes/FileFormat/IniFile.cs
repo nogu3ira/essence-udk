@@ -20,7 +20,7 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat
         private static extern Int32 GetPrivateProfileInt(string appName, string keyName, Int32 valDefault, string filePath);
 
         [DllImport("Kernel32", CharSet = CharSet.Unicode)]
-        private static extern UInt32 GetPrivateProfileString(string appName, string keyName, string valDefault, string valReturn, UInt32 size, string filePath);
+        private static extern UInt32 GetPrivateProfileString(string appName, string keyName, string valDefault, StringBuilder valReturn, UInt32 size, string filePath);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -56,9 +56,9 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat
 
         public string ReadString(string appName, string keyName, string valDefault = "", bool write = true)
         {
-            string getstr = new string('\0', 0x4000);
+            StringBuilder getstr = new StringBuilder(0x4000);
             GetPrivateProfileString(appName, keyName, valDefault, getstr, 0x4000, ConfigPath);
-            string result = getstr.TrimEnd('\0');
+            string result = getstr.ToString();
             if (String.IsNullOrEmpty(result))
                 result = valDefault;
 
