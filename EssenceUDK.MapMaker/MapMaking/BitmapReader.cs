@@ -76,14 +76,15 @@ namespace EssenceUDK.MapMaker.MapMaking
         /// </summary>
         /// <param name="collectionAreaColor"></param>
         /// <param name="location"></param>
-        /// <exception cref="ExecutionEngineException"></exception>
+        /// <exception>
+        ///   <cref>ExecutionEngineException</cref>
+        /// </exception>
         /// <returns></returns>
         public static AreaColor[] ProduceMap(CollectionAreaColor collectionAreaColor, string location)
         {
             AreaColor[] areaColors = null;
             using (var bitmap = new Bitmap(location))
             {
-
 
                 areaColors = new AreaColor[bitmap.Width * bitmap.Height];
                 
@@ -244,12 +245,171 @@ namespace EssenceUDK.MapMaker.MapMaking
                     }
 
                 }
-                rgbValues = null;
 
             }
             return array;
         }
 
 
+        public static sbyte[] AltitudeFromBitmapVersion2(string originalLocation)
+        {
+            var original = new Bitmap(originalLocation);
+            using (original)
+            {
+                var array = new sbyte[original.Height * original.Width];
+                unsafe
+                {
+
+
+                    //lock the original bitmap in memory
+                    BitmapData originalData = original.LockBits(
+                        new Rectangle(0, 0, original.Width, original.Height),
+                        ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+
+                    //set the number of bytes per pixel
+                    const int pixelSize = 3;
+
+                    for (int y = original.Height-1; y >=0 ; y--)
+                    {
+                        //get the data from the original image
+                        byte* oRow = (byte*) originalData.Scan0 + (y*originalData.Stride);
+
+                        for (int x = 0; x < original.Width; x++)
+                        {
+                            var red = oRow[x*pixelSize + 2];
+                            var green = oRow[x*pixelSize + 1];
+                            var blue = oRow[x*pixelSize];
+
+                            if (blue > 0 && red == 0 && green == 0)
+                            {
+                                var partialresult = blue - 128;
+                                if (partialresult > sbyte.MaxValue)
+                                    partialresult = sbyte.MaxValue;
+                                if (partialresult < sbyte.MinValue)
+                                    partialresult = sbyte.MinValue;
+
+                                array[(y * (original.Width)) + x] = (sbyte)partialresult;
+                                continue;
+                            }
+
+                            if (red == green && red == blue)
+                            {
+                                var partialresult = red - 128;
+                                if (partialresult > sbyte.MaxValue)
+                                    partialresult = sbyte.MaxValue;
+                                if (partialresult < sbyte.MinValue)
+                                    partialresult = sbyte.MinValue;
+
+                                array[(y * (original.Width)) + x] = (sbyte)partialresult;
+                                continue;
+                            }
+
+                            if (red == blue && green == 0)
+                            {
+                                var partialresult = red - 128;
+                                if (partialresult > sbyte.MaxValue)
+                                    partialresult = sbyte.MaxValue;
+                                if (partialresult < sbyte.MinValue)
+                                    partialresult = sbyte.MinValue;
+
+                                array[(y * (original.Width)) + x] = (sbyte)partialresult;
+                                continue;
+                            }
+
+                            if (green > 0 && blue == 0 && red == 0)
+                            {
+                                var partialresult = green - 128;
+                                if (partialresult > sbyte.MaxValue)
+                                    partialresult = sbyte.MaxValue;
+                                if (partialresult < sbyte.MinValue)
+                                    partialresult = sbyte.MinValue;
+
+                                array[(y * (original.Width)) + x] = (sbyte)partialresult;
+                                continue;
+                            }
+
+                            
+                            array[(y*(original.Width)) + x] = 0;
+                            
+                        }
+                    }
+
+                    original.UnlockBits(originalData);
+
+                }
+                return array;
+
+            }
+        }
+
+        public static AreaColor[] ColorsFromBitmap(CollectionAreaColor collectionAreaColor, string originalLocation)
+        {
+            var original = new Bitmap(originalLocation);
+            var areaColors = new AreaColor[original.Height * original.Width];
+            var list = new List<string>();
+            using (original)
+            {
+                unsafe
+                {
+
+
+                    //lock the original bitmap in memory
+                    BitmapData originalData = original.LockBits(
+                        new Rectangle(0, 0, original.Width, original.Height),
+                        ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+
+                    //set the number of bytes per pixel
+                    const int pixelSize = 3;
+
+
+                    for (int y = originalData.Height - 1; y >= 0; y--)
+                    {
+                        //get the data from the original image
+                        byte* oRow = (byte*)originalData.Scan0 + (y * originalData.Stride);
+
+                        for (int x = 0; x < originalData.Width; x++)
+                        {
+                            var red = oRow[x * pixelSize + 2];
+                            var green = oRow[x * pixelSize + 1];
+                            var blue = oRow[x * pixelSize];
+
+                            var area =
+                            collectionAreaColor.FindByByteArray(new[]
+                                                                    {
+                                                                        red,
+                                                                        green,
+                                                                        blue
+                                                                    });
+                            areaColors[(y*(originalData.Width)) + x] = area;
+                            if (area != null) continue;
+
+                            var str = "Color =" +
+                                System.Windows.Media.Color.FromRgb(
+                                    red,
+                                    green,
+                                    blue)
+                                + " not found.";
+
+                            if (!list.Contains(str))
+                            {
+                                list.Add(str);
+                            }
+                        }
+                    }
+
+                    original.UnlockBits(originalData);
+
+                }
+                if (list.Count > 0)
+                {
+                    var message = list.Aggregate("", (current, str) => current + (str + '\n'));
+                    throw new Exception(message);
+                }
+                return areaColors;
+
+            }
+        }
     }
 }
