@@ -325,7 +325,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                     }
                 }
 // ReSharper disable PossibleLossOfFraction
-                float percent1 = (100*(X - minX))/(_X);
+                var percent1 = (100*(X - minX))/(_X);
 // ReSharper restore PossibleLossOfFraction
                 _progressPerc += percent1;
                 OnProgressText(new ProgressEventArgs()
@@ -465,7 +465,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                                        MapObjectCoordinates mapObjectCoordinates, Random random)
         {
             var textureids = areaColorCoordinates.List.Select(o => o.TextureIndex).Distinct();
-            if (textureids.Count() == 1)
+            var enumerable = textureids as int[] ?? textureids.ToArray();
+            if (enumerable.Count() == 1)
                 return;
             if (areaColorCoordinates.Center.Type == TypeColor.Cliff) return;
 
@@ -479,7 +480,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (areaColorCoordinates.List.All(o => o.Color == areaColorCoordinates.Center.Color))
                 return;
             AreaTransitionTexture textureTransition = null;
-            foreach (var id in textureids)
+            foreach (var id in enumerable)
             {
                 textureTransition = transitionList.FindById(id);
                 if (textureTransition != null)
@@ -1028,33 +1029,33 @@ namespace EssenceUDK.MapMaker.MapMaking
 
         #region Coasts UOL style
 
-        private static bool PlaceObject(MapObjectCoordinates mapObjectCoordinates,
-                                        AreaColorCoordinates areaColorCoordinates, sbyte altitude, int itemid,
-                                        sbyte zItem, int texture, bool normal = true)
-        {
+        //private static bool PlaceObject(MapObjectCoordinates mapObjectCoordinates,
+        //                                AreaColorCoordinates areaColorCoordinates, sbyte altitude, int itemid,
+        //                                sbyte zItem, int texture, bool normal = true)
+        //{
 
-            var mapObject = !normal ? mapObjectCoordinates.Center : mapObjectCoordinates.SouthEast;
-            if (mapObject.Occupied != 0 && (mapObject.Occupied != (byte) TypeColor.WaterCoast && itemid != (int)SpecialAboutItems.ClearAll))
-                return true;
-            //mapObject.Altitude = altitude;
-            if (itemid >= 0)
-                mapObject.Items = new List<ItemClone> {new ItemClone {Id = itemid, Z = zItem}};
-            if (itemid == (int)SpecialAboutItems.ClearAll)
-                mapObject.Items = null;
+        //    var mapObject = !normal ? mapObjectCoordinates.Center : mapObjectCoordinates.SouthEast;
+        //    if (mapObject.Occupied != 0 && (mapObject.Occupied != (byte) TypeColor.WaterCoast && itemid != (int)SpecialAboutItems.ClearAll))
+        //        return true;
+        //    //mapObject.Altitude = altitude;
+        //    if (itemid >= 0)
+        //        mapObject.Items = new List<ItemClone> {new ItemClone {Id = itemid, Z = zItem}};
+        //    if (itemid == (int)SpecialAboutItems.ClearAll)
+        //        mapObject.Items = null;
 
 
-            mapObject.Occupied = (byte) areaColorCoordinates.Center.Type;
+        //    mapObject.Occupied = (byte) areaColorCoordinates.Center.Type;
             
-            if (texture >= 0)
-                mapObjectCoordinates.Center.Texture = (short) texture;
-            mapObjectCoordinates.Center.Altitude = altitude;
+        //    if (texture >= 0)
+        //        mapObjectCoordinates.Center.Texture = (short) texture;
+        //    mapObjectCoordinates.Center.Altitude = altitude;
 
-            return true;
-        }
+        //    return true;
+        //}
 
         #region Lines
 
-        #region NS
+        #region South
 
         private static bool PlaceObjectSouth(
             AreaColorCoordinates areaColorCoordinates,
@@ -1068,42 +1069,43 @@ namespace EssenceUDK.MapMaker.MapMaking
             bool ground = false
             )
         {
-            if (areaColorCoordinates.North.Type != trueType
-                || areaColorCoordinates.NorthWest.Type != trueType
-                || areaColorCoordinates.NorthEast.Type != trueType
-                || areaColorCoordinates.East.Type != trueType
-                || areaColorCoordinates.West.Type != trueType)
-                return false;
+            //if (areaColorCoordinates.North.Type != trueType
+            //    || areaColorCoordinates.NorthWest.Type != trueType
+            //    || areaColorCoordinates.NorthEast.Type != trueType
+            //    || areaColorCoordinates.East.Type != trueType
+            //    || areaColorCoordinates.West.Type != trueType)
+            //    return false;
 
-            if (areaColorCoordinates.South.Type != trueType || areaColorCoordinates.SouthEast.Type != trueType ||
-                areaColorCoordinates.SouthWest.Type != trueType)
-            {
-                return PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, itemid, zItem, texture, ground);
-            }
-            return false;
+            //if (areaColorCoordinates.South.Type != trueType || areaColorCoordinates.SouthEast.Type != trueType ||
+            //    areaColorCoordinates.SouthWest.Type != trueType)
+            //{
+            //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, itemid, zItem, texture, ground);
+            //}
+            return areaColorCoordinates.IsSouthLine(trueType) &&
+                   PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, itemid, zItem, texture, ground);
         }
 
         #endregion //NS
 
         #region North
 
-        private static bool IsNorthLine(AreaColorCoordinates areaColorCoordinates, TypeColor type)
-        {
-            if (areaColorCoordinates.South.Type != type
-                || areaColorCoordinates.SouthWest.Type != type
-                || areaColorCoordinates.SouthEast.Type != type
-                || areaColorCoordinates.East.Type != type
-                || areaColorCoordinates.West.Type != type)
-                return false;
+        //private static bool IsNorthLine(AreaColorCoordinates areaColorCoordinates, TypeColor type)
+        //{
+        //    if (areaColorCoordinates.South.Type != type
+        //        || areaColorCoordinates.SouthWest.Type != type
+        //        || areaColorCoordinates.SouthEast.Type != type
+        //        || areaColorCoordinates.East.Type != type
+        //        || areaColorCoordinates.West.Type != type)
+        //        return false;
 
-            if (
-                areaColorCoordinates.North.Type != type
-                || areaColorCoordinates.NorthEast.Type != type
-                || areaColorCoordinates.NorthWest.Type != type
-                )
-                return true;
-            return false;
-        }
+        //    if (
+        //        areaColorCoordinates.North.Type != type
+        //        || areaColorCoordinates.NorthEast.Type != type
+        //        || areaColorCoordinates.NorthWest.Type != type
+        //        )
+        //        return true;
+        //    return false;
+        //}
 
     private static bool PlaceObjectNorth(
            AreaColorCoordinates areaColorCoordinates,
@@ -1118,26 +1120,26 @@ namespace EssenceUDK.MapMaker.MapMaking
             bool ground = false
            )
         {
-            return IsNorthLine(areaColorCoordinates, trueType) && PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, itemid, zItem, texture, ground);
+            return areaColorCoordinates.IsNorthLine(trueType) && mapObjectCoordinates.PlaceObject(areaColorCoordinates, altitude, itemid, zItem, texture, ground);
         }
 
         #endregion //North
 
         #region WEST LINE
 
-        private static bool IsWestLine(AreaColorCoordinates areaColorCoordinates,TypeColor type )
-        {
-            if (
-                areaColorCoordinates.NorthEast.Type != type
-                || areaColorCoordinates.North.Type != type
-                || areaColorCoordinates.East.Type != type
-                || areaColorCoordinates.SouthEast.Type != type
-                || areaColorCoordinates.South.Type != type
-                )
-                return false;
+        //private static bool IsWestLine(AreaColorCoordinates areaColorCoordinates,TypeColor type )
+        //{
+        //    if (
+        //        areaColorCoordinates.NorthEast.Type != type
+        //        || areaColorCoordinates.North.Type != type
+        //        || areaColorCoordinates.East.Type != type
+        //        || areaColorCoordinates.SouthEast.Type != type
+        //        || areaColorCoordinates.South.Type != type
+        //        )
+        //        return false;
 
-            return areaColorCoordinates.West.Type != type || areaColorCoordinates.SouthWest.Type != type || areaColorCoordinates.NorthWest.Type != type;
-        }
+        //    return areaColorCoordinates.West.Type != type || areaColorCoordinates.SouthWest.Type != type || areaColorCoordinates.NorthWest.Type != type;
+        //}
 
         private static bool PlaceObjectWest(AreaColorCoordinates areaColorCoordinates,
             MapObjectCoordinates mapObjectCoordinates,
@@ -1151,27 +1153,27 @@ namespace EssenceUDK.MapMaker.MapMaking
             bool ground = false
             )
         {
-            return IsWestLine(areaColorCoordinates,type) && PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+            return areaColorCoordinates.IsWestLine(type) && mapObjectCoordinates.PlaceObject( areaColorCoordinates, altitude, itemid, zItem, texture, ground);
         }
 
         #endregion //WEST LINE
 
         #region EAST LINE
 
-        private static bool IsEastLine(AreaColorCoordinates areaColorCoordinates, TypeColor type)
-        {
-            if (areaColorCoordinates.West.Type != type
-                || areaColorCoordinates.NorthWest.Type != type
-                || areaColorCoordinates.SouthWest.Type != type
-                || areaColorCoordinates.North.Type != type
-                || areaColorCoordinates.South.Type != type
-                )
-                return false;
+        //private static bool IsEastLine(AreaColorCoordinates areaColorCoordinates, TypeColor type)
+        //{
+        //    if (areaColorCoordinates.West.Type != type
+        //        || areaColorCoordinates.NorthWest.Type != type
+        //        || areaColorCoordinates.SouthWest.Type != type
+        //        || areaColorCoordinates.North.Type != type
+        //        || areaColorCoordinates.South.Type != type
+        //        )
+        //        return false;
 
-            return areaColorCoordinates.East.Type != type
-                   || areaColorCoordinates.NorthEast.Type != type
-                   || areaColorCoordinates.SouthEast.Type != type;
-        }
+        //    return areaColorCoordinates.East.Type != type
+        //           || areaColorCoordinates.NorthEast.Type != type
+        //           || areaColorCoordinates.SouthEast.Type != type;
+        //}
 
         private static bool PlaceObjectEast(AreaColorCoordinates areaColorCoordinates,
             MapObjectCoordinates mapObjectCoordinates,
@@ -1184,7 +1186,8 @@ namespace EssenceUDK.MapMaker.MapMaking
             bool ground = false
             )
         {
-            return IsEastLine(areaColorCoordinates,type) && PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+            return areaColorCoordinates.IsEastLine(type)
+                && mapObjectCoordinates.PlaceObject( areaColorCoordinates, altitude, itemid, zItem, texture, ground);
         }
 
         #endregion //EAST LINE
@@ -1208,25 +1211,27 @@ namespace EssenceUDK.MapMaker.MapMaking
             bool ground = false
             )
         {
-            if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthEast.Type != type || areaColorCoordinates.East.Type != type)
-                return false;
+            //if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthEast.Type != type || areaColorCoordinates.East.Type != type)
+            //    return false;
 
-            if (areaColorCoordinates.South.Type != type || areaColorCoordinates.SouthEast.Type != type || areaColorCoordinates.SouthWest.Type != type)
-                if (areaColorCoordinates.West.Type != type || areaColorCoordinates.NorthWest.Type != type)
-                {
-                    //if (areaColorCoordinates.SouthWest.Type != type
-                    //    && areaColorCoordinates.West.Type != type
-                    //    && areaColorCoordinates.South.Type != type
-                    //    && type != TypeColor.WaterCoast
-                    //    && areaColorCoordinates.NorthWest.Type == type)
-                    //{
-                    //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderSouthWest.List, random), zItem, texture, ground);
-                    //}
+            //if (areaColorCoordinates.South.Type != type || areaColorCoordinates.SouthEast.Type != type || areaColorCoordinates.SouthWest.Type != type)
+            //    if (areaColorCoordinates.West.Type != type || areaColorCoordinates.NorthWest.Type != type)
+            //    {
+            //        //if (areaColorCoordinates.SouthWest.Type != type
+            //        //    && areaColorCoordinates.West.Type != type
+            //        //    && areaColorCoordinates.South.Type != type
+            //        //    && type != TypeColor.WaterCoast
+            //        //    && areaColorCoordinates.NorthWest.Type == type)
+            //        //{
+            //        //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, RandomFromList(areaColorCoordinates.Center.Coasts.Coast.BorderSouthWest.List, random), zItem, texture, ground);
+            //        //}
 
-                    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
-                }
+            //        return mapObjectCoordinates.PlaceObject(areaColorCoordinates, altitude, itemid, zItem, texture, ground);
+            //    }
 
-            return false;
+
+
+            return areaColorCoordinates.IsSouthWestEdge(type) && mapObjectCoordinates.PlaceObject(areaColorCoordinates, altitude, itemid, zItem, texture, ground);
         }
 
         #endregion //SouthWestEdge
@@ -1246,16 +1251,18 @@ namespace EssenceUDK.MapMaker.MapMaking
             bool ground = false
             )
         {
-            if (areaColorCoordinates.South.Type != type || areaColorCoordinates.SouthWest.Type != type || areaColorCoordinates.West.Type != type)
-                return false;
+            //if (areaColorCoordinates.South.Type != type || areaColorCoordinates.SouthWest.Type != type || areaColorCoordinates.West.Type != type)
+            //    return false;
 
-            if (areaColorCoordinates.East.Type != type || areaColorCoordinates.SouthEast.Type != type)
-                if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthWest.Type != type || areaColorCoordinates.NorthEast.Type != type)
-                {
-                    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
-                }
+            //if (areaColorCoordinates.East.Type != type || areaColorCoordinates.SouthEast.Type != type)
+            //    if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthWest.Type != type || areaColorCoordinates.NorthEast.Type != type)
+            //    {
+            //        return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+            //    }
 
-            return false;
+            //return false;
+            return areaColorCoordinates.IsNortEastEdge(type) &&
+                   mapObjectCoordinates.PlaceObject(areaColorCoordinates, altitude, itemid, zItem, texture, ground);
         }
 
         #endregion //NorthEastEdge
@@ -1274,27 +1281,29 @@ namespace EssenceUDK.MapMaker.MapMaking
             bool ground = false
            )
         {
-            if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthWest.Type != type || areaColorCoordinates.West.Type != type)
-                return false;
+            //if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthWest.Type != type || areaColorCoordinates.West.Type != type)
+            //    return false;
 
-            if (areaColorCoordinates.South.Type != type || areaColorCoordinates.SouthWest.Type != type)
-                if (areaColorCoordinates.East.Type != type || areaColorCoordinates.NorthEast.Type != type || areaColorCoordinates.SouthEast.Type != type)
-                {
+            //if (areaColorCoordinates.South.Type != type || areaColorCoordinates.SouthWest.Type != type)
+            //    if (areaColorCoordinates.East.Type != type || areaColorCoordinates.NorthEast.Type != type || areaColorCoordinates.SouthEast.Type != type)
+            //    {
 
 
-                    //if (areaColorCoordinates.SouthEast.Type == type
-                    //    && areaColorCoordinates.SouthWest.Type == type
-                    //    && areaColorCoordinates.NorthEast.Type == type
-                    //    && areaColorCoordinates.East.Type != type
-                    //    && type != TypeColor.WaterCoast)
-                    //{
-                    //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates, 0, itemid, zItem, texture, ground);
-                    //}
+            //        //if (areaColorCoordinates.SouthEast.Type == type
+            //        //    && areaColorCoordinates.SouthWest.Type == type
+            //        //    && areaColorCoordinates.NorthEast.Type == type
+            //        //    && areaColorCoordinates.East.Type != type
+            //        //    && type != TypeColor.WaterCoast)
+            //        //{
+            //        //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates, 0, itemid, zItem, texture, ground);
+            //        //}
 
-                    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
-                }
+            //        return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+            //    }
 
-            return false;
+            //return false;
+
+           return areaColorCoordinates.IsSouthEastEdge(type) && mapObjectCoordinates.PlaceObject(areaColorCoordinates, altitude, itemid, zItem, texture, ground);
         }
 
         #endregion //SouthEastEdge
@@ -1313,16 +1322,19 @@ namespace EssenceUDK.MapMaker.MapMaking
             bool ground = false
             )
         {
-            if (areaColorCoordinates.South.Type != type || areaColorCoordinates.SouthEast.Type != type || areaColorCoordinates.East.Type != type)
-                return false;
+            //if (areaColorCoordinates.South.Type != type || areaColorCoordinates.SouthEast.Type != type || areaColorCoordinates.East.Type != type)
+            //    return false;
 
-            if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthEast.Type != type || areaColorCoordinates.NorthWest.Type != type)
-                if (areaColorCoordinates.West.Type != type || areaColorCoordinates.SouthWest.Type != type)
-                {
-                    return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
-                }
+            //if (areaColorCoordinates.North.Type != type || areaColorCoordinates.NorthEast.Type != type || areaColorCoordinates.NorthWest.Type != type)
+            //    if (areaColorCoordinates.West.Type != type || areaColorCoordinates.SouthWest.Type != type)
+            //    {
+            //        return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+            //    }
 
-            return false;
+            //return false;
+
+            return areaColorCoordinates.IsNorthWestEdge(type) && 
+                mapObjectCoordinates.PlaceObject( areaColorCoordinates, altitude, itemid, zItem, texture, ground);
         }
 
         #endregion // NorthWestEdge
@@ -1347,7 +1359,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (areaColorCoordinates.List.Count(o => o != border && o.Type == type) != 8)
                 return false;
 
-            return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+            return mapObjectCoordinates.PlaceObject( areaColorCoordinates, altitude, itemid, zItem, texture, ground);
 
         }
 
@@ -1373,7 +1385,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             if (areaColorCoordinates.List.Count(o => o.Type == type && o != border && o != border2) != 7)
                 return false;
 
-            return PlaceObject(mapObjectCoordinates, areaColorCoordinates,altitude, itemid, zItem, texture, ground);
+            return mapObjectCoordinates.PlaceObject(areaColorCoordinates, altitude, itemid, zItem, texture, ground);
 
         }
 
@@ -2042,7 +2054,6 @@ namespace EssenceUDK.MapMaker.MapMaking
         }
 
         #endregion // make coasts uol style
-
 
         #region Coast Smoothing
         
@@ -2783,15 +2794,50 @@ namespace EssenceUDK.MapMaker.MapMaking
         private readonly AreaColor _southEast;
         private readonly AreaColor _southWest;
 
-        public AreaColor Center { get { return _center; } }
-        public AreaColor North { get { return _north; } }
-        public AreaColor South { get { return _south; } }
-        public AreaColor East { get { return _east; } }
-        public AreaColor West { get { return _west; } }
-        public AreaColor NorthEast { get { return _northEast; } }
-        public AreaColor NorthWest { get { return _northWest; } }
-        public AreaColor SouthEast { get { return _southEast; } }
-        public AreaColor SouthWest { get { return _southWest; } }
+        public AreaColor Center
+        {
+            get { return _center; }
+        }
+
+        public AreaColor North
+        {
+            get { return _north; }
+        }
+
+        public AreaColor South
+        {
+            get { return _south; }
+        }
+
+        public AreaColor East
+        {
+            get { return _east; }
+        }
+
+        public AreaColor West
+        {
+            get { return _west; }
+        }
+
+        public AreaColor NorthEast
+        {
+            get { return _northEast; }
+        }
+
+        public AreaColor NorthWest
+        {
+            get { return _northWest; }
+        }
+
+        public AreaColor SouthEast
+        {
+            get { return _southEast; }
+        }
+
+        public AreaColor SouthWest
+        {
+            get { return _southWest; }
+        }
 
         public AreaColor[] List { get; set; }
 
@@ -2800,36 +2846,140 @@ namespace EssenceUDK.MapMaker.MapMaking
         {
             List = new AreaColor[9];
 
-            List[(int)Directions.Center] = map[coordinates.Center];
-            _center = List[(int)Directions.Center];
+            List[(int) Directions.Center] = map[coordinates.Center];
+            _center = List[(int) Directions.Center];
 
-            List[(int)Directions.East] = map[coordinates.East];
-            _east = List[(int)Directions.East];
+            List[(int) Directions.East] = map[coordinates.East];
+            _east = List[(int) Directions.East];
 
-            List[(int)Directions.North] = map[coordinates.North];
-            _north = List[(int)Directions.North];
+            List[(int) Directions.North] = map[coordinates.North];
+            _north = List[(int) Directions.North];
 
-            List[(int)Directions.NorthEast] = map[coordinates.NorthEast];
-            _northEast = List[(int)Directions.NorthEast];
+            List[(int) Directions.NorthEast] = map[coordinates.NorthEast];
+            _northEast = List[(int) Directions.NorthEast];
 
-            List[(int)Directions.NorthWest] = map[coordinates.NorthWest];
-            _northWest = List[(int)Directions.NorthWest];
+            List[(int) Directions.NorthWest] = map[coordinates.NorthWest];
+            _northWest = List[(int) Directions.NorthWest];
 
-            List[(int)Directions.South] = map[coordinates.South];
-            _south = List[(int)Directions.South];
+            List[(int) Directions.South] = map[coordinates.South];
+            _south = List[(int) Directions.South];
 
-            List[(int)Directions.SouthEast] = map[coordinates.SouthEast];
-            _southEast = List[(int)Directions.SouthEast];
+            List[(int) Directions.SouthEast] = map[coordinates.SouthEast];
+            _southEast = List[(int) Directions.SouthEast];
 
-            List[(int)Directions.SouthWest] = map[coordinates.SouthWest];
-            _southWest = List[(int)Directions.SouthWest];
+            List[(int) Directions.SouthWest] = map[coordinates.SouthWest];
+            _southWest = List[(int) Directions.SouthWest];
 
-            List[(int)Directions.West] = map[coordinates.West];
-            _west = List[(int)Directions.West];
+            List[(int) Directions.West] = map[coordinates.West];
+            _west = List[(int) Directions.West];
 
 
         }
 
+        public bool IsEastLine(TypeColor type)
+        {
+            if (West.Type != type
+                || NorthWest.Type != type
+                || SouthWest.Type != type
+                || North.Type != type
+                || South.Type != type
+                )
+                return false;
+
+            return East.Type != type
+                   || NorthEast.Type != type
+                   || SouthEast.Type != type;
+        }
+
+        public bool IsWestLine(TypeColor type)
+        {
+            if (
+                NorthEast.Type != type
+                || North.Type != type
+                || East.Type != type
+                || SouthEast.Type != type
+                || South.Type != type
+                )
+                return false;
+
+            return West.Type != type || SouthWest.Type != type || NorthWest.Type != type;
+        }
+
+        public bool IsNorthLine(TypeColor type)
+        {
+            if (South.Type != type
+                || SouthWest.Type != type
+                || SouthEast.Type != type
+                || East.Type != type
+                || West.Type != type)
+                return false;
+
+            return North.Type != type
+                   || NorthEast.Type != type
+                   || NorthWest.Type != type;
+        }
+
+        public bool IsSouthLine(TypeColor type)
+        {
+            if (North.Type != type
+                || NorthWest.Type != type
+                || NorthEast.Type != type
+                || East.Type != type
+                || West.Type != type)
+                return false;
+
+            return South.Type != type || SouthEast.Type != type ||
+                   SouthWest.Type != type;
+        }
+
+        public bool IsSouthWestEdge(TypeColor type)
+        {
+            if (North.Type != type || NorthEast.Type != type || East.Type != type)
+                return false;
+
+            if (South.Type != type || SouthEast.Type != type || SouthWest.Type != type)
+                if (West.Type != type || NorthWest.Type != type)
+                    return true;
+
+            return false;
+        }
+
+        public bool IsNortEastEdge(TypeColor type)
+        {
+            if (South.Type != type || SouthWest.Type != type || West.Type != type)
+                return false;
+
+            if (East.Type != type || SouthEast.Type != type)
+                if (North.Type != type || NorthWest.Type != type || NorthEast.Type != type)
+                    return true;
+
+            return false;
+        }
+
+        public bool IsSouthEastEdge(TypeColor type)
+        {
+            if (North.Type != type || NorthWest.Type != type || West.Type != type)
+                return false;
+
+            if (South.Type != type || SouthWest.Type != type)
+                if (East.Type != type || NorthEast.Type != type || SouthEast.Type != type)
+                {
+                    return true;
+                }
+            return false;
+        }
+
+        public bool IsNorthWestEdge(TypeColor type)
+        {
+            if (South.Type != type || SouthEast.Type != type || East.Type != type)
+                return false;
+
+            if (North.Type != type || NorthEast.Type != type || NorthWest.Type != type)
+                if (West.Type != type || SouthWest.Type != type)
+                    return true;
+
+            return false;
+        }
     }
 
     internal class MapObjectCoordinates
@@ -2869,6 +3019,30 @@ namespace EssenceUDK.MapMaker.MapMaking
             _southEast = map[coordinates.SouthEast];
 
             List = new[] { _center, _north, _south, _east, _west, _northEast, _northWest, _southEast, _southWest };
+        }
+
+
+        public bool PlaceObject(AreaColorCoordinates areaColorCoordinates, sbyte altitude, int itemid,
+                                        sbyte zItem, int texture, bool normal = true)
+        {
+
+            var mapObject = !normal ? Center : SouthEast;
+            if (mapObject.Occupied != 0 && (mapObject.Occupied != (byte)TypeColor.WaterCoast && itemid != (int)SpecialAboutItems.ClearAll))
+                return true;
+
+            if (itemid >= 0)
+                mapObject.Items = new List<ItemClone> { new ItemClone { Id = itemid, Z = zItem } };
+            if (itemid == (int)SpecialAboutItems.ClearAll)
+                mapObject.Items = null;
+
+
+            mapObject.Occupied = (byte)areaColorCoordinates.Center.Type;
+
+            if (texture >= 0)
+                Center.Texture = (short)texture;
+            Center.Altitude = altitude;
+
+            return true;
         }
     }
 
