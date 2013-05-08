@@ -1082,7 +1082,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             //    return PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, itemid, zItem, texture, ground);
             //}
             return areaColorCoordinates.IsSouthLine(trueType) &&
-                   PlaceObject(mapObjectCoordinates, areaColorCoordinates, altitude, itemid, zItem, texture, ground);
+                   mapObjectCoordinates.PlaceObject( areaColorCoordinates, altitude, itemid, zItem, texture, ground);
         }
 
         #endregion //NS
@@ -1410,7 +1410,7 @@ namespace EssenceUDK.MapMaker.MapMaking
             #region WaterCoasts
             if (areaColorCoordinates.Center.Type == TypeColor.WaterCoast)
             {
-                PlaceObject(mapObjectCoordinates,areaColorCoordinates,
+                mapObjectCoordinates.PlaceObject(areaColorCoordinates,
                     (sbyte)random.Next(areaColorCoordinates.Center.Min, areaColorCoordinates.Center.Max),
                     areaColorCoordinates.Center.CliffCoast?areaColorCoordinates.Center.Coasts.Coast.Texture:(int)SpecialAboutItems.Nothing,
                     (sbyte)areaColorCoordinates.Center.ItemsAltitude,
@@ -1418,8 +1418,7 @@ namespace EssenceUDK.MapMaker.MapMaking
 
                 if (areaColorCoordinates.List.All(o => o.Type == TypeColor.WaterCoast || o.Type == TypeColor.Water))
                 {
-                    PlaceObject(
-                        mapObjectCoordinates,
+                    mapObjectCoordinates.PlaceObject(
                         areaColorCoordinates,
                         (sbyte)random.Next(areaColorCoordinates.Center.Min,areaColorCoordinates.Center.Max),
                         areaColorCoordinates.Center.CliffCoast?areaColorCoordinates.Center.Coasts.Coast.Texture:(int)SpecialAboutItems.Nothing,
