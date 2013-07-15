@@ -63,6 +63,13 @@
     <Compile Include="Elements\Items\CollectionItem.cs" />
     <Compile Include="Elements\Items\Items\SingleItem.cs" />
     <Compile Include="Elements\ProgressEventArgs.cs" />
+    <Compile Include="MapMaking\AreaColorCoordinates.cs" />
+    <Compile Include="MapMaking\Coordinates.cs" />
+    <Compile Include="MapMaking\Directions.cs" />
+    <Compile Include="MapMaking\ItemClone.cs" />
+    <Compile Include="MapMaking\MapObject.cs" />
+    <Compile Include="MapMaking\MapObjectCoordinates.cs" />
+    <Compile Include="MapMaking\MapZObjectCoordinates.cs" />
     <Compile Include="MapSdk.cs" />
     <Compile Include="MapMaking\BitmapReader.cs" />
     <Compile Include="Elements\BaseTypes\ComplexTypes\CollectionItem.cs" />
