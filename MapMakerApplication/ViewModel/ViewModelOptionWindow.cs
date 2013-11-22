@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Windows.Input;
+using System.Xml.Serialization;
 using EssenceUDK.Platform;
 using EssenceUDK.Platform.UtilHelpers;
 using GalaSoft.MvvmLight;
@@ -10,6 +13,7 @@ using MapMakerApplication.Messages;
 
 namespace MapMakerApplication.ViewModel
 {
+    [Serializable()]
     public class ViewModelOptionWindow : ViewModelBase
     {
         #region Fields
@@ -77,7 +81,13 @@ namespace MapMakerApplication.ViewModel
                                                     {
                                                         AppMessages.DialogRequest.Send(new MessageDialogRequest(e.Message));
                                                     }
-                                                   
+                                                    var serializer = new XmlSerializer(GetType());
+                                                    using (var File = new FileStream("options.xml",FileMode.Create))
+                                                    {
+                                                        serializer.Serialize(File,this);
+
+                                                    }
+
                                                 }, () => !string.IsNullOrEmpty(SelectedFolder));
 
             CommandCancel = new RelayCommand(() => AppMessages.OptionAnswer.Send(new OptionMessage() { Success = false }));
@@ -91,12 +101,16 @@ namespace MapMakerApplication.ViewModel
 
         #region Commands
 
+        [IgnoreDataMember, XmlIgnore]
         public ICommand CommandSelectDirectory { get; private set; }
 
+        [IgnoreDataMember,XmlIgnore]
         public ICommand CommandCancel { get; private set; }
 
+        [IgnoreDataMember,XmlIgnore]
         public ICommand CommandApply { get; private set; }
 
+        [IgnoreDataMember,XmlIgnore]
         public ICommand CommandSelectOutputFolder { get; private set; }
 
         #endregion Commands
@@ -296,6 +310,7 @@ namespace MapMakerApplication.ViewModel
         }
         #endregion //Data Management
 
+        
 
     }
 

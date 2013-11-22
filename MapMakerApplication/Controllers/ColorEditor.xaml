@@ -8,7 +8,7 @@
              x:Class="MapMakerApplication.Controllers.ColorEditor" 
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="600"
-            DataContext="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected}"
+            DataContext="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected,Mode=OneWay}"
     >
     <UserControl.Resources>
         <Style x:Key="vis">
@@ -126,12 +126,12 @@
                     </TextBlock>
             <CollectionManager:CollectionManager Style="{StaticResource ListViewCircles}" Grid.ColumnSpan="8" Grid.Row="6" 
                                                  ItemsSource="{Binding Path=List}"
-                                                 SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedGrownCircle,Mode=TwoWay}"
-                                                 SelectedIndex="{Binding Source={StaticResource Locator},Path= Sdk.IndexGrownCircle, Mode=TwoWay}"
-                                                 CommandAdd="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddGrownCircle,Mode=TwoWay}"
-                                                 CommandRemove="{Binding Source={StaticResource Locator},Path=Sdk.CommmandRemoveGrownCircle,Mode=TwoWay}"
-                                                 CommandMoveUp="{Binding Source={StaticResource Locator}, Path=Sdk.CommandMoveUpGrownCircle,Mode=TwoWay}"
-                                                 CommandMoveDown="{Binding Source={StaticResource Locator}, Path=Sdk.CommandMoveDownGrownCircle, Mode=TwoWay}"
+                                                 SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedGrownCircle, Mode=TwoWay}"
+                                                 SelectedIndex="{Binding Source={StaticResource Locator},Path= Sdk.IndexGrownCircle}"
+                                                 CommandAdd="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddGrownCircle}"
+                                                 CommandRemove="{Binding Source={StaticResource Locator},Path=Sdk.CommmandRemoveGrownCircle}"
+                                                 CommandMoveUp="{Binding Source={StaticResource Locator}, Path=Sdk.CommandMoveUpGrownCircle}"
+                                                 CommandMoveDown="{Binding Source={StaticResource Locator}, Path=Sdk.CommandMoveDownGrownCircle}"
                                                  />
             <TextBlock Grid.Column="5" Grid.Row="2" TextWrapping="Wrap" Text="{Binding Path=IndexColorTopMountain}" Margin="5,0,0,0" d:LayoutOverrides="GridBox, HorizontalMargin" />
                     <TextBlock Grid.Column="4" Grid.Row="2" Text="Index Top Color" />

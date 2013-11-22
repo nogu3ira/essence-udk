@@ -14,10 +14,13 @@
   DataContext="{Binding Source={x:Static vm:ViewModelLocatorTemplate.ViewModelNameStatic}}"
 */
 
+using System;
 using System.Collections;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Windows;
+using System.Xml.Serialization;
 using EssenceUDK.MapMaker;
 using EssenceUDK.Platform;
 using EssenceUDK.Platform.DataTypes;
@@ -81,6 +84,22 @@ namespace MapMakerApplication.ViewModel
             CreateMapMakerView(_sdk.MakeMapSdk);
             CreateOptionView();
             AppMessages.OptionAnswer.Register(this,MessageHandler);
+            if(File.Exists("options.xml"))
+            {
+                var serializer = new XmlSerializer(typeof(ViewModelOptionWindow));
+                try
+                {
+                    using (var file = new FileStream("options.xml", FileMode.Open))
+                    {
+                        _option = (ViewModelOptionWindow) serializer.Deserialize(file);
+                    }
+                    _option.CommandApply.Execute(null);
+                }
+                catch(Exception e)
+                {
+                    
+                }
+            }
 
         }
 
@@ -205,6 +224,7 @@ namespace MapMakerApplication.ViewModel
         {
             RaisePropertyChanged(null);
         }
+
 
     }
 }
