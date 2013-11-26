@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
 
 namespace EssenceUDK.MapMaker.MapMaking
@@ -43,6 +44,16 @@ namespace EssenceUDK.MapMaker.MapMaking
         }
 
 
+        /// <summary>
+        /// Helper to place objects on the map
+        /// </summary>
+        /// <param name="areaColorCoordinates">area color coordinates</param>
+        /// <param name="altitude">altitude of textures</param>
+        /// <param name="itemid">item id</param>
+        /// <param name="zItem">item z</param>
+        /// <param name="texture">texture</param>
+        /// <param name="normal">is it cliff or not</param>
+        /// <returns>true</returns>
         public bool PlaceObject(AreaColorCoordinates areaColorCoordinates, sbyte altitude, int itemid,
                                 sbyte zItem, int texture, bool normal = true)
         {
@@ -63,6 +74,36 @@ namespace EssenceUDK.MapMaker.MapMaking
                 Center.Texture = (short)texture;
             Center.Altitude = altitude;
 
+            return true;
+        }
+
+        /// <summary>
+        /// Wraps the PaceObject to choise if add a hue or adding the occupation of the land
+        /// </summary>
+        /// <param name="areaColorCoordinates">area color coordinates</param>
+        /// <param name="altitude">altitude of textures</param>
+        /// <param name="itemid">item id</param>
+        /// <param name="zItem">item z</param>
+        /// <param name="texture">texture</param>
+        /// <param name="normal">is it cliff or not</param>
+        /// <param name="occupied">should the land be flagged as occupated?</param>
+        /// <param name="hue"> hue of the object</param>
+        /// <returns>true</returns>
+        public bool PlaceObjectOcc(AreaColorCoordinates areaColorCoordinates, sbyte altitude, int itemid,
+                                sbyte zItem, int texture, bool normal = true,bool occupied = true, int hue = 0)
+        {
+            var mapObject = !normal ? Center : SouthEast;
+            var result = PlaceObject(areaColorCoordinates, altitude, itemid, zItem, texture, normal);
+            if (!result)
+                return false;
+            if (hue != 0)
+            {
+                var last = mapObject.Items.Last();
+                last.Hue = hue;
+            }
+
+            if (!occupied)
+                mapObject.Occupied = 0;
             return true;
         }
     }

@@ -29,7 +29,7 @@ using EssenceUDK.Resources.Libraries.MiscUtil.IO;
 
 namespace EssenceUDK.MapMaker
 {
-    public class MapSdk 
+    public class MapSdk
     {
         public static Dictionary<int, Color> Colors { get; set; }
 
@@ -69,7 +69,7 @@ namespace EssenceUDK.MapMaker
 
         public IEnumerable<int> TextureIds { get { return CollectionAreaTexture.List.Select(o => o.Index); } }
 
-        public IEnumerable<String> TextureName { get { return CollectionColorArea.List.Distinct().Select(o=>o.Name);  } } 
+        public IEnumerable<String> TextureName { get { return CollectionColorArea.List.Distinct().Select(o => o.Name); } }
 
         public IEnumerable<Color> AreaColorColors { get { return CollectionColorArea.List.Select(o => o.Color); } }
 
@@ -104,7 +104,7 @@ namespace EssenceUDK.MapMaker
         #region FolderLocations
 
         public String FolderLocation { get; set; }
-        
+
         #endregion
 
         #region Automatic Height Calculation
@@ -193,7 +193,7 @@ namespace EssenceUDK.MapMaker
             #endregion
 
         }
-        
+
         public MapSdk()
         {
             #region initialize props
@@ -214,7 +214,7 @@ namespace EssenceUDK.MapMaker
             #endregion
         }
         #endregion
-        
+
         #region factories
 
         public void InitializeFactories(string directory)
@@ -229,12 +229,12 @@ namespace EssenceUDK.MapMaker
             {
                 FactoryColor = new FactoryColorArea(Path.Combine(directory, "color_area.txt"));
             }
-            catch(Exception)
+            catch (Exception)
             {
-                
+
             }
-            if(FactoryColor!=null)
-            Factories.Add(FactoryColor);
+            if (FactoryColor != null)
+                Factories.Add(FactoryColor);
 
             try
             {
@@ -243,10 +243,10 @@ namespace EssenceUDK.MapMaker
             }
             catch (Exception)
             {
-                
+
             }
-            if(FactoryCoast!=null)
-            Factories.Add(FactoryCoast);
+            if (FactoryCoast != null)
+                Factories.Add(FactoryCoast);
 
             try
             {
@@ -256,8 +256,8 @@ namespace EssenceUDK.MapMaker
             catch (Exception)
             {
             }
-            if (FactoryMountains!=null)
-            Factories.Add(FactoryMountains);
+            if (FactoryMountains != null)
+                Factories.Add(FactoryMountains);
 
             try
             {
@@ -266,8 +266,8 @@ namespace EssenceUDK.MapMaker
             catch (Exception)
             {
             }
-            if (FactoryItems!=null)
-            Factories.Add(FactoryItems);
+            if (FactoryItems != null)
+                Factories.Add(FactoryItems);
 
             try
             {
@@ -276,8 +276,8 @@ namespace EssenceUDK.MapMaker
             catch (Exception)
             {
             }
-            if (FactoryItemCoasts!=null)
-            Factories.Add(FactoryItemCoasts);
+            if (FactoryItemCoasts != null)
+                Factories.Add(FactoryItemCoasts);
 
             try
             {
@@ -287,8 +287,8 @@ namespace EssenceUDK.MapMaker
             catch (Exception)
             {
             }
-            if(FactorySmoothItems!=null)
-            Factories.Add(FactorySmoothItems);
+            if (FactorySmoothItems != null)
+                Factories.Add(FactorySmoothItems);
 
             try
             {
@@ -297,8 +297,8 @@ namespace EssenceUDK.MapMaker
             catch (Exception)
             {
             }
-            if (FactoryTextureArea!=null)
-            Factories.Add(FactoryTextureArea);
+            if (FactoryTextureArea != null)
+                Factories.Add(FactoryTextureArea);
 
             try
             {
@@ -307,8 +307,8 @@ namespace EssenceUDK.MapMaker
             catch (Exception)
             {
             }
-            if (FactoryTextureSmooth!=null)
-            Factories.Add(FactoryTextureSmooth);
+            if (FactoryTextureSmooth != null)
+                Factories.Add(FactoryTextureSmooth);
 
             try
             {
@@ -317,8 +317,8 @@ namespace EssenceUDK.MapMaker
             catch (Exception)
             {
             }
-            if(FactoryCliff!=null)
-            Factories.Add(FactoryCliff);
+            if (FactoryCliff != null)
+                Factories.Add(FactoryCliff);
 
             #endregion
         }
@@ -327,23 +327,23 @@ namespace EssenceUDK.MapMaker
         {
             #region Textures
 
-            if (FactoryTextureArea!=null)
+            if (FactoryTextureArea != null)
             {
                 FactoryTextureArea.Read();
                 CollectionAreaTexture = FactoryTextureArea.Textures;
             }
-            if (FactoryTextureSmooth!=null)
+            if (FactoryTextureSmooth != null)
             {
                 FactoryTextureSmooth.Read();
                 CollectionAreaTransitionTexture = FactoryTextureSmooth.Smooth;
             }
 
-            if (FactoryCliff!=null)
+            if (FactoryCliff != null)
             {
                 FactoryCliff.Read();
                 CollectionAreaTransitionCliffTexture = FactoryCliff.CollectionAreaCliffs;
             }
-            
+
 
             #endregion
 
@@ -416,7 +416,7 @@ namespace EssenceUDK.MapMaker
 
             CollectionColorArea.InitializeSeaches();
 
-            if (CollectionColorMountains!= null)
+            if (CollectionColorMountains != null)
                 foreach (var mnt in CollectionColorMountains.List)
                 {
                     mnt.Type = TypeColor.Moutains;
@@ -439,7 +439,7 @@ namespace EssenceUDK.MapMaker
 
 
             CollectionColorArea.InitializeSeaches();
-            if (CollectionColorCoast!=null)
+            if (CollectionColorCoast != null)
                 foreach (var coast in CollectionColorCoast.List)
                 {
                     var area = CollectionColorArea.FindByColor(coast.Color);
@@ -461,7 +461,7 @@ namespace EssenceUDK.MapMaker
             #endregion //Colors
 
             #region Textures
-            if (CollectionAreaTransitionTexture!=null)
+            if (CollectionAreaTransitionTexture != null)
                 foreach (var transition in CollectionAreaTransitionTexture.List)
                 {
                     var area = CollectionColorArea.FindByColor(transition.ColorFrom);
@@ -492,7 +492,7 @@ namespace EssenceUDK.MapMaker
                     if (areato == null) continue;
                     cliff.IdTo = areato.Index;
                 }
-               
+
             }
 
             CollectionAreaTexture.InitializeSeaches();
@@ -500,7 +500,7 @@ namespace EssenceUDK.MapMaker
             #endregion //Textures
 
             #region Items
-            if (CollectionAreaItems!=null)
+            if (CollectionAreaItems != null)
                 foreach (var items in CollectionAreaItems.List)
                 {
                     var area = CollectionColorArea.FindByColor(items.Color);
@@ -509,7 +509,7 @@ namespace EssenceUDK.MapMaker
 
                     area.Items = items;
                 }
-            if (CollectionAreaItemsCoasts!=null)
+            if (CollectionAreaItemsCoasts != null)
                 foreach (var coast in CollectionAreaItemsCoasts.List)
                 {
                     var area = CollectionColorArea.FindByColor(coast.Ground.Color);
@@ -519,7 +519,7 @@ namespace EssenceUDK.MapMaker
 
                     area.Coasts = coast;
                 }
-            if (CollectionAreaTransitionItems!=null)
+            if (CollectionAreaTransitionItems != null)
                 foreach (var itemtransition in CollectionAreaTransitionItems.List)
                 {
                     var area = CollectionColorArea.FindByColor(itemtransition.ColorFrom);
@@ -556,17 +556,48 @@ namespace EssenceUDK.MapMaker
                 }
         }
 
-        
+
 
         #endregion //Factories
 
         #region MapMaking
 
-        public void MapMake(string directory, string bitmaplocation, string bitmapZLocation,int x, int y, int index)
+        public void MapMake(string directory, string bitmaplocation, string bitmapZLocation, int x, int y, int index)
         {
             CollectionColorArea.InitializeSeaches();
+            CollectionAreaTexture.InitializeSeaches();
+            var list_errors = new List<string>();
+            foreach (var VARIABLE in CollectionColorArea.List)
+            {
+                Elements.Textures.TextureArea.AreaTextures area;
+                CollectionAreaTexture._fast.TryGetValue(VARIABLE.TextureIndex, out area);
+                if (VARIABLE.Max < VARIABLE.Min)
+                {
+                    var tmp = VARIABLE.Max;
+                    VARIABLE.Max = VARIABLE.Min;
+                    VARIABLE.Min = tmp;
+                }
+
+                if (area != null || VARIABLE.Type == TypeColor.Cliff) continue;
+
+                var error = VARIABLE.Name + @" refers to a non-existent texture '" + VARIABLE.TextureIndex + @"' not found";
+                list_errors.Add(error);
+            }
+
+            if (list_errors.Count > 0)
+            {
+                string errors = "";
+                foreach (var error_in in list_errors)
+                {
+                    errors += error_in + '\n';
+                }
+                
+                throw new Exception(errors);
+            }
 
             var task = new Task[2];
+
+            
 
             var taskMapBitmap =
                 Task<AreaColor[]>.Factory.StartNew(() => BitmapReader.ColorsFromBitmap(CollectionColorArea, bitmaplocation));
@@ -581,7 +612,7 @@ namespace EssenceUDK.MapMaker
             }
             catch (Exception e)
             {
-                
+
                 throw e;
             }
             GC.Collect();
@@ -604,13 +635,13 @@ namespace EssenceUDK.MapMaker
             }
             catch (Exception e)
             {
-               
+
                 throw e;
             }
             GC.Collect();
-            
+
         }
-            
+
         #endregion
 
         #region ACO Making
@@ -618,22 +649,22 @@ namespace EssenceUDK.MapMaker
         public void MakeAco(string file)
         {
             MemoryStream memory = new MemoryStream();
-            EndianBinaryWriter bwriterWriter = new EndianBinaryWriter(EndianBitConverter.Big,memory);
-            
+            EndianBinaryWriter bwriterWriter = new EndianBinaryWriter(EndianBitConverter.Big, memory);
+
             const UInt16 separator = 0;
             UInt16 sectionCounter = 0;
 
-            var colorlist = CollectionColorArea.List.Select(c=>c.Color).ToList();
-            
+            var colorlist = CollectionColorArea.List.Select(c => c.Color).ToList();
+
             UInt16 numberOfColors = UInt16.Parse(colorlist.Count.ToString());
             sectionCounter++;
-            
+
             using (memory)
             {
                 using (bwriterWriter)
                 {
                     bwriterWriter.Write(sectionCounter);
-                   
+
                     bwriterWriter.Write(numberOfColors); // write the number of colors
 
                     foreach (var color in colorlist)
@@ -646,15 +677,15 @@ namespace EssenceUDK.MapMaker
 
                     bwriterWriter.Write(numberOfColors);
 
-                    var encoding = new UnicodeEncoding(true,true,true);
+                    var encoding = new UnicodeEncoding(true, true, true);
 
                     foreach (var color in colorlist)
                     {
-                        ColorStructureWriter(bwriterWriter,color);
-                        
+                        ColorStructureWriter(bwriterWriter, color);
+
                         var tmpcol = CollectionColorArea.List.FirstOrDefault(c => c.Color == color);
                         var bytes = (encoding.GetBytes(tmpcol.Name));
-                        bwriterWriter.Write((ushort)tmpcol.Name.Length+1);
+                        bwriterWriter.Write((ushort)tmpcol.Name.Length + 1);
                         bwriterWriter.Write(bytes);
                         bwriterWriter.Write((ushort)0);
                     }
@@ -666,11 +697,11 @@ namespace EssenceUDK.MapMaker
                     }
                 }
 
-                
+
             }
 
         }
-        
+
         private void ColorStructureWriter(EndianBinaryWriter writer, Color color)
         {
             writer.Write((ushort)0);
@@ -715,7 +746,7 @@ namespace EssenceUDK.MapMaker
             using (ms)
             {
                 formatter.Serialize(ms, objects);
-                using (var stream = new FileStream(file,FileMode.Create))
+                using (var stream = new FileStream(file, FileMode.Create))
                 {
                     ms.WriteTo(stream);
                 }
@@ -727,11 +758,11 @@ namespace EssenceUDK.MapMaker
 
             //var formatter = new BinaryFormatter();
             var ss = new SurrogateSelector();
-            
+
             var formatter = new BinaryFormatter();
             formatter.SurrogateSelector = ss;
             object[] objectfrom;
-            using(var strema = new FileStream(file,FileMode.Open))
+            using (var strema = new FileStream(file, FileMode.Open))
             {
                 objectfrom = (object[])formatter.Deserialize(strema);
             }
@@ -750,7 +781,7 @@ namespace EssenceUDK.MapMaker
                               };
 
             var serializer = new SoapFormatter();
-            
+
             var ms = new MemoryStream();
             using (ms)
             {
@@ -778,21 +809,21 @@ namespace EssenceUDK.MapMaker
                 area.PropertyChanged += EventUpdateList;
             }
 
-            if(CollectionAreaTexture!= null)
+            if (CollectionAreaTexture != null)
                 CollectionAreaTexture.InitializeSeaches();
-            if(CollectionColorArea!=null)
+            if (CollectionColorArea != null)
                 CollectionColorArea.InitializeSeaches();
-            
+
             EventUpdateList(this, null);
 
-            if (CollectionAreaTexture != null && CollectionAreaTexture.List.First().AreaTransitionTexture.List.Count==0)
+            if (CollectionAreaTexture != null && CollectionAreaTexture.List.First().AreaTransitionTexture.List.Count == 0)
                 foreach (var area in CollectionColorArea.List)
                 {
                     foreach (var transition in area.TextureTransitions)
                     {
                         var texture = CollectionAreaTexture.FindByIndex(area.TextureIndex);
                         var areaTo = CollectionColorArea.FindByColor(transition.ColorTo);
-                        if(areaTo!=null)
+                        if (areaTo != null)
                             transition.TextureIdTo = areaTo.TextureIndex;
 
                         if (!texture.AreaTransitionTexture.List.Contains(transition))
@@ -807,8 +838,8 @@ namespace EssenceUDK.MapMaker
                         var areaTo = CollectionColorArea.FindByColor(transitem.ColorTo);
                         if (areaTo != null)
                             transitem.TextureIdTo = areaTo.TextureIndex;
-                        if (texture.CollectionAreaItems==null)
-                            texture.CollectionAreaItems= new CollectionAreaTransitionItems();
+                        if (texture.CollectionAreaItems == null)
+                            texture.CollectionAreaItems = new CollectionAreaTransitionItems();
                         if (!texture.CollectionAreaItems.List.Contains(transitem))
                             texture.CollectionAreaItems.List.Add(transitem);
                     }
@@ -831,7 +862,7 @@ namespace EssenceUDK.MapMaker
 
         private void EventUpdateList(object sender, EventArgs args)
         {
-            Colors=new Dictionary<int, Color>();
+            Colors = new Dictionary<int, Color>();
             foreach (var area in CollectionColorArea.List)
             {
                 try
@@ -841,7 +872,7 @@ namespace EssenceUDK.MapMaker
                 catch (Exception)
                 {
                 }
-                
+
             }
         }
 
@@ -852,6 +883,18 @@ namespace EssenceUDK.MapMaker
 
         #endregion //Event Handler
 
-
+        public static NotificationObject CloneSdkObject(NotificationObject ToClone)
+        {
+            var soap = new BinaryFormatter();
+            var mem = new MemoryStream();
+            NotificationObject output = null;
+            using (mem)
+            {
+                soap.Serialize(mem, ToClone);
+                mem.Position = 0;
+                output = (NotificationObject)soap.Deserialize(mem); 
+            }
+            return output;
+        }
     }
 }

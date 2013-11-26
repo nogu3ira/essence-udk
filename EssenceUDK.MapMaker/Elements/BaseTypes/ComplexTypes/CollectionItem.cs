@@ -8,7 +8,9 @@ namespace EssenceUDK.MapMaker.Elements.BaseTypes.ComplexTypes
     public class CollectionItem : NotificationObject
     {
         private ObservableCollection<int> _list;
-        public ObservableCollection<int> List { get { return _list; } set { _list = value; RaisePropertyChanged(()=>List); } } 
+        private int _hue;
+        public ObservableCollection<int> List { get { return _list; } set { _list = value; RaisePropertyChanged(()=>List); } }
+        
         public CollectionItem()
         {
             List = new ObservableCollection<int>();

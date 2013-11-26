@@ -196,18 +196,6 @@
 			<RowDefinition Height="5"/>
 
 		</Grid.RowDefinitions>
-		<!--<ListBox Grid.Row="3" Style="{StaticResource LocalTransitionListbox}" SelectedItem="{Binding SelectedCoastTile}" Background="{DynamicResource BackGroundGreed}" Margin="0">
-			<ListBox.ContextMenu>
-				<ContextMenu>
-					<MenuItem Header="Add" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}"/>
-					<MenuItem Header="Set As Default Item" Command="{Binding CommandCoastSetAsDefault}"/>
-				</ContextMenu>
-			</ListBox.ContextMenu>
-			<ListBox.InputBindings>
-				<KeyBinding Key="Add" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}"/>
-                <MouseBinding MouseAction="MiddleClick" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}" />
-            </ListBox.InputBindings>
-		</ListBox>-->
         <Ultima:ListBoxViewTiles  Grid.Row="3" Margin="5" SelectedItem="{Binding SelectedCoastTile,Mode=TwoWay}"
                                  Style="{StaticResource LocalTransitionListboxViewTile}"
                                   >
@@ -260,7 +248,10 @@
 						Style="{StaticResource ComboBoxLinked}"
 						SelectedIndex="{Binding Sdk.SelectedComboboxCoastDirectionIndex, Source={StaticResource Locator}}" Width="184.171" Height="20" MinWidth="{DynamicResource MaxWithComboBox}" Margin="5,0"
             />
-				</StackPanel>
+                        <TextBlock Text="Hue" Margin="5,0,5,0"/>
+                        <TextBox MinWidth="50" Text="{Binding Path=CollectionAreaColorSelected.Coasts.Coast.Hue}" MinLines="1" IsEnabled="True" CharacterCasing="Upper" TextWrapping="Wrap" />
+
+                    </StackPanel>
 			</Grid>
 		</TabItem>
 		<TabItem Header="Default Water Item" Name="TabItemDefault" Style="{StaticResource InvisibleTab}">
@@ -330,9 +321,8 @@
                                 CommandAdd="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddSmoothCircle}"
                                 CommandMoveDown="{Binding Source={StaticResource Locator},Path=Sdk.CommandMoveDownSmoothCircle}"
                                 CommandMoveUp="{Binding Source={StaticResource Locator},Path=Sdk.CommandMoveUpSmoothCircle}"
+                                
                                 Margin="0,5,5,0" Grid.RowSpan="3" />
-
-                               
                         </Grid>
 				
 					</GroupBox>

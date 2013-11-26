@@ -12,6 +12,7 @@ namespace EssenceUDK.MapMaker.Elements.Items.ItemCoast
         private Color _color;
 
         private int _texture;
+        private int _hue;
 
 
         #endregion //Fields
@@ -39,6 +40,8 @@ namespace EssenceUDK.MapMaker.Elements.Items.ItemCoast
         }
 
 
+        public int Hue { get { return _hue; } set { _hue = value; RaisePropertyChanged(()=>Hue); } }
+
 
 
         #endregion //Props
@@ -62,6 +65,7 @@ namespace EssenceUDK.MapMaker.Elements.Items.ItemCoast
             base.GetObjectData(info, context);
             Serialize(() => Color, info);
             Serialize(() => Texture, info);
+            Serialize(()=>Hue,info);
         }
 
         protected TransitionItemsCoast(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
@@ -69,6 +73,14 @@ namespace EssenceUDK.MapMaker.Elements.Items.ItemCoast
         {
             Color = Deserialize(() => Color, info);
             Texture = (int)Deserialize(() => Texture, info);
+            try
+            {
+                Hue = (int) Deserialize(() => Hue, info);
+            }
+            catch (Exception)
+            {
+                
+            }
         }
 
         #endregion//Serialization

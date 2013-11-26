@@ -1386,6 +1386,8 @@ namespace MapMakerApplication.ViewModel
             }
             CollectionAreaColorSelected.ItemsAltitude = AreaColorCopied.ItemsAltitude;
             CollectionAreaColorSelected.CoastAltitude = AreaColorCopied.CoastAltitude;
+            CollectionAreaColorSelected.CliffCoast = AreaColorCopied.CliffCoast;
+            CollectionAreaColorSelected.MinCoastTextureZ = AreaColorCopied.MinCoastTextureZ;
             RaisePropertyChanged(null);
         }
         #endregion //ContexMenu Copy&Paste
@@ -1486,7 +1488,6 @@ namespace MapMakerApplication.ViewModel
                 }
                 else
                 {   
-                 
                     throw;  // Already on UI thread; just rethrow the exception to global handlers
                 }
             }

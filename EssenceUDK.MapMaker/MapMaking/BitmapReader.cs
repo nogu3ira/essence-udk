@@ -385,6 +385,7 @@ namespace EssenceUDK.MapMaker.MapMaking
                             areaColors[(y*(originalData.Width)) + x] = area;
                             if (area != null) continue;
 
+
                             var str = "Color =" +
                                 System.Windows.Media.Color.FromRgb(
                                     red,

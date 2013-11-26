@@ -1,3 +1,4 @@
+using System.Linq;
 using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
 
 namespace EssenceUDK.MapMaker.MapMaking
@@ -96,6 +97,32 @@ namespace EssenceUDK.MapMaker.MapMaking
 
         }
 
+        public bool IsAllColor()
+        {
+            return List.All(areaColor => areaColor.Index == Center.Index);
+        }
+
+        public bool IsAllType()
+        {
+            return List.All(areaColor => areaColor.Type == Center.Type);
+        }
+
+        public bool IsEastLine(int id)
+        {
+            if (West.Index != id
+               || NorthWest.Index != id
+               || SouthWest.Index != id
+               || North.Index != id
+               || South.Index != id
+               )
+                return false;
+
+            return East.Index != id
+                   || NorthEast.Index != id
+                   || SouthEast.Index != id;
+        }
+
+
         public bool IsEastLine(TypeColor type)
         {
             if (West.Type != type
@@ -109,6 +136,21 @@ namespace EssenceUDK.MapMaker.MapMaking
             return East.Type != type
                    || NorthEast.Type != type
                    || SouthEast.Type != type;
+        }
+
+        #region Location Methods
+        public bool IsWestLine(int index)
+        {
+            if (
+                NorthEast.Index != index
+                || North.Index != index
+                || East.Index != index
+                || SouthEast.Index != index
+                || South.Index != index
+                )
+                return false;
+
+            return West.Index != index || SouthWest.Index != index || NorthWest.Index != index;
         }
 
         public bool IsWestLine(TypeColor type)
@@ -139,6 +181,20 @@ namespace EssenceUDK.MapMaker.MapMaking
                    || NorthWest.Type != type;
         }
 
+        public bool IsNorthLine(int index)
+        {
+            if (South.Index != index
+                || SouthWest.Index != index
+                || SouthEast.Index != index
+                || East.Index != index
+                || West.Index != index)
+                return false;
+
+            return North.Index != index
+                   || NorthEast.Index != index
+                   || NorthWest.Index != index;
+        }
+
         public bool IsSouthLine(TypeColor type)
         {
             if (North.Type != type
@@ -152,6 +208,19 @@ namespace EssenceUDK.MapMaker.MapMaking
                    SouthWest.Type != type;
         }
 
+        public bool IsSouthLine(int index)
+        {
+            if (North.Index != index
+                || NorthWest.Index != index
+                || NorthEast.Index != index
+                || East.Index != index
+                || West.Index != index)
+                return false;
+
+            return South.Index != index || SouthEast.Index != index ||
+                   SouthWest.Index != index;
+        }
+
         public bool IsSouthWestEdge(TypeColor type)
         {
             if (North.Type != type || NorthEast.Type != type || East.Type != type)
@@ -163,7 +232,18 @@ namespace EssenceUDK.MapMaker.MapMaking
 
             return false;
         }
+        
+        public bool IsSouthWestEdge(int index)
+        {
+            if (North.Index != index || NorthEast.Index != index || East.Index != index)
+                return false;
 
+            if (South.Index != index || SouthEast.Index != index || SouthWest.Index != index)
+                if (West.Index != index || NorthWest.Index != index)
+                    return true;
+
+            return false;
+        }
         public bool IsNortEastEdge(TypeColor type)
         {
             if (South.Type != type || SouthWest.Type != type || West.Type != type)
@@ -171,6 +251,18 @@ namespace EssenceUDK.MapMaker.MapMaking
 
             if (East.Type != type || SouthEast.Type != type)
                 if (North.Type != type || NorthWest.Type != type || NorthEast.Type != type)
+                    return true;
+
+            return false;
+        }
+
+        public bool IsNortEastEdge(int index)
+        {
+            if (South.Index != index || SouthWest.Index != index || West.Index != index)
+                return false;
+
+            if (East.Index != index || SouthEast.Index != index)
+                if (North.Index != index || NorthWest.Index != index || NorthEast.Index != index)
                     return true;
 
             return false;
@@ -189,6 +281,19 @@ namespace EssenceUDK.MapMaker.MapMaking
             return false;
         }
 
+        public bool IsSouthEastEdge(int index)
+        {
+            if (North.Index != index || NorthWest.Index != index || West.Index != index)
+                return false;
+
+            if (South.Index != index || SouthWest.Index != index)
+                if (East.Index != index || NorthEast.Index != index || SouthEast.Index != index)
+                {
+                    return true;
+                }
+            return false;
+        }
+
         public bool IsNorthWestEdge(TypeColor type)
         {
             if (South.Type != type || SouthEast.Type != type || East.Type != type)
@@ -200,5 +305,83 @@ namespace EssenceUDK.MapMaker.MapMaking
 
             return false;
         }
+
+        public bool IsNorthWestEdge(int index)
+        {
+            if (South.Index != index || SouthEast.Index != index || East.Index != index)
+                return false;
+
+            if (North.Index != index || NorthEast.Index != index || NorthWest.Index != index)
+                if (West.Index != index || SouthWest.Index != index)
+                    return true;
+
+            return false;
+        }
+
+
+        #region Border
+        public bool IsNorthEastBorder()
+        {
+            return NorthEast.Index != Center.Index
+                   && East.Index != NorthEast.Index
+                   && North.Index != NorthEast.Index;
+        }
+
+        public bool IsNorthWestBorder()
+        {
+            return NorthWest.Index != Center.Index
+                   && West.Index != NorthWest.Index
+                   && North.Index != NorthWest.Index;
+        }
+
+        public bool IsSouthWestBorder()
+        {
+            return SouthWest.Index != Center.Index
+                   && West.Index != SouthWest.Index
+                   && South.Index != SouthWest.Index;
+        }
+
+        public bool IsSouthEastBorder()
+        {
+            return SouthEast.Index != Center.Index
+            && East.Index != SouthEast.Index
+            && South.Index != SouthEast.Index;
+        }
+
+        #endregion //border
+
+        #region Border Texture
+
+        public bool IsNorthEastBorderTexture()
+        {
+            return NorthEast.TextureIndex != Center.TextureIndex
+                   && East.TextureIndex != NorthEast.TextureIndex
+                   && North.TextureIndex != NorthEast.TextureIndex;
+        }
+
+        public bool IsNorthWestBorderTexture()
+        {
+            return NorthWest.TextureIndex != Center.TextureIndex
+                   && West.TextureIndex != NorthWest.TextureIndex
+                   && North.TextureIndex != NorthWest.TextureIndex;
+        }
+
+        public bool IsSouthWestBorderTexture()
+        {
+            return SouthWest.TextureIndex != Center.TextureIndex
+                   && West.TextureIndex != SouthWest.TextureIndex
+                   && South.TextureIndex != SouthWest.TextureIndex;
+        }
+
+        public bool IsSouthEastBorderTexture()
+        {
+            return SouthEast.TextureIndex != Center.TextureIndex
+            && East.TextureIndex != SouthEast.TextureIndex
+            && South.TextureIndex != SouthEast.TextureIndex;
+        }
+
+        #endregion //Border Texture
+
+        #endregion //location methods
     }
 }

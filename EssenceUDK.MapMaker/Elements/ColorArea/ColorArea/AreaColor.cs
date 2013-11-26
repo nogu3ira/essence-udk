@@ -338,6 +338,7 @@ namespace EssenceUDK.MapMaker.Elements.ColorArea.ColorArea
         Land,
         Cliff,
         Special,
-        WaterCoast
+        WaterCoast,
+        TransparentFluid
     }
 }
