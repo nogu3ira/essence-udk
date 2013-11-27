@@ -4,6 +4,9 @@ using EssenceUDK.MapMaker.Elements.ColorArea.ColorArea;
 
 namespace EssenceUDK.MapMaker.MapMaking
 {
+    /// <summary>
+    /// this class is needed to describe a TILE in the map
+    /// </summary>
     public class MapObjectCoordinates
     {
         private readonly MapObject _center;
@@ -28,6 +31,11 @@ namespace EssenceUDK.MapMaker.MapMaking
 
         public MapObject[] List { get; set; }
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="coordinates">coordinates class</param>
+        /// <param name="map">mapobejct array</param>
         public MapObjectCoordinates(Coordinates coordinates, MapObject[] map)
         {
             _center = map[coordinates.Center];
