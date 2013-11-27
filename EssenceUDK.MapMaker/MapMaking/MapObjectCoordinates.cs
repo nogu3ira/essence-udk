@@ -98,8 +98,8 @@ namespace EssenceUDK.MapMaker.MapMaking
                 return false;
             if (hue != 0)
             {
-                var last = mapObject.Items.Last();
-                last.Hue = hue;
+                mapObject.Items.Clear();
+                mapObject.AddItem(itemid,hue,zItem);
             }
 
             if (!occupied)
