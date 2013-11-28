@@ -25,7 +25,9 @@
         	<SolidColorBrush x:Key="BackGroundGreed" Color="#FF2C2929"/>
         	<System:Double x:Key="MaxWithComboBox">120</System:Double>
         	<Thickness x:Key="DefaultMargin">5</Thickness>
-        </ResourceDictionary>
+      <SolidColorBrush x:Key="OrangeYellowBrushKey">Gold</SolidColorBrush>
+      <SolidColorBrush x:Key="ColorTexts">Gold</SolidColorBrush>
+    </ResourceDictionary>
         <!--Global View Model Locator-->
         
     </Application.Resources>

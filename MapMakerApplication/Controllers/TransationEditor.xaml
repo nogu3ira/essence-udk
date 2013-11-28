@@ -23,6 +23,9 @@
 	</UserControl.DataContext>
     <Grid>
         <Grid>
+            <Grid.InputBindings>
+                <KeyBinding Command="{Binding Sdk.TransationEditorViewModel.TileTransitionAddByString}" Key="Enter"/>
+            </Grid.InputBindings>
             <Grid.Resources>
                 <Style TargetType="{x:Type ListBox}" x:Key="localChanginAll" BasedOn="{StaticResource TileStyle}">
                     <Setter Property="Background" Value="Black"/>
@@ -182,18 +185,18 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="Auto" MinWidth="114"/>
                 <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="0.5*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="20" />
-                <RowDefinition Height="20"/>
-                <RowDefinition Height="20"/>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="20" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="0.50*" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="0.25*" />
             </Grid.RowDefinitions>
 			<Border 
 			CornerRadius="5" 
@@ -209,7 +212,7 @@
                     >
                     <Ultima:ListBoxViewTiles.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Add" Command="{Binding Sdk.TransationEditorViewModel.TileAdd, Source={StaticResource Locator}}"/>
+                            <MenuItem Header="Add" Command="{Binding Sdk.TransationEditorViewModel.TileTransitionAdd, Source={StaticResource Locator}}"/>
                         </ContextMenu>
                     </Ultima:ListBoxViewTiles.ContextMenu>
                 </Ultima:ListBoxViewTiles>
@@ -220,24 +223,25 @@
         		x:Name="ListBoxSelect"
         		Style="{StaticResource LocalTransitionListbox}"
                 ItemsSource="{Binding Sdk.TransationEditorViewModel.SelectedLineTransition, Source={StaticResource Locator}}"
-                SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTileInt, Source={StaticResource Locator}}" ItemsPanel="{DynamicResource ItemsPanelTemplate2}" Background="{DynamicResource BackGroundGreed}" Margin="5">
+                SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTileInt, Source={StaticResource Locator}}" ItemsPanel="{DynamicResource ItemsPanelTemplate2}" Background="{DynamicResource BackGroundGreed}" Margin="{StaticResource DefaultMargin}">
                 <ListBox.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Remove" Command="{Binding Sdk.TransationEditorViewModel.TileRemove, Source={StaticResource Locator}}"/>
+                        <MenuItem Header="Remove" Command="{Binding Sdk.TransationEditorViewModel.TextureTransitionTileRemove, Source={StaticResource Locator}}"/>
                     </ContextMenu>
                 </ListBox.ContextMenu>
             </ListBox>
             <ComboBox 
+                Margin="{StaticResource DefaultMargin}"
                 Grid.Row="4" 
                 x:Name="comboBoxTypeLine" 
                 ItemsSource="{Binding Source={StaticResource ObjectProviderLineType}}" 
-                SelectedIndex="{Binding Sdk.TransationEditorViewModel.ComboBoxLineTypeSelectedIndex, Source={StaticResource Locator}}" Margin="5,0,0,0" />
+                SelectedIndex="{Binding Sdk.TransationEditorViewModel.ComboBoxLineTypeSelectedIndex, Source={StaticResource Locator}}"/>
             <ComboBox 
-                Grid.Column="4" 
+                Grid.Column="2" 
                 Grid.Row="4" 
-                x:Name="comboBoxDirection" Style="{StaticResource ComboBoxLinked}"
-                />
-            <ComboBox x:Name="ComboBoxSelector" Grid.Row="2" SelectedIndex="{Binding Sdk.TransationEditorViewModel.SelectedKindOfTransition,UpdateSourceTrigger=PropertyChanged, Source={StaticResource Locator}}" Margin="5,0,0,0">
+                Margin="{StaticResource DefaultMargin}"
+                x:Name="comboBoxDirection" Style="{StaticResource ComboBoxLinked}" />
+            <ComboBox x:Name="ComboBoxSelector"  Grid.Row="2" SelectedIndex="{Binding Sdk.TransationEditorViewModel.SelectedKindOfTransition,UpdateSourceTrigger=PropertyChanged, Source={StaticResource Locator}}" Margin="{StaticResource DefaultMargin}">
                 <ComboBoxItem Content="Textures"/>
                 <ComboBoxItem Content="Items"/>
             </ComboBox>
@@ -248,7 +252,7 @@
                 CommandRemove="{Binding Sdk.TransationEditorViewModel.TransitionRemove, Source={StaticResource Locator}}"
                 Style="{StaticResource TransitionGridLocal}"
                 SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTransition, Mode=TwoWay, Source={StaticResource Locator},UpdateSourceTrigger=PropertyChanged}" 
-                Grid.Row="5" Grid.Column="6" Grid.ColumnSpan="2" Margin="5" >
+                Grid.Row="5" Grid.Column="6" Grid.ColumnSpan="2" Margin="{StaticResource DefaultMargin}" >
             	<CollectionManager:CollectionManager.ContextMenu>
             		<ContextMenu>
             			<MenuItem 
@@ -259,10 +263,13 @@
 				</CollectionManager:CollectionManager>
             <TextBlock Text="Name" TextWrapping="Wrap" Margin="5,0,0,0" />
             <TextBox Grid.ColumnSpan="5" Grid.Column="2" TextWrapping="Wrap" Text="{Binding Sdk.TransationEditorViewModel.SelectedTransition.Name,UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock TextWrapping="Wrap" Grid.Row="1" Margin="5,0,0,0"><Run Language="it-it" Text="Texture Reference"/></TextBlock>
+            <TextBlock TextWrapping="Wrap" Grid.Row="1" Margin="{StaticResource DefaultMargin}"><Run Language="it-it" Text="Texture Reference"/></TextBlock>
             <!--<xctk:IntegerUpDown Grid.Column="2" Grid.Row="1" Minimum="0" Value="{Binding Sdk.TransationEditorViewModel.SelectedTransition.IndexTextureTo, UpdateSourceTrigger=PropertyChanged}" />-->
-            <ComboBox Grid.Column="4" Grid.Row="1" Name="ComboBoxId" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.TextureIds,UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Sdk.TransationEditorViewModel.IndexTextureTo,Mode=TwoWay}" />
-            <ComboBox Grid.Column="2" Grid.Row="1" SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTextureName,Mode =TwoWay}" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.TextureNames}"/>
+            <ComboBox Margin="{StaticResource DefaultMargin}" Grid.Column="4" Grid.Row="1" Name="ComboBoxId" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.TextureIds,UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Sdk.TransationEditorViewModel.IndexTextureTo,Mode=TwoWay}" />
+            <ComboBox Margin="{StaticResource DefaultMargin}" Grid.Column="2" Grid.Row="1" SelectedItem="{Binding Sdk.TransationEditorViewModel.SelectedTextureName,Mode =TwoWay}" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.TextureNames}"/>
+            <TextBlock Grid.Column="4" Grid.Row="4" Margin="{StaticResource DefaultMargin}" Text="Tile ID" />
+            <TextBox Grid.Column="5" Margin="{StaticResource DefaultMargin}" Grid.Row="4" Text="{Binding UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Path=Sdk.TransationEditorViewModel.TextureIntString, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Grid.ColumnSpan="2" />
+            <Button Margin="{StaticResource DefaultMargin}" Content="Add" Name="button1" Command="{Binding Sdk.TransationEditorViewModel.TileTransitionAddByString}" Grid.Column="7" Grid.Row="4" />
         </Grid>
     </Grid>
 </UserControl>

@@ -95,6 +95,7 @@ namespace MapMakerApplication.ViewModel
         private object _selectedCoastTile;
         private object _selectedCoastTileInt;
         private int _selectedCoastType;
+        private string _stringCoast;
 
         #endregion
 
@@ -117,6 +118,8 @@ namespace MapMakerApplication.ViewModel
         private object _selectedTextureForCliff;
 
         private object _selectedTextureInListCliff;
+
+        private string _stringSelectedCliff;
 
         #endregion //cliffs
 
@@ -207,6 +210,8 @@ namespace MapMakerApplication.ViewModel
             }
         }
 
+        public string _selectedTextureString;
+
         #endregion
 
         #region CollectionAreaTransitionCliffTexture
@@ -231,6 +236,10 @@ namespace MapMakerApplication.ViewModel
                 RaisePropertyChanged("CollectionAreaTransitionItems");
             }
         }
+
+        private string _textureTransitionString;
+
+
         #endregion
 
         #region CollectionAreaTransitionTexture
@@ -243,6 +252,8 @@ namespace MapMakerApplication.ViewModel
                 RaisePropertyChanged("CollectionAreaTransitionTexture");
             }
         }
+
+        public string TextureTransitionString { get { return _textureTransitionString; } set { _textureTransitionString = value; RaisePropertyChanged(()=>TextureTransitionString); } }
         #endregion
 
         #region CollectionAreaColor
@@ -380,6 +391,7 @@ namespace MapMakerApplication.ViewModel
 
         public object SelectedAreaTextureTileInt { get { return _selectedAreaTextureTileInt; } set { _selectedAreaTextureTileInt = value; RaisePropertyChanged(() => SelectedAreaTextureTileInt); } }
 
+        public string SelectedTextureString { get { return _selectedTextureString; } set { _selectedTextureString = value; RaisePropertyChanged(()=>SelectedTextureString); } }
 
         #endregion //Area Texture
 
@@ -471,6 +483,7 @@ namespace MapMakerApplication.ViewModel
 
         public object SelectedCoastTile { get { return _selectedCoastTile; } set { _selectedCoastTile = value; RaisePropertyChanged(() => SelectedCoastTile); } }
 
+        public string SelectedStringCoast { get { return _stringCoast; } set { _stringCoast = value; RaisePropertyChanged(()=>SelectedStringCoast); } }
         #endregion
 
         #region Cliffs
@@ -483,6 +496,8 @@ namespace MapMakerApplication.ViewModel
 
         public object SelectedTextureInCliffList { get { return _selectedTextureInListCliff; } set { _selectedTextureInListCliff = value; RaisePropertyChanged(() => SelectedTextureInCliffList); } }
 
+
+        public string StringSelectedCliff { get { return _stringSelectedCliff; } set { _stringSelectedCliff = value; RaisePropertyChanged(()=>StringSelectedCliff); } }
         #endregion //Cliff
 
         #region EventHandling
@@ -567,6 +582,8 @@ namespace MapMakerApplication.ViewModel
 
         public ICommand CommandTextureTileRemove { get; private set; }
 
+        public ICommand CommandTextureTileAddString { get; private set; }
+
         #endregion //Texture Area commands
 
         #region Area Items
@@ -588,6 +605,8 @@ namespace MapMakerApplication.ViewModel
         public ICommand CommandCoastAddTile { get; private set; }
 
         public ICommand CommandCoastSetAsDefault { get; private set; }
+
+        public ICommand CommandCoastAddString { get; private set; }
 
         #endregion //Coasts
 
@@ -616,6 +635,8 @@ namespace MapMakerApplication.ViewModel
         public ICommand CommandAddCliffTexture { get; private set; }
 
         public ICommand CommandRemoveCliffTexture { get; private set; }
+
+        public ICommand CommandAddCliffString { get; private set; }
 
         #endregion //Cliff Commands
 
@@ -710,7 +731,7 @@ namespace MapMakerApplication.ViewModel
             CommandMoveUpSmoothCircle =
                 new RelayCommand(CommandSmoothCircleMoveUpExecuted, CommandCanMoveUpSmoothCircle);
 
-
+            
 
             #endregion //Grown/Smooth Circle Commands
 
@@ -739,6 +760,86 @@ namespace MapMakerApplication.ViewModel
 
             CommandTextureTileRemove = new RelayCommand(CommandAreaTextureTileRemove, CommandAreaTextureTileRemoveCan);
 
+            CommandTextureTileAddString = new RelayCommand(()=>
+                                                               {
+                                                                   var decValue = ParseStringToInt(SelectedTextureString);
+                                                                 
+                                                                   if(decValue != -1)
+                                                                   {
+                                                                       var selected = SelectedAreaTexture as AreaTextures;
+                                                                       selected.List.Add(decValue);
+                                                                   }
+                                                               },()=>
+                                                                     {
+                                                                         var t = SelectedAreaTexture != null
+                                                                                 &&
+                                                                                 !string.IsNullOrWhiteSpace(
+                                                                                     SelectedTextureString);
+                                                                         if (!t) return false;
+                                                                         var value = ParseStringToInt(SelectedTextureString);
+                                                                         if(value < 0)
+                                                                             return false;
+                                                                         var selected =
+                                                                             SelectedAreaTexture as AreaTextures;
+
+                                                                         if (selected == null)
+                                                                             return false;
+                                                                         if (selected.List.Contains(value))
+                                                                             return false;
+                                                                         if (ApplicationController.manager.GetLandTile().Count() < value)
+                                                                             return false;
+                                                                         return true;
+                                                                     });
+
+
+            CommandCoastAddString = new RelayCommand(()=>
+                                                         {
+                                                             var value = ParseStringToInt(_stringCoast);
+                                                                 switch (SelectedCoastType)
+                                                                 {
+                                                                     case 0:
+                                                                         {
+                                                                             SelectedWater.Add(value);
+                                                                         }
+                                                                         break;
+
+                                                                     case 1:
+                                                                         {
+                                                                             SelectedGround.Add(value);
+                                                                         }
+                                                                         break;
+                                                                 }
+                                                         },()=>
+                                                               {
+                                                                   if (string.IsNullOrWhiteSpace(_stringCoast))
+                                                                       return false;
+                                                                   var value = ParseStringToInt(_stringCoast);
+                                                                   if (value < 0)
+                                                                       return false;
+                                                                   switch (SelectedCoastType)
+                                                                   {
+                                                                       case 0:
+                                                                           {
+                                                                               if (SelectedWater == null)
+                                                                                   return false;
+                                                                               if (value > ApplicationController.manager.GetItemTile().Count())
+                                                                                   return false;
+                                                                               if (SelectedWater.Contains(value))
+                                                                                   return false;
+                                                                           }
+                                                                           break;
+
+                                                                       case 1:
+                                                                           {
+                                                                               if (value > ApplicationController.manager.GetLandTile().Count())
+                                                                                   return false;
+                                                                               if (SelectedGround.Contains(value))
+                                                                                   return false;
+                                                                           }
+                                                                           break;
+                                                                   }
+                                                                   return true;
+                                                               });
             #endregion //Collection Area Textures
 
             #region Collection Area item
@@ -767,6 +868,7 @@ namespace MapMakerApplication.ViewModel
             CommandPasteWaterCoast = new RelayCommand(CommandPasteWaterCoastExecuted, CommandCanPasteCoast);
             CommandPasteCoastSpecialOptions = new RelayCommand(CommandPasteCoastSpecialOptionsExecuted, CommandCanPasteCoast);
             CommandPasteWaterCliff = new RelayCommand(CommandPasteWaterCliffExecuted,CommandCanPasteCoast);
+           
             CommandPasteCliffs = new RelayCommand(() =>
                                                       {
                                                           var cloned = (AreaColor) MapSdk.CloneSdkObject(AreaColorCopied);
@@ -875,6 +977,29 @@ namespace MapMakerApplication.ViewModel
                
             }, () => SelectedCliff != null && SelectedTextureInCliffList != null && CollectionAreaColorSelected != null);
 
+
+            CommandAddCliffString = new RelayCommand(()=>
+                                                         {
+                                                             var val = ParseStringToInt(StringSelectedCliff);
+                                                             var collection =
+                                                                 SelectedCliff as AreaTransitionCliffTexture;
+                                                             if (collection != null) collection.List.Add(val);
+                                                         },()=>
+                                                               {
+                                                                   if (SelectedCliff == null)
+                                                                       return false;
+                                                                   var collection =
+                                                                 SelectedCliff as AreaTransitionCliffTexture;
+                                                                   if (collection == null)
+                                                                       return false;
+                                                                   var value = ParseStringToInt(StringSelectedCliff);
+                                                                   if (value < 0) return false;
+                                                                   if (value > ApplicationController.manager.GetLandTile().Count())
+                                                                       return false;
+                                                                   if (collection.List.Contains(value))
+                                                                       return false;
+                                                                   return true;
+                                                               });
             #endregion //Cliff Commands
 
 
@@ -1719,6 +1844,37 @@ namespace MapMakerApplication.ViewModel
         #endregion //Export to CentrED+
 
 
+
+        public static int ParseStringToInt(string toParse)
+        {
+            var decValue = -1;
+            if (string.IsNullOrWhiteSpace(toParse))
+                return decValue;
+            if (toParse.Contains("0x"))
+            {
+
+                try
+                {
+                    decValue = Convert.ToInt32(toParse, 16);
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+            else
+            {
+                try
+                {
+                    decValue = int.Parse(toParse);
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+            return decValue;
+        }
         #endregion
 
       

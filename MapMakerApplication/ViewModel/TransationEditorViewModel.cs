@@ -21,10 +21,13 @@ namespace MapMakerApplication.ViewModel
         private int _selectedKindOfTransition;
         private IEntryTile _selectedTile;
         private int _selectedTileInt;
+        private string _stringTextureInt;
 
         #endregion //Declarations
 
         #region Properties
+
+        public string TextureIntString { get { return _stringTextureInt; } set { _stringTextureInt = value; RaisePropertyChanged(()=>TextureIntString);} }
 
         public int ComboBoxLineTypeSelectedIndex
         {
@@ -167,8 +170,27 @@ namespace MapMakerApplication.ViewModel
             TransitionAdd = new RelayCommand(TransitionAddExecuted, TransitionCanAdd);
             TransitionRemove = new RelayCommand(TransitionRemoveExecuted, TransitionCanExecuteRemove);
 
-            TileAdd = new RelayCommand(TileAddExecuted, TileAddCanExecute);
-            TileRemove = new RelayCommand(TileRemoveExecuted, TileRemoveCanExecute);
+            TileTransitionAdd = new RelayCommand(TileAddExecuted, TileAddCanExecute);
+            TextureTransitionTileRemove = new RelayCommand(TileRemoveExecuted, TileRemoveCanExecute);
+            TileTransitionAddByString = new RelayCommand(()=>
+                                                             {
+                                                                 var value = SdkViewModel.ParseStringToInt(TextureIntString);
+                                                                 SelectedLineTransition.Add(value);
+                                                                 
+                                                             },
+                                            ()=>{
+                                                if (string.IsNullOrWhiteSpace(TextureIntString))
+                                                    return false;
+                                                    var value = SdkViewModel.ParseStringToInt(TextureIntString);
+                                                    if(value < 0)
+                                                        return false;
+
+                                                    if (SelectedKindOfTransition == 1 && ApplicationController.manager.GetItemTile().Count() < value)
+                                                        return false;
+                                                    if (SelectedKindOfTransition == 0 && ApplicationController.manager.GetLandTile().Count() < value)
+                                                        return false;
+                                                    return SelectedLineTransition != null && !SelectedLineTransition.Contains(value);
+                                            });
             #endregion //Commands
         }
         #endregion
@@ -179,9 +201,11 @@ namespace MapMakerApplication.ViewModel
 
         public ICommand TransitionAdd { get; private set; }
 
-        public ICommand TileRemove { get; private set; }
+        public ICommand TextureTransitionTileRemove { get; private set; }
 
-        public ICommand TileAdd { get; private set; }
+        public ICommand TileTransitionAdd { get; private set; }
+
+        public ICommand TileTransitionAddByString { get; private set; }
 
         #endregion //Commands Properties
 

@@ -101,18 +101,22 @@ namespace EssenceUDK.MapMaker.MapMaking
                                 sbyte zItem, int texture, bool normal = true,bool occupied = true, int hue = 0)
         {
             var mapObject = !normal ? Center : SouthEast;
-            var result = PlaceObject(areaColorCoordinates, altitude, itemid, zItem, texture, normal);
-            if (!result)
-                return false;
-            if (hue != 0)
-            {
-                mapObject.Items.Clear();
-                mapObject.AddItem(itemid,hue,zItem);
-            }
+            if (mapObject.Occupied != 0 && (mapObject.Occupied != (byte)TypeColor.WaterCoast && itemid != (int)SpecialAboutItems.ClearAll))
+                return true;
 
-            if (!occupied)
-                mapObject.Occupied = 0;
-            return true;
+            if (itemid >= 0)
+                mapObject.Items = new List<ItemClone> { new ItemClone { Id = itemid, Z = zItem, Hue = hue } };
+            if (itemid == (int)SpecialAboutItems.ClearAll)
+                mapObject.Items = null;
+
+            if(occupied)
+                mapObject.Occupied = (byte)areaColorCoordinates.Center.Type;
+
+            if (texture >= 0)
+                Center.Texture = (short)texture;
+            Center.Altitude = altitude;
+
+            return true;    
         }
     }
 }

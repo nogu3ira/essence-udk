@@ -60,6 +60,9 @@
 	<UserControl.DataContext>
 		<Binding Path="Sdk" Source="{StaticResource Locator}"/>
 	</UserControl.DataContext>
+    <UserControl.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding CommandCoastAddString}"/>
+    </UserControl.InputBindings>
 	<Grid DataContext="{Binding}">
 		<Grid.Resources>
 			<Style TargetType="{x:Type ListBox}" x:Key="LocalTransitionListbox" BasedOn="{StaticResource TileStyle}">
@@ -188,17 +191,15 @@
 		<Grid.RowDefinitions>
 
 			<RowDefinition Height="5"/>
-			<RowDefinition Height="20"/>
+			<RowDefinition Height="30"/>
 			<RowDefinition Height="5"/>
-			<RowDefinition Height="0.4*"/>
-			<RowDefinition Height="0.2*"/>
-			<RowDefinition Height="0.6*"/>
+            <RowDefinition Height="0.5*"/>
+			<RowDefinition Height=".30*"/>
 			<RowDefinition Height="5"/>
 
 		</Grid.RowDefinitions>
-        <Ultima:ListBoxViewTiles  Grid.Row="3" Margin="5" SelectedItem="{Binding SelectedCoastTile,Mode=TwoWay}"
-                                 Style="{StaticResource LocalTransitionListboxViewTile}"
-                                  >
+        <Ultima:ListBoxViewTiles  Grid.Row="3" SelectedItem="{Binding SelectedCoastTile,Mode=TwoWay}"
+                                 Style="{StaticResource LocalTransitionListboxViewTile}" Margin="{Binding Source={StaticResource DefaultMargin}}">
             <Ultima:ListBoxViewTiles.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Add" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}"/>
@@ -210,14 +211,18 @@
                 <MouseBinding MouseAction="MiddleClick" Command="{Binding Sdk.CommandCoastAddTile, Source={StaticResource Locator}}" />
             </Ultima:ListBoxViewTiles.InputBindings>
         </Ultima:ListBoxViewTiles>
-		<ComboBox SelectedIndex="{Binding SelectedCoastType}" x:Name="ComboBoxSelector" Grid.Row="1" HorizontalAlignment="Left" Width="120" Margin="5,0,0,0">
+        <StackPanel Grid.Row="1" HorizontalAlignment="Left"  Orientation="Horizontal">
+            <ComboBox SelectedIndex="{Binding SelectedCoastType}" x:Name="ComboBoxSelector" Width="120" Margin="{StaticResource DefaultMargin}">
 			<ComboBoxItem Content="Water"/>
 			<ComboBoxItem Content="Coast"/>
 		</ComboBox>
-        
+            <TextBlock Margin="{StaticResource DefaultMargin}" Text="Tile ID" FontWeight="Bold" Foreground="{StaticResource ColorTexts}" MinWidth="20"/>
+            <TextBox MinWidth="60" Margin="{StaticResource DefaultMargin}" Text="{Binding UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Path=SelectedStringCoast, BindsDirectlyToSource=True}" />
+            <Button Content="Add" Margin="{StaticResource DefaultMargin}" Command="{Binding CommandCoastAddString}"/>
+        </StackPanel>
        
        
-		<TabControl  Grid.Row="5" Background="{x:Null}" Margin="5,0,0,0">
+		<TabControl  Grid.Row="4" Background="{x:Null}" Margin="5,0,0,0">
             <TabItem Name="TabItemMain" Style="{StaticResource ChangeNameTab}">
 			<Grid>
 				<Grid.RowDefinitions>
@@ -274,28 +279,29 @@
 					<ColumnDefinition Width="0.134*"/>
 				</Grid.ColumnDefinitions>
 				<Grid.RowDefinitions>
-					<RowDefinition Height="20"/>
+					<RowDefinition Height="30"/>
 					<RowDefinition Height="5"/>
-					<RowDefinition Height="20"/>
+					<RowDefinition Height="30"/>
 					<RowDefinition Height="5"/>
-					<RowDefinition Height="20"/>
+					<RowDefinition Height="30"/>
 					<RowDefinition Height="5"/>
-					<RowDefinition Height="20"/>
+					<RowDefinition Height="30"/>
 					<RowDefinition Height="5"/>
-					<RowDefinition Height="20"/>
+					<RowDefinition Height="30"/>
 					<RowDefinition Height="5"/>
 					<RowDefinition Height="*"/>
 					<RowDefinition/>
 				</Grid.RowDefinitions>
-				<TextBlock TextWrapping="Wrap" Text="Water Items Altitude"/>
+                    <TextBlock TextWrapping="Wrap" Text="Water Items Altitude" Margin="{StaticResource DefaultMargin}"/>
 
                     <xctk:IntegerUpDown 
                         Grid.Column="2" 
                         Value="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected.CoastAltitude,UpdateSourceTrigger=PropertyChanged}" 
                         Maximum="127"
                         Minimum="-128"
+                        Margin="{StaticResource DefaultMargin}"
                         />
-                    <CheckBox Content="Cliff Coast" Grid.Row="2" Name="CliffCheckBox" IsChecked="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected.CliffCoast}"/>
+                    <CheckBox Content="Cliff Coast" Margin="{StaticResource DefaultMargin}" Grid.Row="2" Name="CliffCheckBox" IsChecked="{Binding Source={StaticResource Locator},Path=Sdk.CollectionAreaColorSelected.CliffCoast}"/>
 				<GroupBox Header="Sand Coast Smooth Circles" Grid.Row="3" Grid.ColumnSpan="5" Grid.RowSpan="9" Style="{StaticResource InvisibleGroup}" >
 					
 					<Grid>
@@ -327,12 +333,13 @@
 				
 					</GroupBox>
                     <xctk:IntegerUpDown 
+                        Margin="{StaticResource DefaultMargin}"
                         Value="{Binding Source={StaticResource Locator}, Path=Sdk.CollectionAreaColorSelected.MinCoastTextureZ, UpdateSourceTrigger=PropertyChanged}" 
                         Minimum="-128"
                         Maximum="127"
                         Grid.Column="4" 
                         Grid.Row="2" />
-                    <TextBlock Grid.Column="2" Grid.Row="2" Text="Minimum Altitude Texture" />
+                    <TextBlock Grid.Column="2" Margin="{StaticResource DefaultMargin}" Grid.Row="2" Text="Minimum Altitude Texture" />
                 </Grid>
 	
 	

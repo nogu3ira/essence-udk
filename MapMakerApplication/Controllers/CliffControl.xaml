@@ -86,16 +86,20 @@
 			<ColumnDefinition Width="0.166*"/>
 			<ColumnDefinition Width="0.333*"/>
 		</Grid.ColumnDefinitions>
+        
 		<Grid.RowDefinitions>
 			<RowDefinition Height="20"/>
-			<RowDefinition Height="20"/>
-			<RowDefinition Height="20"/>
-			<RowDefinition Height="0.033*"/>
-			<RowDefinition Height="0.427*"/>
-			<RowDefinition Height="0.066*"/>
-            <RowDefinition Height="0*" />
-            <RowDefinition Height="0.473*"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="5"/>
+			<RowDefinition Height="0.5*"/>
+			<RowDefinition Height="30"/>
+            <RowDefinition Height=".1*" />
+            <RowDefinition Height="0.15*"/>
 		</Grid.RowDefinitions>
+        <Grid.InputBindings>
+            <KeyBinding Key="Enter" Command="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddCliffString}"/>
+        </Grid.InputBindings>
         <CollectionManager:CollectionManager Grid.RowSpan="8" Grid.Column="3" 
             CommandAdd="{Binding Source={StaticResource Locator},Path=Sdk.CommandAddCliff}" 
             CommandRemove="{Binding Source={StaticResource Locator},Path=Sdk.CommandDeleteCliff}" 
@@ -124,10 +128,10 @@
             </ListBox.ContextMenu>
         </ListBox>
 
-        <TextBlock Grid.Row="1" TextWrapping="Wrap"><Run Language="it-it" Text="Direction"/></TextBlock>
-        <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource ObjectProviderDirectionCliff}}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.Directions,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-		<TextBlock Grid.Row="2" TextWrapping="Wrap"><Run Language="it-it" Text="Index Color To"/></TextBlock>
-        <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.AreaColorIndexes, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.IdTo}"/>
+        <TextBlock Margin="{StaticResource DefaultMargin}" Grid.Row="1" TextWrapping="Wrap"><Run Language="it-it" Text="Direction"/></TextBlock>
+        <ComboBox Margin="{StaticResource DefaultMargin}" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource ObjectProviderDirectionCliff}}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.Directions,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Margin="{StaticResource DefaultMargin}" Grid.Row="2" TextWrapping="Wrap"><Run Language="it-it" Text="Index Color To"/></TextBlock>
+        <ComboBox Margin="{StaticResource DefaultMargin}" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Source={StaticResource Locator},Path=Sdk.AreaColorIndexes, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Source={StaticResource Locator},Path=Sdk.SelectedCliff.IdTo}"/>
         <my:ListBoxViewTiles 
             Grid.Row="4" 
             Name="listBoxViewTiles1" 
@@ -142,5 +146,8 @@
                 </ContextMenu>
             </my:ListBoxViewTiles.ContextMenu>
         </my:ListBoxViewTiles>
+        <TextBlock Grid.Row="5" Text="Tile ID" Margin="{StaticResource DefaultMargin}" Foreground="{Binding Source={StaticResource ColorTexts}}" />
+        <TextBox Grid.Row="5" Text="{Binding Source={StaticResource Locator}, Path=Sdk.StringSelectedCliff, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" Grid.Column="1" Margin="{StaticResource DefaultMargin}"/>
+        <Button Grid.Row="5" Content ="Add" Grid.Column="2" Margin="{StaticResource DefaultMargin}" Command="{Binding Source={StaticResource Locator}, Path=Sdk.CommandAddCliffString}"/>
     </Grid>
 </UserControl>
