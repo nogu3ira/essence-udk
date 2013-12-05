@@ -600,9 +600,10 @@ namespace EssenceUDK.MapMaker
             
 
             var taskMapBitmap =
-                Task<AreaColor[]>.Factory.StartNew(() => BitmapReader.ColorsFromBitmap(CollectionColorArea, bitmaplocation));
+                Task<AreaColor[]>.Factory.StartNew(() => BitmapReader.ColorsFromBitmap(CollectionColorArea,
+                                                                                       bitmaplocation, x, y));
 
-            var taskMapZ = Task<sbyte[]>.Factory.StartNew(() => BitmapReader.AltitudeFromBitmapVersion2(bitmapZLocation));
+            var taskMapZ = Task<sbyte[]>.Factory.StartNew(() => BitmapReader.AltitudeFromBitmapVersion2(bitmapZLocation,x,y));
 
             task[0] = taskMapBitmap;
             task[1] = taskMapZ;

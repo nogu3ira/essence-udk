@@ -251,9 +251,11 @@ namespace EssenceUDK.MapMaker.MapMaking
         }
 
 
-        public static sbyte[] AltitudeFromBitmapVersion2(string originalLocation)
+        public static sbyte[] AltitudeFromBitmapVersion2(string originalLocation, int XMax, int YMax)
         {
             var original = new Bitmap(originalLocation);
+            if(original.Width != XMax || original.Height != YMax)
+                throw  new Exception("Altitude Bitmap Dimentions are not correct.");
             using (original)
             {
                 var array = new sbyte[original.Height * original.Width];
@@ -343,9 +345,11 @@ namespace EssenceUDK.MapMaker.MapMaking
             }
         }
 
-        public static AreaColor[] ColorsFromBitmap(CollectionAreaColor collectionAreaColor, string originalLocation)
+        public static AreaColor[] ColorsFromBitmap(CollectionAreaColor collectionAreaColor, string originalLocation, int XMax, int YMax)
         {
             var original = new Bitmap(originalLocation);
+            if(original.Height != YMax || original.Width != XMax )
+                throw new Exception("Terrain Bitmap has wrong dimentions");
             var areaColors = new AreaColor[original.Height * original.Width];
             var list = new List<string>();
             using (original)

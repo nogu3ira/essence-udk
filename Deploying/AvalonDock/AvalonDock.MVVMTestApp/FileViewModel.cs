@@ -113,7 +113,7 @@ namespace AvalonDock.MVVMTestApp
             {
                 if (_saveCommand == null)
                 {
-                    _saveCommand = new RelayCommand((p) => OnSave(p), (p) => CanSave(p));
+                    _saveCommand = new RelayCommand(OnSave, CanSave);
                 }
 
                 return _saveCommand;
