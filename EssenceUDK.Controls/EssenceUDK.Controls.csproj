@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Common\Converters.cs" />
     <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Common\FileBrowser.cs" />
     <Compile Include="Common\NumericUpDown.cs" />
     <Compile Include="Common\TileBaseView.cs" />
     <Compile Include="Common\GDIAdapter.cs" />

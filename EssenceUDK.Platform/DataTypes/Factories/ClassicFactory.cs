@@ -366,345 +366,142 @@ map5.mul
 
         // art.mul convertors    ---------------------------------------------------------------
 
-        private static unsafe void ConvertLandSurface(byte[] rawdata, out BitmapSource bmp)
+        private static unsafe void ConvertLandSurface(UODataManager datamanager, byte[] rawdata, out ISurface surface)
         {
-            /*
-            var bmpWriter = new WriteableBitmap(44, 44, 96, 96, PixelFormats.Bgr555, null);
-            bmpWriter.Lock();
-
-            int xOffset = 21;
-            int xRun = 2;
-
-            byte* data = rawdata;
-            ushort* line = (ushort*)bmpWriter.BackBuffer;
-            int delta = bmpWriter.BackBufferStride >> 1;
-
-            for (int y = 0; y < 22; ++y, --xOffset, xRun += 2, line += delta)
-            {
-                ushort* cur = line + xOffset;
-                ushort* end = cur + xRun;
-
-                while (cur < end)
-                    *cur++ = (ushort)(bin.ReadUInt16() | 0x8000);
-            }
-
-            xOffset = 0;
-            xRun = 44;
-
-            for (int y = 0; y < 22; ++y, ++xOffset, xRun -= 2, line += delta)
-            {
-                ushort* cur = line + xOffset;
-                ushort* end = cur + xRun;
-
-                while (cur < end)
-                    *cur++ = (ushort)(bin.ReadUInt16() | 0x8000);
-            }
-
-            bmpWriter.AddDirtyRect(new Int32Rect(0, 0, 44, 44));
-            bmpWriter.Unlock();
-            bmpWriter.Freeze();
-            */
-
             if (rawdata == null || rawdata.Length == 0) {
-                bmp = null;
+                surface = null;
                 return;
             }
 
-            var bmpWriter = new WriteableBitmap(44, 44, 96, 96, PixelFormats.Bgr555, null);
-            bmpWriter.Lock();
-
-            fixed (byte* bindata = rawdata)
+            fixed (byte* data = rawdata)
             {
-                ushort* bdata = (ushort*)bindata;
+                ushort* bdata = (ushort*)data;
                 int xOffset = 21;
                 int xRun = 2;
 
-                ushort* line = (ushort*)bmpWriter.BackBuffer;
-                int delta = bmpWriter.BackBufferStride >> 1;
+                surface = datamanager.CreateSurface(44, 44, EssenceUDK.Platform.DataTypes.PixelFormat.Bpp16A1R5G5B5);
+                lock (surface) {
+                    ushort*  line = surface.ImageWordPtr;
+                    uint    delta = surface.Stride >> 1;
 
-                for (int y = 0; y < 22; ++y, --xOffset, xRun += 2, line += delta)
-                {
-                    ushort* cur = line + xOffset;
-                    ushort* end = cur + xRun;
+                    for (int y = 0; y < 22; ++y, --xOffset, xRun += 2, line += delta) {
+                        ushort* cur = line + xOffset;
+                        ushort* end = cur + xRun;
 
-                    while (cur < end)
-                        *cur++ = (ushort)(*bdata++ | 0x8000);
-                }
+                        while (cur < end)
+                            *cur++ = (ushort)(*bdata++ | 0x8000);
+                    }
 
-                xOffset = 0;
-                xRun = 44;
+                    xOffset = 0;
+                    xRun = 44;
 
-                for (int y = 0; y < 22; ++y, ++xOffset, xRun -= 2, line += delta)
-                {
-                    ushort* cur = line + xOffset;
-                    ushort* end = cur + xRun;
+                    for (int y = 0; y < 22; ++y, ++xOffset, xRun -= 2, line += delta) {
+                        ushort* cur = line + xOffset;
+                        ushort* end = cur + xRun;
 
-                    while (cur < end)
-                        *cur++ = (ushort)(*bdata++ | 0x8000);
+                        while (cur < end)
+                            *cur++ = (ushort)(*bdata++ | 0x8000);
+                    }
                 }
             }
-            bmpWriter.AddDirtyRect(new Int32Rect(0, 0, 44, 44));
-            bmpWriter.Unlock();
-            bmpWriter.Freeze();
-            bmp = bmpWriter;
         }
 
-        private static unsafe void ConvertLandSurface(ImageSource bmp, out byte[] rawdata)
+        private static unsafe void ConvertLandSurface(ISurface surface, out byte[] rawdata)
         {
             rawdata = null;
         }
 
-        private static unsafe void ConvertItemSurface(byte[] rawdata, out Bitmap bmp)
+        private static unsafe void ConvertItemSurface(UODataManager datamanager, byte[] rawdata, out ISurface surface)
         {
             fixed (byte* data = rawdata)
             {
                 ushort* bindata = (ushort*)data;
 
                 int count = 2;
-                int width  = bindata[count++];
-                int height = bindata[count++];
+                ushort width = bindata[count++];
+                ushort height = bindata[count++];
 
-				if (width >= 0x0400 || height >= 0x0400) {
-                    bmp = null;
+                if (width >= 0x0400 || height >= 0x0400) {
+                    surface = null;
                     return;
-				}
-                    
+                }
+
                 int[] lookups = new int[height];
                 int start = (height + 4);
                 for (int i = 0; i < height; ++i)
                     lookups[i] = (int)(start + (bindata[count++]));
 
-                bmp = new Bitmap(width, height, PixelFormat.Format16bppArgb1555);
-                var bd = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format16bppArgb1555);
+                surface = datamanager.CreateSurface(width, height, EssenceUDK.Platform.DataTypes.PixelFormat.Bpp16A1R5G5B5);
+                lock (surface) {
+                    ushort*  line = surface.ImageWordPtr;
+                    uint    delta = surface.Stride >> 1;
 
-                ushort* line = (ushort*)bd.Scan0;
-                int delta = bd.Stride >> 1;
+                    for (int y = 0; y < height; ++y, line += delta)
+                    {
+                        count = lookups[y];
+                        ushort* cur = line;
+                        ushort* end;
+                        int xOffset, xRun;
 
-                for (int y = 0; y < height; ++y, line += delta) {
-                    count = lookups[y];
-                    ushort* cur = line;
-                    ushort* end;
-                    int xOffset, xRun;
+                        while (((xOffset = bindata[count++]) + (xRun = bindata[count++])) != 0) {
+                            if (cur >= surface.ImageWordPtr + delta * height)
+                                break;
 
-					while (((xOffset = bindata[count++]) + (xRun = bindata[count++])) != 0) {
-                        if (cur >= (ushort*)bd.Scan0 + delta * height)
-                            break;
-                        
-                        if (2 * count >= rawdata.Length)
-                            break;
+                            if (2 * count >= rawdata.Length)
+                                break;
 
-                        if (xOffset + xRun > delta)
-                            break;
+                            if (xOffset + xRun > delta)
+                                break;
 
-                        cur += xOffset;
-                        end = cur + xRun;
+                            cur += xOffset;
+                            end = cur + xRun;
 
-                        while (cur < end)
-                            *cur++ = (ushort)(bindata[count++] ^ 0x8000);
+                            while (cur < end)
+                                *cur++ = (ushort)(bindata[count++] ^ 0x8000);
+                        }
                     }
-                } 
-                bmp.UnlockBits(bd);
+                }
             }
         }
 
-        private static unsafe void ConvertItemSurface(byte[] rawdata, out BitmapSource bmp)
-        {/*
-            if (rawdata == null || rawdata.Length < 8) {
-                bmp = new WriteableBitmap(40, 40, 96, 96, PixelFormats.Bgr555, null);
-                return;
-            }
-            fixed (byte* data = rawdata)
-            {
-                ushort* bindata = (ushort*)data;
-
-                int count = 2;
-                int width  = bindata[count++];
-                int height = bindata[count++];
-
-				if (width >= 0x0400 || height >= 0x0400) {
-                    bmp = null;
-                    return;
-				}
-
-                int[] lookups = new int[height];
-
-                int start = (int)count + (height * 2);
-
-                for (int i = 0; i < height; ++i)
-                    lookups[i] = (int)(start + (bindata[count++] * 2));
-
-                bmp = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgr555, null);
-                bmp.Lock();
-
-                ushort* line = (ushort*)bmp.BackBuffer;
-                int delta = bmp.BackBufferStride >> 1;
-
-                for (int y = 0; y < height; ++y, line += delta)
-                {
-                    count = lookups[y];
-
-                    ushort* cur = line;
-                    ushort* end;
-
-                    int xOffset, xRun;
-
-                    while (((xOffset = bindata[count++]) + (xRun = bindata[count++])) != 0) {
-                        cur += xOffset;
-                        end = cur + xRun;
-
-                        while (cur < end)
-                            *cur++ = (ushort)(bindata[count++] ^ 0x8000);
-                    }
-                }
-
-                bmp.AddDirtyRect(new Int32Rect(0, 0, width, height));
-                bmp.Unlock();
-            }
-            //index += 0x4000;
-            //index &= 0xFFFF;
-
-            /**/
-            if (rawdata == null || rawdata.Length < 8) {
-                bmp = null;
-                return;
-            }
-
-            fixed (byte* data = rawdata)
-            {
-                ushort* bindata = (ushort*)data;
-
-                int count = 2;
-                int width  = bindata[count++];
-                int height = bindata[count++];
-
-				if (width >= 0x0400 || height >= 0x0400) {
-                    bmp = null;
-                    return;
-				}
-                    
-                int[] lookups = new int[height];
-                int start = (height + 4);
-                for (int i = 0; i < height; ++i)
-                    lookups[i] = (int)(start + (bindata[count++]));
-
-                //bmp = new Bitmap(width, height, PixelFormat.Format16bppArgb1555);
-                var bmpWriter = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgr555, null);
-                bmpWriter.Lock();
-
-                ushort* line = (ushort*)bmpWriter.BackBuffer;
-                int delta = bmpWriter.BackBufferStride >> 1;
-
-                for (int y = 0; y < height; ++y, line += delta) {
-                    count = lookups[y];
-                    ushort* cur = line;
-                    ushort* end;
-                    int xOffset, xRun;
-                    
-					while (((xOffset = bindata[count++]) + (xRun = bindata[count++])) != 0) {
-                        if (cur >= (ushort*)bmpWriter.BackBuffer + delta * height)
-                            break;
-                        
-                        if (2 * count >= rawdata.Length)
-                            break;
-
-                        if (xOffset + xRun > delta)
-                            break;
-
-                        cur += xOffset;
-                        end = cur + xRun;
-
-                        while (cur < end)
-                            *cur++ = (ushort)(bindata[count++] ^ 0x8000);
-                    }
-                }
-
-                bmpWriter.AddDirtyRect(new Int32Rect(0, 0, width, height));
-                bmpWriter.Unlock();
-                bmpWriter.Freeze();
-
-                bmp = bmpWriter;
-            }//*/
-        }
-
-        private static unsafe void ConvertItemSurface(ImageSource bmp, out byte[] rawdata)
+        private static unsafe void ConvertItemSurface(ISurface surface, out byte[] rawdata)
         {
             rawdata = null;
         }
 
         // texmaps.mul convertors --------------------------------------------------------------
 
-        private static unsafe void ConvertTexmSurface(byte[] rawdata, out BitmapSource bmp)
+        private static unsafe void ConvertTexmSurface(UODataManager datamanager, byte[] rawdata, out ISurface surface)
         {
-            /*
-            int length, extra;
-            Stream stream = _fileIndex.Seek(index, out length, out extra);
-
-            if (stream == null)
-                return null;
-
-            int size = extra == 0 ? 64 : 128;
-
-            BinaryReader bin = new BinaryReader(stream);
-            WriteableBitmap bmp = new WriteableBitmap(size, size, 96, 96, PixelFormats.Bgr555, null);
-            bmp.Lock();
-
-            ushort* line = (ushort*)bmp.BackBuffer;
-            int delta = bmp.BackBufferStride >> 1;
-
-            for (int y = 0; y < size; ++y, line += delta)
-            {
-                ushort* cur = line;
-                ushort* end = cur + size;
-
-                while (cur < end)
-                    *cur++ = (ushort)(bin.ReadUInt16() ^ 0x8000);
-            }
-
-            bmp.AddDirtyRect(new Int32Rect(0, 0, size, size));
-            bmp.Unlock();
-            */
-            
             if (rawdata == null || rawdata.Length == 0) {
-                bmp = null;
+                surface = null;
                 return;
             }
-            
+
             // TODO: its greate loooose, we need to view at osi data model
-            int size = rawdata.Length == 8192 ? 64 : 128;
+            ushort size = (ushort)(rawdata.Length == 8192 ? 64 : 128);
             //int size = extra == 0 ? 64 : 128;
 
-            var bmpWriter = new WriteableBitmap(size, size, 96, 96, PixelFormats.Bgr555, null);
-            bmpWriter.Lock();
+            surface = datamanager.CreateSurface(size, size, EssenceUDK.Platform.DataTypes.PixelFormat.Bpp16A1R5G5B5);
+            lock (surface) {
+                ushort*  line = surface.ImageWordPtr;
+                uint    delta = surface.Stride >> 1;
 
-            ushort* line = (ushort*)bmpWriter.BackBuffer;
-            int delta = bmpWriter.BackBufferStride >> 1;
-
-            //int max = size * size * 2;
-            //if (m_StreamBuffer == null || m_StreamBuffer.Length < max)
-            //    m_StreamBuffer = new byte[max];
-            //stream.Read(m_StreamBuffer, 0, max);
-
-            fixed (byte* data = rawdata)
-            {
-                ushort* bindat = (ushort*)data;
-                for (int y = 0; y < size; ++y, line += delta)
+                fixed (byte* data = rawdata)
                 {
-                    ushort* cur = line;
-                    ushort* end = cur + size;
+                    ushort* bindat = (ushort*)data;
+                    for (int y = 0; y < size; ++y, line += delta) {
+                        ushort* cur = line;
+                        ushort* end = cur + size;
 
-                    while (cur < end)
-                        *cur++ = (ushort)(*bindat++ ^ 0x8000);
+                        while (cur < end)
+                            *cur++ = (ushort)(*bindat++ ^ 0x8000);
+                    }
                 }
             }
-
-            bmpWriter.AddDirtyRect(new Int32Rect(0, 0, size, size));
-            bmpWriter.Unlock();
-            bmpWriter.Freeze();
-
-            bmp = bmpWriter;
         }
 
-        private static unsafe void ConvertTexmSurface(ImageSource bmp, out byte[] rawdata)
+        private static unsafe void ConvertTexmSurface(ISurface surface, out byte[] rawdata)
         {
             rawdata = null;
         }
@@ -802,16 +599,16 @@ map5.mul
 
         ISurface IDataFactory.GetLandSurface(uint id)
         {
-            BitmapSource bitmap;
-            ConvertLandSurface(container_LandTile[id], out bitmap);
-            return bitmap != null ? new BitmapSurface(bitmap) : null;
+            ISurface surface;
+            ConvertLandSurface(Data, container_LandTile[id], out surface);
+            return surface;
         }
 
         ISurface IDataFactory.GetTexmSurface(uint id)
         {
-            BitmapSource bitmap;
-            ConvertTexmSurface(container_LandTexm[id], out bitmap);
-            return bitmap != null ? new BitmapSurface(bitmap) : null;
+            ISurface surface;
+            ConvertTexmSurface(Data, container_LandTexm[id], out surface);
+            return surface;
         }
 
         IItemTile[] IDataFactory.GetItemTiles()
@@ -831,9 +628,9 @@ map5.mul
 
         ISurface IDataFactory.GetItemSurface(uint id)
         {
-            BitmapSource bitmap;
-            ConvertItemSurface(container_ItemTile[id], out bitmap);            
-            return bitmap != null ? new BitmapSurface(bitmap) : null;
+            ISurface surface;
+            ConvertItemSurface(Data, container_ItemTile[id], out surface);
+            return surface;
         }
 
 

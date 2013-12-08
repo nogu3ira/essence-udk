@@ -241,7 +241,7 @@ namespace EssenceUDK.Platform
         }
     }
 
-    public sealed class UODataManager : IDisposable
+    public sealed class UODataManager : BaseSysFactory, IDisposable
     {
         public readonly UODataType DataType;
         public readonly Language   Language;

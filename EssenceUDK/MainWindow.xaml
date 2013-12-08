@@ -2,8 +2,10 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:contr="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls"
+        xmlns:addin="clr-namespace:EssenceUDK.Add_ins.Client;assembly=EssenceUDK.Add-ins"
         xmlns:EssenceUDK="clr-namespace:EssenceUDK" Title="Essence UDK (Ultima Developer Kit)" Height="385" Width="853"
-        Icon="/EssenceUDK;component/EssenceUDK.ico" xmlns:my="clr-namespace:EssenceUDK.Controllers">
+        Icon="/EssenceUDK;component/EssenceUDK.ico" xmlns:my="clr-namespace:EssenceUDK.Controllers"
+        >
     <Window.Resources />
         
     <Grid ShowGridLines="False">
@@ -18,8 +20,12 @@
             <TabItem Header="tabPreferences">
                 <EssenceUDK:PreferencesPage x:Name="preferencesPage1" />
             </TabItem>
+            <TabItem Header="tbTileMerger" Name="TileMerger">
+                <addin:TileMerger x:Name="userControlTileMerger" />
+            </TabItem>
+            
             <TabItem Header="tabItemListTest">
-                <contr:TileItemView Name="tileItemView1" ItemHeight="192" ItemWidth="96" />
+                <contr:ListBoxViewTiles Name="tileItemView1" Texture="False" />
             </TabItem>
             <TabItem Header="tabLandListTest">
                 <Grid ShowGridLines="False">
@@ -34,6 +40,7 @@
             <TabItem Header="tabItem2" Name="tabItem2">
                 <my:UserControlPreferences x:Name="userControlPreferences1" />
             </TabItem>
+            
         </TabControl>
     </Grid>
 </Window>

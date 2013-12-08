@@ -6,34 +6,62 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Media;
 using Color = EssenceUDK.Platform.DataTypes.Color;
+using PixelFormat = EssenceUDK.Platform.DataTypes.PixelFormat;
 
 namespace EssenceUDK.Platform
 {
+    public interface IPoint2D
+    {
+        short X { get; set; }
+        short Y { get; set; }
+    }
+
+    public interface IClipper
+    {
+        short X1 { get; }
+        short X2 { get; }
+        short Y1 { get; }
+        short Y2 { get; }
+        ushort Width { get; }
+        ushort Height { get; }
+    }
+
     public interface IPalette
     {
         uint Length { get; }
         Color this[byte id] { get; set; }
     }
 
-    public interface IClipper
-    {
-        short  X1        { get; }
-        short  X2        { get; }
-        short  Y1        { get; }
-        short  Y2        { get; }
-        ushort Width     { get; }
-        ushort Height    { get; }
-    }
-
     public interface ISurface
     {
-        ImageSource Image { get; }
+        ImageSource Image       { get; }
 
-        ushort Width     { get; }
-        ushort Height    { get; }
+        ushort      Width       { get; }
+        ushort      Height      { get; }
+        PixelFormat PixelFormat { get; }
+
+        unsafe uint*    ImageUIntPtr    { get; }
+        unsafe ushort*  ImageWordPtr    { get; }
+        unsafe byte*    ImageBytePtr    { get; }
+        uint            Stride          { get; }
+        
         IHuedSurface  GetSurface(IPalette palette);
         IClipSurface  GetSurface(IClipper clipper);
         IImageSurface GetSurface(); // ???
+
+        //void BitBlt(ISurface dstSurface, short trgX, short trgY);
+        //void BitBlt(IClipper srsClipper, ISurface dstSurface, short trgX, short trgY);
+        //void BitBlt(IPalette srsPalette, IClipper srsClipper, ISurface dstSurface, IClipper dstClipper);
+
+        bool Equals(IImageSurface surface);
+    }
+
+    public interface IImageSurface : ISurface//, ISerializable, ICloneable, IDisposable
+    {
+        ImageSource Image { get; }
+        void Invalidate();
+
+        byte GetHammingDistanceForAvrHash(IImageSurface surface);
     }
 
     public interface IHuedSurface  : ISurface
@@ -52,10 +80,7 @@ namespace EssenceUDK.Platform
     {
     }
 
-    public interface IImageSurface : ISurface//, ISerializable, ICloneable, IDisposable
-    {
-        ImageSource Image { get; }
-    }
+    
 
     internal interface IDataContainer
     {

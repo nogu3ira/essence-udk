@@ -97,6 +97,12 @@ namespace EssenceUDK.Controls.Ultima
             DependencyProperty.Register("TileId", typeof(int), typeof(ImageForTiles), new UIPropertyMetadata(0));
 
 
+        public string TileIdHex
+        {
+            get { return String.Format("0x{0:X4}", TileId); }
+        }
+
+
         public bool Miao { get; set; }
     }
 
