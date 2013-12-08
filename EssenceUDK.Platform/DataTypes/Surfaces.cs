@@ -280,163 +280,6 @@ namespace EssenceUDK.Platform.DataTypes
         }
     }
 
-    //TODO: Very dirty right now...
-    [Obsolete("Its too shit...")]
-    internal class _BitmapSurface : /*Image, !!!DAMN!!! */ IImageSurface
-    {
-        #region Interface Implementation
-        ImageSource IImageSurface.Image     { get { return Bitmap; } }
-        ImageSource ISurface.Image          { get { return Bitmap; } }
-        public ImageSource  Image { get { return Bitmap; } }
-        ushort      ISurface.Width          { get { return (ushort)Bitmap.Width;  } }
-        ushort      ISurface.Height         { get { return (ushort)Bitmap.Height; } }
-
-        unsafe uint* ISurface.ImageUIntPtr { get { return null; } }
-        unsafe ushort* ISurface.ImageWordPtr { get { return null; } }
-        unsafe byte* ISurface.ImageBytePtr { get { return null; } }
-        uint ISurface.Stride { get { return 0; } }
-
-        PixelFormat ISurface.PixelFormat { get { return PixelFormat.UnknownFormat; } }
-
-        IHuedSurface  ISurface.GetSurface(IPalette palette)
-        {
-            throw new NotImplementedException();
-        }
-
-        IClipSurface  ISurface.GetSurface(IClipper clipper)
-        {
-            throw new NotImplementedException();
-        }
-
-        IImageSurface ISurface.GetSurface()
-        {           
-            return this;
-        }
-        #endregion
-
-        byte IImageSurface.GetHammingDistanceForAvrHash(IImageSurface surface)
-        {
-            return 0;
-        }
-
-        void IImageSurface.Invalidate()
-        {
-        }
-
-
-        protected BitmapSource Bitmap;
-
-        internal _BitmapSurface(IImageSurface surface)
-        {
-            if (surface is _BitmapSurface)
-                Bitmap = (surface as _BitmapSurface).Bitmap;
-            else
-                throw new NotImplementedException();
-        }
-
-        internal _BitmapSurface(BitmapSource bitmap)
-        {
-            Bitmap = bitmap;
-        }
-
-        [DllImport("gdi32")]
-        private static extern int DeleteObject(IntPtr o);
-
-        internal _BitmapSurface(Bitmap bitmap)
-        {
-            IntPtr ptr = bitmap.GetHbitmap();
-
-            Bitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                    ptr, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            
-            DeleteObject(ptr);
-        }
-
-        internal _BitmapSurface(Image image) : this(new Bitmap(image))
-        {
-        }
-
-        internal _BitmapSurface(Stream stream)
-        {
-            Bitmap = BitmapFrame.Create(stream);
-        }
-
-        internal _BitmapSurface(byte[] bytes)
-        {
-            var stream = new MemoryStream(bytes);
-            Bitmap = BitmapFrame.Create(stream);
-            stream.Close();
-        }
-
-        internal _BitmapSurface(string filepath)
-        {
-            Bitmap = new BitmapImage(new Uri(filepath));
-        }
-
-        public Bitmap ToBitmap()
-        {
-            using (MemoryStream outStream = new MemoryStream())
-            {
-                BitmapEncoder enc = new BmpBitmapEncoder();
-                enc.Frames.Add(BitmapFrame.Create(Bitmap));
-                enc.Save(outStream);
-                var bitmap = new System.Drawing.Bitmap(outStream);
-                return bitmap;
-            }
-        }
-
-        public byte[] ToArray(BitmapEncoder encoder)
-        {
-            var frame = BitmapFrame.Create(Bitmap);
-            encoder.Frames.Add(frame);
-            var stream = new MemoryStream();
-
-            encoder.Save(stream);
-            return stream.ToArray();
-        }
-
-        public byte[] ToArray()
-        {
-            return ToArray(new PngBitmapEncoder());
-        }
-
-        private static SHA256Managed shaM = new SHA256Managed();
-
-        protected byte[] Hash { get; private set; }
-
-        public byte[] GetHash()
-        {
-            if (Hash == null)
-                Hash = ToArray();
-            //return BitConverter.ToString(shaM.ComputeHash(btBitmap));
-            return Hash;
-        }
-
-        public bool Equals(IImageSurface surface)
-        {
-            if (Equals((object)surface))
-                return true;
-            if (surface is BitmapSurface) {
-                return (surface as BitmapSurface).GetHash().SequenceEqual(GetHash());
-            } else
-                throw new NotImplementedException();
-        }
-
-        //public Rect GetImgRect()
-       // {
-           // buf = new WPFUtil.BitmapBuffer(bmpsrc);
-           // var bmpReader = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgr555, null);
-
-       // }
-
-        //public float Relevance(IImageSurface surface)
-        //{
-        //    if (Compare(surface))
-        //        return 1.0f;
-        //}
-    }
-
-
 
     internal unsafe class BitmapSurface : IDisposable, IImageSurface
     {
@@ -532,21 +375,16 @@ namespace EssenceUDK.Platform.DataTypes
             return new Point2D(dx, dy);
         }
 
- 
 
-        internal ulong GetAvrHash()
+        private byte[] GrayscaleResize(byte mx, byte my)
         {
-            // NOTE: In theory hash can be 0, so it's not very good
-            if (_AvrHash > 0) 
-                return _AvrHash;
+            var minimg = new byte[mx*my];
+            var pixels = Width * Height;
 
-            var minimg = new byte[64];
-            var pixels = Width*Height;
             fixed (byte* colors = new byte[pixels])
             {
                 // Creating grayscale...
                 int a, r, g, b;
-                uint stride = 0;
                 var trg = colors;
                 if (BytesPerPixel == 2) 
                     lock (LockObject) {
@@ -561,28 +399,22 @@ namespace EssenceUDK.Platform.DataTypes
                                 r = g = b = 0;
                             }
                             *trg = (byte)((r + g + b) / 3);
-                            //++trg;
-                            //++srs;
                         }
-                        stride = Stride >> 1;
                     }
                 else if (BytesPerPixel == 4) 
                     lock (LockObject) {
-                        var srs = ImageWordPtr;
+                        var srs = ImageUIntPtr;
                         for (var i = 0; i < pixels; ++i, ++srs, ++trg) {
-                            a = (*srs>>24);
+                            a = (int)(*srs >> 24);
                             if (a > 0) {
-                                r = (*srs>>16) & 0xFF;
-                                g = (*srs>>8) & 0xFF;
-                                b = (*srs) & 0xFF;
+                                r = (int)(*srs >> 16) & 0xFF;
+                                g = (int)(*srs >> 8) & 0xFF;
+                                b = (int)(*srs) & 0xFF;
                             } else {
                                 r = g = b = 0;
                             }
                             *trg = (byte)((r + g + b) / 3);
-                            //++trg;
-                            //++srs;
                         }
-                        stride = Stride >> 2;
                     }
                 else
                     throw new NotImplementedException();
@@ -590,22 +422,45 @@ namespace EssenceUDK.Platform.DataTypes
 
                 // Resizing...
                 double colavg;
-                double x_ratio = Width  / 8D;
-                double y_ratio = Height / 8D;
+                double x_ratio = Width  / (double)mx;
+                double y_ratio = Height / (double)my;
                 double xy_ratio = x_ratio * y_ratio;
-                double[] px1 = new[] {0D,        x_ratio, 2*x_ratio, 3*x_ratio, 4*x_ratio, 5*x_ratio, 6*x_ratio, 7*x_ratio};
-                double[] px2 = new[] {x_ratio, 2*x_ratio, 3*x_ratio, 4*x_ratio, 5*x_ratio, 6*x_ratio, 7*x_ratio, 8*x_ratio};
-                double[] py1 = new[] {0D,        y_ratio, 2*y_ratio, 3*y_ratio, 4*y_ratio, 5*y_ratio, 6*y_ratio, 7*y_ratio};
-                double[] py2 = new[] {y_ratio, 2*y_ratio, 3*y_ratio, 4*y_ratio, 5*y_ratio, 6*y_ratio, 7*y_ratio, 8*y_ratio};
-                int[] mx1 = new[] {0, (int)(px1[1]), (int)(px1[2]), (int)(px1[3]), (int)(px1[4]), (int)(px1[5]), (int)(px1[6]), (int)(px1[7])};
-                int[] mx2 = new[] { (int)Math.Ceiling(px2[0]), (int)Math.Ceiling(px2[1]), (int)Math.Ceiling(px2[2]), (int)Math.Ceiling(px2[3]), 
-                                    (int)Math.Ceiling(px2[4]), (int)Math.Ceiling(px2[5]), (int)Math.Ceiling(px2[6]), (int)Math.Ceiling(px2[7])};
-                int[] my1 = new[] {0, (int)(py1[1]), (int)(py1[2]), (int)(py1[3]), (int)(py1[4]), (int)(py1[5]), (int)(py1[6]), (int)(py1[7])};
-                int[] my2 = new[] { (int)Math.Ceiling(py2[0]), (int)Math.Ceiling(py2[1]), (int)Math.Ceiling(py2[2]), (int)Math.Ceiling(py2[3]), 
-                                    (int)Math.Ceiling(py2[4]), (int)Math.Ceiling(py2[5]), (int)Math.Ceiling(py2[6]), (int)Math.Ceiling(py2[7])};
+                double[] px1, px2, py1, py2;
+                int[]    mx1, mx2, my1, my2;
 
-                for (int y = 0; y < 8; y++) {             
-                    for (int x = 0; x < 8; x++, trg++) {
+                if (mx == 8 && my == 8) {
+                    px1 = new[] {0D,        x_ratio, 2*x_ratio, 3*x_ratio, 4*x_ratio, 5*x_ratio, 6*x_ratio, 7*x_ratio};
+                    px2 = new[] {x_ratio, 2*x_ratio, 3*x_ratio, 4*x_ratio, 5*x_ratio, 6*x_ratio, 7*x_ratio, 8*x_ratio};
+                    py1 = new[] {0D,        y_ratio, 2*y_ratio, 3*y_ratio, 4*y_ratio, 5*y_ratio, 6*y_ratio, 7*y_ratio};
+                    py2 = new[] {y_ratio, 2*y_ratio, 3*y_ratio, 4*y_ratio, 5*y_ratio, 6*y_ratio, 7*y_ratio, 8*y_ratio};
+                    mx1 = new[] {0, (int)(px1[1]), (int)(px1[2]), (int)(px1[3]), (int)(px1[4]), (int)(px1[5]), (int)(px1[6]), (int)(px1[7])};
+                    mx2 = new[] { (int)Math.Ceiling(px2[0]), (int)Math.Ceiling(px2[1]), (int)Math.Ceiling(px2[2]), (int)Math.Ceiling(px2[3]), 
+                                  (int)Math.Ceiling(px2[4]), (int)Math.Ceiling(px2[5]), (int)Math.Ceiling(px2[6]), (int)Math.Ceiling(px2[7])};
+                    my1 = new[] {0, (int)(py1[1]), (int)(py1[2]), (int)(py1[3]), (int)(py1[4]), (int)(py1[5]), (int)(py1[6]), (int)(py1[7])};
+                    my2 = new[] { (int)Math.Ceiling(py2[0]), (int)Math.Ceiling(py2[1]), (int)Math.Ceiling(py2[2]), (int)Math.Ceiling(py2[3]), 
+                                  (int)Math.Ceiling(py2[4]), (int)Math.Ceiling(py2[5]), (int)Math.Ceiling(py2[6]), (int)Math.Ceiling(py2[7])};
+                } else {
+                    px1 = new double[mx];       mx1 = new int[mx];      px1[0] = 0D;        mx1[0] = 0;
+                    px2 = new double[mx];       mx2 = new int[mx];      px2[0] = x_ratio;   mx2[0] = (int)Math.Ceiling(x_ratio);
+                    py1 = new double[my];       my1 = new int[my];      py1[0] = 0D;        my1[0] = 0;
+                    py2 = new double[my];       my2 = new int[my];      py2[0] = y_ratio;   my2[0] = (int)Math.Ceiling(y_ratio);
+
+                    for (var x = 1; x < mx; ++x) {
+                        px1[x] = px1[x - 1] + x_ratio;
+                        px2[x] = px2[x - 1] + x_ratio;
+                        mx1[x] = (int) (px1[x]);
+                        mx2[x] = (int) Math.Ceiling(px2[x]);
+                    }
+                    for (var y = 1; y < my; ++y) {
+                        py1[y] = py1[y - 1] + y_ratio;
+                        py2[y] = py2[y - 1] + y_ratio;
+                        my1[y] = (int) (py1[y]);
+                        my2[y] = (int) Math.Ceiling(py2[y]);
+                    }
+                }
+
+                for (int y = 0; y < my; y++) {             
+                    for (int x = 0; x < mx; x++, trg++) {
                         colavg = 0;
                         for (int srs_y = my1[y]; srs_y < my2[y]; srs_y++) {
                             trg = colors + srs_y * Width + mx1[x];
@@ -614,7 +469,7 @@ namespace EssenceUDK.Platform.DataTypes
                                                    * (Math.Min(py2[y], srs_y + 1) - Math.Max(py1[y], srs_y));
                             }
                         }
-                        minimg[(y<<3) + x] = (byte)(colavg / xy_ratio);
+                        minimg[y * mx + x] = (byte)(colavg / xy_ratio);
                     }
                 }
 
@@ -632,9 +487,17 @@ namespace EssenceUDK.Platform.DataTypes
                 }
                 return 0;
                 */
-
             }
- 
+            return minimg;
+        }
+
+        internal ulong GetAvrHash008()
+        {
+            // NOTE: In theory hash can be 0, so it's not very good
+            if (_AvrHash > 0) 
+                return _AvrHash;
+
+            var minimg = GrayscaleResize(8, 8);
 
             // Get Avarage color
             uint avgcolor = 0;
@@ -648,8 +511,6 @@ namespace EssenceUDK.Platform.DataTypes
                 if (minimg[c] > avgcolor)
                     hashsum |= ((ulong)0x01 << c);
 
-
-
             // TEST CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             /*
             lock (LockObject) {
@@ -662,11 +523,95 @@ namespace EssenceUDK.Platform.DataTypes
                     }
                 }
             }
+
+            (this as IImageSurface).Invalidate();
             */
 
             return _AvrHash = hashsum;
         }
         private ulong _AvrHash = 0;
+
+        internal byte[] GetAvrHash032()
+        {
+            if (_AvrHash032 != null)
+                return _AvrHash032;
+
+            var minimg = GrayscaleResize(16, 16);
+
+            // Get Avarage color
+            uint avgcolor = 0;
+            for (var c = 0; c < 256; ++c)
+                avgcolor += minimg[c];
+            avgcolor /= 256;
+
+            // Get HashSum
+            _AvrHash032 = new byte[32];
+            for (var cb = 0; cb < 32; ++cb)
+                for (var ct = 0; ct < 8; ++ct)
+                    if (minimg[(cb << 3) + ct] > avgcolor)
+                        _AvrHash032[cb] |= (byte)((byte)0x01 << ct);
+
+            // TEST CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            /*
+            lock (LockObject) {
+                var srs = ImageWordPtr;
+                for (int y = 0; y < 16; y++) {
+                    srs = ImageWordPtr + y * Width;
+                    for (int x = 0; x < 16; x++, srs++) {
+                        ushort gcol = (ushort)(minimg[(y << 4) + x] >> 3);
+                        *srs = (ushort)(0x8000 | gcol | gcol << 5 | gcol << 10);
+                    }
+                }
+            }
+
+            (this as IImageSurface).Invalidate();
+            */
+
+            return _AvrHash032;
+        }
+        private byte[] _AvrHash032 = null;
+
+        internal byte[] GetAvrHash128()
+        {
+            if (_AvrHash128 != null)
+                return _AvrHash128;
+
+            var minimg = GrayscaleResize(32, 32);
+
+            // Get Avarage color
+            uint avgcolor = 0;
+            for (var c = 0; c < 1024; ++c)
+                avgcolor += minimg[c];
+            avgcolor /= 1024;
+
+            // Get HashSum
+            _AvrHash128 = new byte[128];
+            for (var cb = 0; cb < 128; ++cb)
+                for (var ct = 0; ct < 8; ++ct)
+                    if (minimg[(cb << 3) + ct] > avgcolor)
+                        _AvrHash128[cb] |= (byte)((byte)0x01 << ct);
+
+            // TEST CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            /*
+            lock (LockObject) {
+                var srs = ImageWordPtr;
+                for (int y = 0; y < 32; y++) {
+                    srs = ImageWordPtr + y * Width;
+                    for (int x = 0; x < 32; x++, srs++) {
+                        ushort gcol = (ushort)(minimg[(y << 5) + x] >> 3);
+                        *srs = (ushort)(0x8000 | gcol | gcol << 5 | gcol << 10);
+                    }
+                }
+            }
+
+            (this as IImageSurface).Invalidate();
+            */
+
+            return _AvrHash128;
+        }
+        private byte[] _AvrHash128 = null;
+
+
 
         private static readonly byte[] _BitCountTable = new byte[] {
                 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
@@ -678,24 +623,20 @@ namespace EssenceUDK.Platform.DataTypes
                 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 
                 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8 };
 
-        byte IImageSurface.GetHammingDistanceForAvrHash(IImageSurface surface)
+        ushort IImageSurface.GetHammingDistanceForAvrHash008(IImageSurface surface)
         {
             if (surface == null) {
-            //    GetAvrHash();
-            //    (this as IImageSurface).Invalidate();
-
-                //GetAvrHash();
-                return 0xFF;
+                return 0xFFFF;
             }
 
-            byte result;
+            ushort result;
             ulong avrhash = 0;
             if (surface is BitmapSurface)
-                avrhash = (surface as BitmapSurface).GetAvrHash();
+                avrhash = (surface as BitmapSurface).GetAvrHash008();
             else
                 throw new NotImplementedException();
 
-            avrhash ^= GetAvrHash();
+            avrhash ^= GetAvrHash008();
 
             result  = _BitCountTable[avrhash & 0xFF];
             result += _BitCountTable[(avrhash >>  8) & 0xFF];
@@ -712,6 +653,46 @@ namespace EssenceUDK.Platform.DataTypes
             // avrhash = ((avrhash >> 4) + avrhash) & 0x0f0f0f0fUL;
             // avrhash *= 0x01010101UL;
             // return avrhash >> 24;
+        }
+
+        ushort IImageSurface.GetHammingDistanceForAvrHash032(IImageSurface surface)
+        {
+            if (surface == null) {
+                return 0xFFFF;
+            }
+
+            ushort result = 0;
+            byte[] avrhash1 = null, avrhash2 = null;
+            if (surface is BitmapSurface)
+                avrhash2 = (surface as BitmapSurface).GetAvrHash032();
+            else
+                throw new NotImplementedException();
+
+            avrhash1 = GetAvrHash032();
+            for (var cb = 0; cb < 32; ++cb)
+                result += _BitCountTable[avrhash1[cb] ^ avrhash2[cb]];
+
+            return result;
+        }
+
+        ushort IImageSurface.GetHammingDistanceForAvrHash128(IImageSurface surface)
+        {
+            if (surface == null) {
+                return 0xFFFF;
+            }
+
+            ushort result = 0;
+            byte[] avrhash1 = null, avrhash2 = null;
+            if (surface is BitmapSurface)
+                avrhash2 = (surface as BitmapSurface).GetAvrHash128();
+            else
+                throw new NotImplementedException();
+
+            avrhash1 = GetAvrHash128();
+            for (var cb = 0; cb < 128; ++cb)
+                result += _BitCountTable[avrhash1[cb] ^ avrhash2[cb]];
+
+            return result;
         }
 
         /// <summary>
@@ -842,8 +823,8 @@ namespace EssenceUDK.Platform.DataTypes
         public uint this[int x, int y]   // Indexer declaration
         {
             get {
-                int p = (int) ((x * BitmapSource.Width * BytesPerPixel) + (y * BytesPerPixel));
-                return ImageUIntPtr[p];
+                int p = (int) ((y * BitmapSource.Width) + x);
+                return BytesPerPixel == 4 ? ImageUIntPtr[p] : BytesPerPixel == 2 ? ImageWordPtr[p] : BytesPerPixel == 1 ? ImageBytePtr[p] : 0xDEADF00D;
             }
         }
 
@@ -925,8 +906,23 @@ namespace EssenceUDK.Platform.DataTypes
                                 *trg |= 0x8000;
                         }
                     }
-                }
-
+                } else if (pbb == 2 && BytesPerPixel == 4)
+                {
+                    var trg = ImageUIntPtr;
+                    for (var y = 0; y < Height; ++y) {
+                        var srs = (ushort*)((byte*)bData.Scan0.ToPointer() + y * bData.Stride);
+                        for (var x = 0; x < Width; ++x, ++srs, ++trg) {
+                            if (*srs <= 0x7FFF) {
+                                *trg = 0;
+                                continue;
+                            }
+                            *trg = (((uint)*srs & 0x00007C00) << 9) | (((uint)*srs & 0x000003E0) << 6) | (((uint)*srs & 0x0000001F) << 3);
+                            if (*trg > 0x00000000)
+                                *trg |= 0xFF000000;
+                        }
+                    }
+                } else
+                    throw new NotImplementedException();
 
             }
         }

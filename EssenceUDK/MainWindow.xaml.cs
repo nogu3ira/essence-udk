@@ -47,8 +47,8 @@ namespace EssenceUDK
 
                 // ok, we get manager just now let get tiles and set them as sourse to our list. Yeh, it's really simple)
                 var items = manager.GetItemTile(TileFlag.None, true);//TileFlag.Wall); // lets get all walls to look throw
-                foreach (var item in items)
-                    item.Surface.GetSurface().GetHammingDistanceForAvrHash(null);
+                //foreach (var item in items)
+                //    item.Surface.GetSurface().GetHammingDistanceForAvrHash(null);
                 tileItemView1.ItemsSource = items;
                 
 

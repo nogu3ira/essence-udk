@@ -167,18 +167,28 @@ namespace EssenceUDK.Platform.UtilHelpers
 
         public static object InvokeMethod(object obj, Type result, string method_name, params object[] args)
         {
+            return InvokeMethod(obj, null, result, method_name, args);
+        }
+
+        public static object InvokeMethod(object obj, Type type, Type result, string method_name, params object[] args)
+        {
             if (obj == null)
                 throw new ArgumentNullException("obj");
-            Type obj_type = obj.GetType();
+            Type obj_type = type ?? obj.GetType();
 
             object res = result != null ? CreateInstance(result) : new object();
 
             res = obj_type.InvokeMember(method_name, System.Reflection.BindingFlags.InvokeMethod, null, obj, args);
 
-//             if(result != null)
-//                 return (result)res;
-//             else
-                return res;
+            //             if(result != null)
+            //                 return (result)res;
+            //             else
+            return res;
+        }
+
+        public static T InvokeMethod<T>(object obj, Type type, string method_name, params object[] args)
+        {
+            return (T)InvokeMethod(obj, type, typeof(T), method_name, args);
         }
 
     }

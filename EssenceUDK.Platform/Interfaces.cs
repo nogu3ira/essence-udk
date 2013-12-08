@@ -61,7 +61,9 @@ namespace EssenceUDK.Platform
         ImageSource Image { get; }
         void Invalidate();
 
-        byte GetHammingDistanceForAvrHash(IImageSurface surface);
+        ushort GetHammingDistanceForAvrHash008(IImageSurface surface);
+        ushort GetHammingDistanceForAvrHash032(IImageSurface surface);
+        ushort GetHammingDistanceForAvrHash128(IImageSurface surface);
     }
 
     public interface IHuedSurface  : ISurface

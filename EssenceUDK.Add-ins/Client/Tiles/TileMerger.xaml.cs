@@ -84,12 +84,18 @@ namespace EssenceUDK.Add_ins.Client
             if (surf == null)
                 return;
             var dif = nudHamming.Value;
+            var arg = new object[] { surf };
+            var prc = (string)(cbComparisonType.SelectedItem as ComboBoxItem).Tag;
+
             if ((int)tileItemView1.Tag == 0)
-                tileItemView1.ItemsSource = _UODataManager.GetItemTile(TileFlag.None, true).Where(t => t.Surface.GetSurface().GetHammingDistanceForAvrHash(surf) <= dif);
+                tileItemView1.ItemsSource = _UODataManager.GetItemTile(TileFlag.None, true).Where(t =>
+                                            DynamicExecutor.InvokeMethod<ushort>(t.Surface.GetSurface(), typeof(IImageSurface), prc, arg) <= dif);
             else if ((int)tileItemView1.Tag == 1)
-                tileItemView1.ItemsSource = _UODataManager.GetLandTile(TileFlag.None, true).Where(t => t.Surface != null && t.Surface.GetSurface().GetHammingDistanceForAvrHash(surf) <= dif);
+                tileItemView1.ItemsSource = _UODataManager.GetLandTile(TileFlag.None, true).Where(t =>
+                                            DynamicExecutor.InvokeMethod<ushort>(t.Surface.GetSurface(), typeof(IImageSurface), prc, arg) <= dif);
             else if ((int)tileItemView1.Tag == 2)
-                tileItemView1.ItemsSource = _UODataManager.GetLandTile(TileFlag.None, true).Where(t => t.Texture != null && t.Texture.GetSurface().GetHammingDistanceForAvrHash(surf) <= dif);
+                tileItemView1.ItemsSource = _UODataManager.GetLandTile(TileFlag.None, true).Where(t =>
+                                            DynamicExecutor.InvokeMethod<ushort>(t.Texture.GetSurface(), typeof(IImageSurface), prc, arg) <= dif);
         }
 
         private  int _HammingVal = 0;
@@ -99,6 +105,12 @@ namespace EssenceUDK.Add_ins.Client
             _HammingVal = value; 
             Comparison();
         } }
+
+        private void cbComparisonType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (imgSelectedFile != null)
+                Comparison();
+        }
 
         // -------------
 
@@ -158,6 +170,8 @@ namespace EssenceUDK.Add_ins.Client
                 tbDirectory_KeyDown(null, null);
             }
         }
+
+        
 
         // -------------
 

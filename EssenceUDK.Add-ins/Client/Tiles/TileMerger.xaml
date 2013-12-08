@@ -66,8 +66,12 @@
                 <RadioButton GroupName="TileType" Content="Textures" Tag="2" IsChecked="False" Checked="rbTileType_Checked" />
             </StackPanel>
             <TextBlock Margin="4,4,2,4" Grid.Column="0" Grid.Row="1" Text="Код Хэмминга:" />
-            <Common:NumericUpDown Name="nudHamming" Margin="4,0,2,8" Grid.Column="1" Grid.Row="1" Maximum="64" Value="{Binding HammingVal}" />
-
+            <Common:NumericUpDown Name="nudHamming" Margin="4,0,2,8" Grid.Column="1" Grid.Row="1" Maximum="64" Value="{Binding HammingVal, Mode = TwoWay}" />
+            <ComboBox Margin="4,4,4,4" Name="cbComparisonType" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" SelectionChanged="cbComparisonType_SelectionChanged">
+                <ComboBoxItem Content="Average 64bit Hash" IsSelected="True" Tag="GetHammingDistanceForAvrHash008" />
+                <ComboBoxItem Content="Average 256bit Hash" Tag="GetHammingDistanceForAvrHash032" />
+                <ComboBoxItem Content="Average 1024bit Hash" Tag="GetHammingDistanceForAvrHash128" />
+            </ComboBox>
         </Grid>
         
         <Grid Grid.Column="0" Grid.Row="3">
