@@ -5,8 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:contr="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls"
              xmlns:Common="clr-namespace:EssenceUDK.Controls.Common;assembly=EssenceUDK.Controls" mc:Ignorable="d" 
+             Name="root"
              d:DesignHeight="409" d:DesignWidth="696" Loaded="UserControl_Loaded">
-    <Grid>
+    <Grid x:Name="LayoutRoot" DataContext="{Binding ElementName=root}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260" />
             <ColumnDefinition Width="*" />
@@ -16,13 +17,14 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="60" />
             <RowDefinition Height="200" />
+            <RowDefinition Height="20" />
         </Grid.RowDefinitions>
         
         <TextBlock />
         
         
         
-        <contr:ListBoxViewTiles Name="tileItemView1" Texture="False" Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" />
+        <contr:ListBoxViewTiles Name="tileItemView1" Texture="False" Grid.Column="1" Grid.Row="0" Grid.RowSpan="5" />
         
         <Grid Grid.Column="0" Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -33,7 +35,7 @@
             <Button  Margin="4,4,4,4" Name="btnBrowse"  Grid.Column="1" Grid.Row="0" Content="0" Click="btnBrowse_Click" />
         </Grid>
 
-        <ListView Name="lvFileList"  Grid.Column="0" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="lvFileList_SelectionChanged">
+        <ListView Name="lvFileList"  Grid.Column="0" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled"  SelectionChanged="lvFileList_SelectionChanged" BorderThickness="0">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="40" x:Name="Image">
@@ -43,8 +45,8 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="160" DisplayMemberBinding="{Binding FileName}" Header="Имя файла"/>
-                    <GridViewColumn Width="40" DisplayMemberBinding="{Binding FileExts}"  Header="Тип"/>
+                    <GridViewColumn Width="160" DisplayMemberBinding="{Binding FileName}" Header="File Name"  />
+                    <GridViewColumn Width="40" DisplayMemberBinding="{Binding FileExts}"  Header="Ext"/>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -65,8 +67,8 @@
                 <RadioButton GroupName="TileType" Content="Lands" Tag="1" IsChecked="False" Checked="rbTileType_Checked" />
                 <RadioButton GroupName="TileType" Content="Textures" Tag="2" IsChecked="False" Checked="rbTileType_Checked" />
             </StackPanel>
-            <TextBlock Margin="4,4,2,4" Grid.Column="0" Grid.Row="1" Text="Код Хэмминга:" />
-            <Common:NumericUpDown Name="nudHamming" Margin="4,0,2,8" Grid.Column="1" Grid.Row="1" Maximum="64" Value="{Binding HammingVal, Mode = TwoWay}" />
+            <TextBlock Margin="4,4,2,4" Grid.Column="0" Grid.Row="1" Text="Hamming Distance:" />
+            <Common:NumericUpDown Name="nudHamming" Margin="4,0,2,8" Grid.Column="1" Grid.Row="1" />
             <ComboBox Margin="4,4,4,4" Name="cbComparisonType" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" SelectionChanged="cbComparisonType_SelectionChanged">
                 <ComboBoxItem Content="Average 64bit Hash" IsSelected="True" Tag="GetHammingDistanceForAvrHash008" />
                 <ComboBoxItem Content="Average 256bit Hash" Tag="GetHammingDistanceForAvrHash032" />
@@ -79,8 +81,10 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Image Margin="4,4,2,4" Name="imgSelectedFile"  Grid.Column="0" Grid.Row="0" />
-            <Image Margin="4,2,4,4" Name="imgSelectedItem"  Grid.Column="1" Grid.Row="0" />
+            <Image Margin="4,4,2,4" Name="imgSelectedFile"  Grid.Column="0" Grid.Row="0" StretchDirection="DownOnly" />
+            <Image Margin="2,4,4,4" Name="imgSelectedItem"  Grid.Column="1" Grid.Row="0" StretchDirection="DownOnly" />
         </Grid>
+
+        <TextBlock Name="tbStatusLabel" Margin="4,1,8,4" Grid.Column="0" Grid.Row="4" Text="Matches found: 0" Tag="Matches found: {0:D}" TextAlignment="Right" FontWeight="Bold" />
     </Grid>
 </UserControl>

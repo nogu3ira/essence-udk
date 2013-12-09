@@ -121,11 +121,17 @@ namespace EssenceUDK.Controls.Ultima
 
 
 
+        public delegate void SelectionChangeHandler(object sender);
+        public event SelectionChangeHandler OnSelectionChanged;
+
 
         public Object SelectedItem
         {
             get { return (Object)GetValue(SelectedItemProperty); }
-            set { SetValue(SelectedItemProperty, value); }
+            set { SetValue(SelectedItemProperty, value);
+                if (OnSelectionChanged != null)
+                    OnSelectionChanged(this);
+            }
         }
 
         // Using a DependencyProperty as the backing store for SelectedItem.  This enables animation, styling, binding, etc...
@@ -139,7 +145,10 @@ namespace EssenceUDK.Controls.Ultima
         public int SelectedIndex
         {
             get { return (int)GetValue(SelectedIndexProperty); }
-            set { SetValue(SelectedIndexProperty, value); }
+            set { SetValue(SelectedIndexProperty, value);
+                if (OnSelectionChanged != null)
+                    OnSelectionChanged(this);
+            }
         }
 
         // Using a DependencyProperty as the backing store for SelectedIndex.  This enables animation, styling, binding, etc...

@@ -65,6 +65,11 @@ namespace EssenceUDK.Controls.Common
             ValueProperty   = DependencyProperty.Register("Value",      typeof(int), typeof(NumericUpDown), new FrameworkPropertyMetadata(0));
         }
 
+        public delegate void ValueChangeHandler(object sender);
+        public event ValueChangeHandler OnValueChanged;
+
+
+
         #region DpAccessior
         public int Maximum
         {
@@ -80,8 +85,11 @@ namespace EssenceUDK.Controls.Common
         {
             get { return (int)GetValue(ValueProperty); }
             set { SetCurrentValue(ValueProperty, value); 
-                  if (PropertyChanged != null)
-                      PropertyChanged(this, new PropertyChangedEventArgs("Text")); 
+                if (PropertyChanged != null) {
+                    PropertyChanged(this, new PropertyChangedEventArgs("Text"));
+                    if (OnValueChanged != null)
+                        OnValueChanged(this);
+                }
             }
         }
         public int StepValue
