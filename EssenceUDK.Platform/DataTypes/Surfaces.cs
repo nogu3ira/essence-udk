@@ -285,7 +285,6 @@ namespace EssenceUDK.Platform.DataTypes
     {
         #region ISurface Implementation
         ImageSource IImageSurface.Image     { get { return BitmapSource; } }
-        ImageSource ISurface.Image          { get { return BitmapSource; } }
         public ImageSource  Image { get { return BitmapSource; } }
         ushort      ISurface.Width          { get { return (ushort)Width;  } }
         ushort      ISurface.Height         { get { return (ushort)Height; } }
@@ -325,36 +324,57 @@ namespace EssenceUDK.Platform.DataTypes
 
         #region IImageSurface Implementation
 
-        IClipper GetImageRect()
+        IClipper IImageSurface.GetImageRect()
         {
-            short dx = -1, dy = -1;
+            short dx = 0x0400, dy = 0x0400;
             ushort width = 0, height = 0;
 
             lock (LockObject) 
             {
-                var line = ImageWordPtr;
-                var delta = Stride >> 1;
-                for (short Y = 0; Y < Height; ++Y, line += delta) {
-                    var cur = line;
-                    for (short X = 0; X < Width; ++X) {
-                        byte a = (byte)((cur[X] & 0xFF000000) >> 24);
-                        byte r = (byte)((cur[X] & 0x00FF0000) >> 16);
-                        byte g = (byte)((cur[X] & 0x0000FF00) >> 8);
-                        byte b = (byte)((cur[X] & 0x000000FF) >> 0);
-
-                        if (r >= 1 || g >= 1 || b >= 1) {
-                            dx = Math.Min(dx, X);
-                            dy = Math.Min(dy, Y);
-                            width  = (ushort)Math.Max(width, X);
-                            height = (ushort)Math.Max(height, Y);
+                if (BytesPerPixel == 2) {
+                    var line = ImageWordPtr;
+                    var delta = Stride >> 1;
+                    for (short Y = 0; Y < Height; ++Y, line += delta) {
+                        var cur = line;
+                        for (short X = 0; X < Width; ++X) {
+                            if ((cur[X] & 0x8000) > 0 && (cur[X] & 0x7FFF) > 0) {
+                                dx = Math.Min(dx, X);
+                                dy = Math.Min(dy, Y);
+                                width  = (ushort)Math.Max(width, X);
+                                height = (ushort)Math.Max(height, Y);
+                            }
                         }
                     }
-                }
+                } else if (BytesPerPixel == 4) {
+                    var line = ImageUIntPtr;
+                    var delta = Stride >> 2;
+                    for (short Y = 0; Y < Height; ++Y, line += delta) {
+                        var cur = line;
+                        for (short X = 0; X < Width; ++X) {
+                            byte a = (byte)((cur[X] & 0xFF000000) >> 24);
+                            byte r = (byte)((cur[X] & 0x00FF0000) >> 16);
+                            byte g = (byte)((cur[X] & 0x0000FF00) >> 8);
+                            byte b = (byte)((cur[X] & 0x000000FF) >> 0);
+
+                            if (a > 0 && (r > 7 || g > 7 || b > 7)) {
+                                dx = Math.Min(dx, X);
+                                dy = Math.Min(dy, Y);
+                                width  = (ushort)Math.Max(width,  X);
+                                height = (ushort)Math.Max(height, Y);
+                            }
+                        }
+                    }
+                } else
+                    throw new NotImplementedException();
+
+                
             }
 
-            if (dx != -1 && dy != -1) {
-                width -= (ushort)dx;
-                height -= (ushort)dy;
+            if (dx != 0x0400 && dy != 0x0400) {
+                width  += 1;  width  -= (ushort)dx;
+                height += 1;  height -= (ushort)dy;
+                
+                
                 //dx += width / 2;
                 //dx *= -1;
                 //dy += height / 2;
@@ -367,9 +387,9 @@ namespace EssenceUDK.Platform.DataTypes
             return new Clipper2D(dx, dy, width, height);
         }
 
-        IPoint2D GetImageCenter()
+        IPoint2D IImageSurface.GetImageCenter()
         {
-            var rect = GetImageRect();
+            var rect = (this as IImageSurface).GetImageRect();
             var dx = (rect.X1 + Width) / 2;
             var dy = (rect.Y1 + Height) / 2;
             return new Point2D(dx, dy);
@@ -902,6 +922,17 @@ namespace EssenceUDK.Platform.DataTypes
                                 continue;
                             }
                             *trg = (ushort)(((*srs & 0x00F80000) >> 9) | ((*srs & 0x0000F800) >> 6) | ((*srs & 0x000000F8) >> 3));
+                            if (*trg > 0x0000)
+                                *trg |= 0x8000;
+                        }
+                    }
+                } else if (pbb == 3 && BytesPerPixel == 2)
+                {
+                    var trg = ImageWordPtr;
+                    for (var y = 0; y < Height; ++y) {
+                        var srs = (byte*)bData.Scan0.ToPointer() + y * bData.Stride;
+                        for (var x = 0; x < Width; ++x, srs += 3, ++trg) {
+                            *trg = (ushort)(((srs[2] & 0xF8) << 7) | ((srs[1] & 0xF8) << 2) | (srs[0] >> 3));
                             if (*trg > 0x0000)
                                 *trg |= 0x8000;
                         }

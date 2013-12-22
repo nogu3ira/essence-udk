@@ -34,8 +34,6 @@ namespace EssenceUDK.Platform
 
     public interface ISurface
     {
-        ImageSource Image       { get; }
-
         ushort      Width       { get; }
         ushort      Height      { get; }
         PixelFormat PixelFormat { get; }
@@ -61,6 +59,9 @@ namespace EssenceUDK.Platform
         ImageSource Image { get; }
         void Invalidate();
 
+        IClipper GetImageRect();
+        IPoint2D GetImageCenter();
+        
         ushort GetHammingDistanceForAvrHash008(IImageSurface surface);
         ushort GetHammingDistanceForAvrHash032(IImageSurface surface);
         ushort GetHammingDistanceForAvrHash128(IImageSurface surface);
@@ -88,8 +89,12 @@ namespace EssenceUDK.Platform
     {
         bool IsValid(uint id);
         uint EntryLength { get; }
+        uint GetExtra(uint id);
+        void SetExtra(uint id, uint value);
         byte[] this[uint id] { get; set; }
         T   Read<T>(uint id, uint offset) where T : struct;
         T[] Read<T>(uint fromId, uint offset, uint count) where T : struct;
+        void Write<T>(uint id, uint offset, T data) where T : struct;
+        void Write<T>(uint id, uint offset, T[] data, uint sfrom, uint count) where T : struct;
     }
 }

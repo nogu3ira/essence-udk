@@ -90,6 +90,9 @@ namespace EssenceUDK.Add_ins.Client
             else if ((int)tileItemView1.Tag == 2)
                 tileItemView1.ItemsSource = _UODataManager.GetLandTile(TileFlag.None, true).Where(t => t.Texture != null &&
                                             DynamicExecutor.InvokeMethod<ushort>(t.Texture.GetSurface(), typeof(IImageSurface), prc, arg) <= dif);
+            else if ((int)tileItemView1.Tag == 3)
+                tileItemView1.ItemsSource = _UODataManager.GetGumpSurf(true).Where(t => 
+                                            DynamicExecutor.InvokeMethod<ushort>(t.Surface.GetSurface(), typeof(IImageSurface), prc, arg) <= dif);
 
             tbStatusLabel.Text = String.Format((string)tbStatusLabel.Tag, (tileItemView1.ItemsSource as IEnumerable<object>).Count());
         }
@@ -151,6 +154,10 @@ namespace EssenceUDK.Add_ins.Client
                 tileItemView1.ItemsSource = _UODataManager.GetLandTile(TileFlag.None, true);
             else if ((int)tileItemView1.Tag == 2)
                 tileItemView1.ItemsSource = _UODataManager.GetLandTile(TileFlag.None, true);
+            else if ((int)tileItemView1.Tag == 3)
+                tileItemView1.ItemsSource = _UODataManager.GetGumpSurf(true);
+
+            //imgSelectedFile.Source = _UODataManager.GetGumpSurf(true).ElementAt(1).Surface.GetSurface().Image;
         }
 
         private void OnTileViewSelectionChanged(object sender)
@@ -161,6 +168,8 @@ namespace EssenceUDK.Add_ins.Client
                 imgSelectedItem.Source = (tileItemView1.SelectedItem as ModelLandData).Surface.GetSurface().Image;
             else if ((int)tileItemView1.Tag == 2)
                 imgSelectedItem.Source = (tileItemView1.SelectedItem as ModelLandData).Texture.GetSurface().Image;
+            else if ((int)tileItemView1.Tag == 3)
+                imgSelectedItem.Source = (tileItemView1.SelectedItem as ModelGumpSurf).Surface.GetSurface().Image;
         }
 
 

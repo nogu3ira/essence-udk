@@ -21,9 +21,9 @@
         </Grid.RowDefinitions>
         
         <TextBlock />
-        
-        
-        
+
+
+
         <contr:ListBoxViewTiles Name="tileItemView1" Texture="False" Grid.Column="1" Grid.Row="0" Grid.RowSpan="5" />
         
         <Grid Grid.Column="0" Grid.Row="0">
@@ -63,9 +63,10 @@
             </Grid.RowDefinitions>
 
             <StackPanel Margin="4,4,2,4" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">
-                <RadioButton GroupName="TileType" Content="Items" Tag="0" IsChecked="True" Checked="rbTileType_Checked" />
-                <RadioButton GroupName="TileType" Content="Lands" Tag="1" IsChecked="False" Checked="rbTileType_Checked" />
-                <RadioButton GroupName="TileType" Content="Textures" Tag="2" IsChecked="False" Checked="rbTileType_Checked" />
+                <RadioButton GroupName="TileType" Content="Items" Tag="0" IsChecked="True" Checked="rbTileType_Checked" Margin="0,-4,0,-1"  />
+                <RadioButton GroupName="TileType" Content="Lands" Tag="1" IsChecked="False" Checked="rbTileType_Checked" Margin="0,-1,0,-1" />
+                <RadioButton GroupName="TileType" Content="Textures" Tag="2" IsChecked="False" Checked="rbTileType_Checked" Margin="0,-1,0,-1" />
+                <RadioButton GroupName="TileType" Content="Gumps" Tag="3" IsChecked="False" Checked="rbTileType_Checked" Margin="0,-1,0,-4" />
             </StackPanel>
             <TextBlock Margin="4,4,2,4" Grid.Column="0" Grid.Row="1" Text="Hamming Distance:" />
             <Common:NumericUpDown Name="nudHamming" Margin="4,0,2,8" Grid.Column="1" Grid.Row="1" />

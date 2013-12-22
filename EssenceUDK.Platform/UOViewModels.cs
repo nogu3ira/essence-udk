@@ -14,7 +14,7 @@ namespace EssenceUDK.Platform
 
         #region Properties
 
-        public uint TileId { get { return _data.TileId; } set { _data.TileId = value; RaisePropertyChanged(() => TileId); } }
+        public uint EntryId { get { return _data.EntryId; } set { _data.EntryId = value; RaisePropertyChanged(() => EntryId); } }
 
         public bool IsValid { get { return _data.IsValid; } }
 
@@ -52,7 +52,7 @@ namespace EssenceUDK.Platform
 
         #region Properties
 
-        public uint TileId { get { return _data.TileId; } set { _data.TileId = value; RaisePropertyChanged(() => TileId); } }
+        public uint EntryId { get { return _data.EntryId; } set { _data.EntryId = value; RaisePropertyChanged(() => EntryId); } }
 
         public bool IsValid { get { return _data.IsValid; } }
 
@@ -70,6 +70,30 @@ namespace EssenceUDK.Platform
 
         #region Ctor
         public ModelLandData(ILandTile data)
+        {
+            _data = data;
+        }
+        #endregion
+    }
+
+    public sealed class ModelGumpSurf : UOBaseViewModel, IGumpEntry
+    {
+        #region Declarations
+        private readonly IGumpEntry _data;
+        #endregion
+
+        #region Properties
+
+        public uint EntryId { get { return _data.EntryId; } set { _data.EntryId = value; RaisePropertyChanged(() => EntryId); } }
+
+        public bool IsValid { get { return _data.IsValid; } }
+
+        public ISurface Surface { get { return _data.Surface; } set { _data.Surface = value; RaisePropertyChanged(() => Surface); } }
+        
+        #endregion
+
+        #region Ctor
+        public ModelGumpSurf(IGumpEntry data)
         {
             _data = data;
         }

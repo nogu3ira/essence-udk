@@ -5,7 +5,7 @@ using EssenceUDK.Platform;
 
 namespace EssenceUDK.Controls.Converters
 {
-    public class ConverterImageSourceItemsLandsFromISurface : IValueConverter
+    public class ConverterImageSourceItemsGumpsFromISurface : IValueConverter
     {
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -13,7 +13,7 @@ namespace EssenceUDK.Controls.Converters
             var surface = value as ISurface;
             if (surface != null)
             {
-                var image = surface.Image;
+                var image = surface.GetSurface().Image;
                 return image;
             }
 
@@ -26,6 +26,26 @@ namespace EssenceUDK.Controls.Converters
         }
     }
 
+    public class ConverterImageSourceItemsLandsFromISurface : IValueConverter
+    {
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var surface = value as ISurface;
+            if (surface != null)
+            {
+                var image = surface.GetSurface().Image;
+                return image;
+            }
+
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     public class ConverterImageSourceTextureISurface : IValueConverter
     {
@@ -61,7 +81,7 @@ namespace EssenceUDK.Controls.Converters
             if (texture == null)
                 return null;
 
-            return texture.Image;
+            return texture.GetSurface().Image;
 
         }
 
@@ -84,7 +104,30 @@ namespace EssenceUDK.Controls.Converters
             if (image == null)
                 return null;
 
-            return image.Image;
+            return image.GetSurface().Image;
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ConverterImageSourceGumpFromInt : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var manager = parameter as UODataManager;
+            if (manager == null) return null;
+            var gump = manager.GetGumpSurf((int)value);
+            if (gump == null)
+                return null;
+            var image = gump.Surface;
+            if (image == null)
+                return null;
+
+            return image.GetSurface().Image;
 
         }
 
@@ -107,7 +150,7 @@ namespace EssenceUDK.Controls.Converters
             if (image == null)
                 return null;
 
-            return image.Image;
+            return image.GetSurface().Image;
 
         }
 

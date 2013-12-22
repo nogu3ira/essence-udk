@@ -62,9 +62,15 @@
                             SelectedIndex="{Binding RelativeSource={RelativeSource TemplatedParent},Path=SelectedIndex,Mode=TwoWay}">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <DataVirtualization1:VirtualizingWrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"
-                                   MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}"
-                               />
+
+                                    <DataVirtualization1:VirtualizingTilePanel ChildSize="80"
+                                   />
+
+
+                                    <!--<DataVirtualization1:VirtualizingWrapPanel Orientation="Horizontal" Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"
+                                   MinWidth="{Binding ItemWidth, RelativeSource={RelativeSource Self}}" ItemWidth="80" ItemHeight="80"
+                                    
+                               />-->
                                     </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                             <!--<ListBox.ItemTemplate>

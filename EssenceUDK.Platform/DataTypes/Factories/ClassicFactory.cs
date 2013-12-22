@@ -4,11 +4,13 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Runtime.Serialization;
 using EssenceUDK.Platform.DataTypes;
 using EssenceUDK.Platform.DataTypes.FileFormat.Containers;
 using EssenceUDK.Platform.UtilHelpers;
@@ -80,11 +82,12 @@ map3.mul
 map4.mul
 map5.mul
     */
-    internal class ClassicFactory : IDataFactory
+    internal class ClassicFactory : IDataFactory, IDataFactoryReader, IDataFactoryWriter
     {
         public readonly UODataManager Data;
         
         private IDataContainer   container_LandData, container_ItemData, container_LandTile, container_ItemTile, container_LandTexm, container_ItemAnim;
+        private IDataContainer   container_GumpData;
 
         private IDataContainer[] container_Animation;
 
@@ -125,7 +128,9 @@ map5.mul
             container_LandTile = new MulContainer(virtualcontainer, 0, _LandLength);
             container_ItemTile = new MulContainer(virtualcontainer, _LandLength, 0);
 
-            container_LandTexm = new MulContainer(GetPath("texidx.mul"), GetPath("texmaps.mul"), data.RealTime);
+            container_LandTexm = new MulContainer(GetPath("texidx.mul"),  GetPath("texmaps.mul"), data.RealTime);
+
+            container_GumpData = new MulContainer(GetPath("gumpidx.mul"), GetPath("gumpart.mul"), data.RealTime);
 
             //container_ItemAnim = new MulContainer(0, GetPath("animdata.mul"), realtime);
 
@@ -408,7 +413,43 @@ map5.mul
 
         private static unsafe void ConvertLandSurface(ISurface surface, out byte[] rawdata)
         {
-            rawdata = null;
+            if (surface.Stride / surface.Width != 2)
+                throw new NotImplementedException();
+
+            var bitmap = surface.GetSurface();// as BitmapSurface;
+            var imrect = bitmap.GetImageRect();
+            var imavrx = bitmap.Width / 2;
+            var imlenx = Math.Min(Math.Max(imavrx - imrect.X1, imrect.X2 + 1 - imavrx), imavrx);
+            imrect = new Clipper2D((short)(imavrx - imlenx), imrect.Y1, (short)(imavrx + imlenx - 1), (short)(bitmap.Height - 1));
+
+            if (imrect.Width != 44 || imrect.Height != 44) {
+                imrect = new Clipper2D((short)0, (short)0, (ushort)bitmap.Width, (ushort)bitmap.Height);
+                if (imrect.Width != 44 || imrect.Height != 44)
+                    throw new ClassicFactoryException();
+            }
+
+            rawdata = new byte[0x07E8];
+            lock (surface) {
+                uint    delta = surface.Stride >> 1;
+                ushort* line1 = surface.ImageWordPtr + imrect.Y1 * delta + imrect.X1;
+                ushort* line2 = surface.ImageWordPtr + imrect.Y2 * delta + imrect.X1;  
+
+                fixed (byte* _data = &rawdata[0]) {
+                    var data = (uint*)_data;
+
+                    //data[0] = 0x00000000; // header
+                    var i1 = 0;
+                    var i2 = 505;
+                    for (var y = 0; y < 22; ++y, line1 += delta, line2 -= delta) {
+                        var cur1 = (uint*)(line1 + 21 - y);
+                        var cur2 = (uint*)(line2 + 21 + y);
+                        for (var x = 0; x <= y; ++x, ++i1, --i2, ++cur1, --cur2) {
+                            data[i1] = *cur1 ^ 0x80008000;
+                            data[i2] = *cur2 ^ 0x80008000;
+                        }
+                    }
+                }
+            }
         }
 
         private static unsafe void ConvertItemSurface(UODataManager datamanager, byte[] rawdata, out ISurface surface)
@@ -466,12 +507,74 @@ map5.mul
 
         private static unsafe void ConvertItemSurface(ISurface surface, out byte[] rawdata)
         {
-            rawdata = null;
+            if (surface.Stride / surface.Width != 2)
+                throw new NotImplementedException();
+
+            var bitmap = surface.GetSurface();// as BitmapSurface;
+            var imrect = bitmap.GetImageRect();
+            var imavrx = bitmap.Width / 2;
+            var imlenx = Math.Min(Math.Max(imavrx - imrect.X1, imrect.X2 + 1 - imavrx), imavrx);
+            imrect = new Clipper2D((short)(imavrx - imlenx), imrect.Y1, (short)(imavrx + imlenx - 1), (short)(bitmap.Height - 1));
+
+            var data = new BinaryWriter(new MemoryStream());
+            data.Write((uint)1234); // header
+            data.Write((ushort)imrect.Width);
+            data.Write((ushort)imrect.Height);
+
+            var lookup = (int)data.BaseStream.Position;
+            for (var y = 0; y < imrect.Height; ++y)// fill lookup
+                data.Write((ushort)0);
+  
+            lock (surface) {
+                uint   delta = surface.Stride >> 1;
+                ushort* line = surface.ImageWordPtr + imrect.Y1 * delta;               
+
+                for (int y = 0; y < imrect.Height; ++y, line += delta) {
+
+                    data.BaseStream.Seek(lookup + (y << 1), SeekOrigin.Begin);
+                    var lineoffs = ((data.BaseStream.Length - lookup) >> 1) - imrect.Height;
+                    if (lineoffs > 0xFFFF)
+                        throw new ClassicFactoryException();
+                    data.Write( (ushort)lineoffs );
+                    data.BaseStream.Seek(0, SeekOrigin.End);
+
+                    ushort* cur = line + imrect.X1;
+                    int x = 0, j = 0, i = 0;
+
+                    while (i < imrect.Width) {
+                        for (i = x; i < imrect.Width; ++i) {
+                            //first pixel set
+                            if (cur[i] != 0)
+                                break;
+                        }
+                        if (i < imrect.Width) {
+                            for (j = (i + 1); j < imrect.Width; ++j) {
+                                //next non set pixel
+                                // if (cur[j] == 0)
+                                if (cur[j] == 0 && (j + 1 == imrect.Width || cur[j + 1] == 0))
+                                    break;
+                            }
+                            data.Write((ushort)(i - x)); //xoffset
+                            data.Write((ushort)(j - i)); //run
+                            for (int p = i; p < j; ++p)
+                                //data.Write((ushort)(cur[p] ^ 0x8000);
+                                data.Write((ushort)(cur[p] > 0 ? (cur[p] ^ 0x8000) : cur[p]));
+                            x = j;
+                        }
+                    }
+                    data.Write((ushort)0); //xOffset
+                    data.Write((ushort)0); //Run
+                }
+            }
+
+            data.Flush();
+            rawdata = (data.BaseStream as MemoryStream).ToArray();
+            data.Close();
         }
 
         // texmaps.mul convertors --------------------------------------------------------------
 
-        private static unsafe void ConvertTexmSurface(UODataManager datamanager, byte[] rawdata, out ISurface surface)
+        private static unsafe void ConvertTexmSurface(UODataManager datamanager, uint extra, byte[] rawdata, out ISurface surface)
         {
             if (rawdata == null || rawdata.Length == 0) {
                 surface = null;
@@ -501,22 +604,113 @@ map5.mul
             }
         }
 
-        private static unsafe void ConvertTexmSurface(ISurface surface, out byte[] rawdata)
+        private static unsafe void ConvertTexmSurface(ISurface surface, out uint extra, out byte[] rawdata)
         {
-            rawdata = null;
+            if (surface.Width != surface.Height || (surface.Width != 64 && surface.Width != 128))
+                throw new ClassicFactoryException();
+
+            extra = surface.Width == 64 ? 0U : 1U;
+
+            rawdata = new byte[2 * surface.Width * surface.Height];
+            lock (surface) {
+                uint    delta = surface.Stride >> 1;
+                ushort* tline = surface.ImageWordPtr;
+                
+                fixed (byte* _data = rawdata) {
+                    ushort* data = (ushort*)_data, cur = tline;
+                    for (int i = 0, y = 0; y < surface.Height; ++y, cur = (tline += delta))
+                        for (int x = 0; x < surface.Width; ++x, ++i, ++cur)
+                            data[i] = (ushort)(*cur ^ 0x8000);
+                }
+            }
         }
 
         // gumps convertors       --------------------------------------------------------------
 
-        private static unsafe void ConvertGumpSurface(byte[] rawdata, out Bitmap bmp)
+        private static unsafe void ConvertGumpSurface(UODataManager datamanager, uint extra, byte[] rawdata, out ISurface surface)
         {
-            bmp = null;
-            if (rawdata == null || rawdata.Length < 8) {
-                bmp = null;
+            uint width = (extra >> 16) & 0xFFFF;
+            uint height = extra & 0xFFFF;
+            if (rawdata == null || /* extra == 0xFFFFFFFF || */ (extra & 0x80008000) != 0 || width == 0 || height == 0) {
+                surface = null;
                 return;
             }
 
+            surface = datamanager.CreateSurface((ushort)width, (ushort)height, EssenceUDK.Platform.DataTypes.PixelFormat.Bpp16A1R5G5B5);
+            lock (surface) {
+                ushort*  line = surface.ImageWordPtr;
+                uint    delta = surface.Stride >> 1;
 
+                fixed (byte* data = rawdata) {
+                    uint* lookup = (uint*)data;
+                    ushort* dat = (ushort*)data;
+
+                    for (uint count = 0, y = 0; y < height; ++y, line += delta)
+                    {
+                        count = (*lookup++ << 1);
+
+                        ushort* cur = line;
+                        ushort* end = line + width;
+
+                        while (cur < end) {
+                            ushort color = dat[count++];
+                            ushort* next = cur + dat[count++];
+
+                            if (color == 0)
+                                cur = next;
+                            else {
+                                color ^= 0x8000;
+                                while (cur < next)
+                                    *cur++ = color;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        private static unsafe void ConvertGumpSurface(ISurface surface, out uint extra, out byte[] rawdata)
+        {
+            extra = (uint)((surface.Width << 16) + surface.Height);
+
+            var data = new BinaryWriter(new MemoryStream());
+
+            lock (surface) {
+                uint    delta = surface.Stride >> 1;
+                ushort* yline = surface.ImageWordPtr;
+
+                for (int y = 0; y < surface.Height; ++y, yline += delta) {
+                    ushort* cur = yline;
+
+                    int x = 0;
+                    int current = (int)data.BaseStream.Position;
+                    data.Seek(y << 2, SeekOrigin.Begin);
+                    int offset = current >> 2;
+                    data.Write(offset);
+                    data.Seek(offset << 2, SeekOrigin.Begin);
+
+                    while (x < surface.Width) {
+                        int run = 1;
+                        ushort c = cur[x];
+                        while ((x + run) < surface.Width) {
+                            if (c != cur[x + run])
+                                break;
+                            ++run;
+                        }
+                        if (c == 0)
+                            data.Write(c);
+                        else
+                            data.Write((ushort)(c ^ 0x8000));
+                        data.Write((short)run);
+                        x += run;
+                    }
+                }
+            }
+
+            data.Flush();
+            rawdata = (data.BaseStream as MemoryStream).ToArray();
+            data.Close();
         }
 
         // animation convertors   --------------------------------------------------------------
@@ -597,18 +791,42 @@ map5.mul
             return tiles;
         }
 
-        ISurface IDataFactory.GetLandSurface(uint id)
+        ISurface IDataFactoryReader.GetLandSurface(uint id)
         {
             ISurface surface;
             ConvertLandSurface(Data, container_LandTile[id], out surface);
             return surface;
         }
 
-        ISurface IDataFactory.GetTexmSurface(uint id)
+        void IDataFactoryWriter.SetLandSurface(uint id, ISurface surface)
+        {
+            try {
+                byte[] rawdata;
+                ConvertLandSurface(surface, out rawdata);
+                container_LandTile[id] = rawdata;
+            } catch (OutOfMemoryException e) {
+                throw new ClassicFactoryException("Bad image format for land tile.", container_LandTile, id);
+            }
+        }
+
+        ISurface IDataFactoryReader.GetTexmSurface(uint id)
         {
             ISurface surface;
-            ConvertTexmSurface(Data, container_LandTexm[id], out surface);
+            ConvertTexmSurface(Data, container_LandTexm.GetExtra(id), container_LandTexm[id], out surface);
             return surface;
+        }
+
+        void IDataFactoryWriter.SetTexmSurface(uint id, ISurface surface)
+        { 
+            try {
+                uint extra;
+                byte[] rawdata;
+                ConvertTexmSurface(surface, out extra, out rawdata);
+                container_LandTexm.SetExtra(id, extra);
+                container_LandTexm[id] = rawdata; 
+            } catch (ClassicFactoryException e) {
+                throw new ClassicFactoryException("Bad texture format.", container_LandTexm, id);
+            }
         }
 
         IItemTile[] IDataFactory.GetItemTiles()
@@ -626,13 +844,51 @@ map5.mul
             return tiles;
         }
 
-        ISurface IDataFactory.GetItemSurface(uint id)
+        ISurface IDataFactoryReader.GetItemSurface(uint id)
         {
             ISurface surface;
             ConvertItemSurface(Data, container_ItemTile[id], out surface);
             return surface;
         }
 
+        void IDataFactoryWriter.SetItemSurface(uint id, ISurface surface)
+        {
+            try {
+                byte[] rawdata;
+                ConvertItemSurface(surface, out rawdata);
+                container_ItemTile[id] = rawdata;
+            } catch (ClassicFactoryException e) {
+                throw new ClassicFactoryException("Overflow image data for item tile.", container_ItemTile, id);
+            }           
+        }
+
+        IGumpEntry[] IDataFactory.GetGumpSurfs()
+        {
+            var gumps = new GumpEntry[container_GumpData.EntryLength];
+            for (uint i = 0; i < gumps.Length && i < container_GumpData.EntryLength; ++i)
+                gumps[i] = new GumpEntry(i, this, container_GumpData.IsValid(i));
+            return gumps;
+        }
+
+        ISurface IDataFactoryReader.GetGumpSurface(uint id)
+        {
+            ISurface surface;
+            ConvertGumpSurface(Data, container_GumpData.GetExtra(id), container_GumpData[id], out surface);
+            return surface;
+        }
+
+        void IDataFactoryWriter.SetGumpSurface(uint id, ISurface surface)
+        {
+            try {
+                uint extra;
+                byte[] rawdata; 
+                ConvertGumpSurface(surface, out extra, out rawdata);
+                container_GumpData.SetExtra(id, extra);
+                container_GumpData[id] = rawdata; 
+            } catch (ClassicFactoryException e) {
+                throw new ClassicFactoryException("Overflow image data for gump surface.", container_GumpData, id);
+            }           
+        }
 
         IAnimation[] IDataFactory.GetAnimations()
         {
@@ -692,6 +948,69 @@ if (header._AnimationID == 0197) {
 
             }
             return list.ToArray();
+        }
+
+        [Serializable]
+        public sealed class ClassicFactoryException : OutOfMemoryException 
+        {
+            private string  idxdatInfo = null;
+            private string  muldatInfo = null;
+            private uint    dataidInfo = 0x00;
+
+            public string IdxdatInfo
+            {
+                get { return idxdatInfo; }
+            }
+
+            public string MuldatInfo
+            {
+                get { return muldatInfo; }
+            }
+
+            public uint   DataidInfo
+            {
+                get { return DataidInfo; }
+            }
+
+            public override string Message
+            {
+                get
+                {
+                    var message = String.Format("{0} (in \"{1}\", \"{2}\" at 0x{3:X8})", base.Message, idxdatInfo ?? "<null>", muldatInfo ?? "<null>", dataidInfo);
+                    return message;
+                }
+            }
+
+            internal ClassicFactoryException() : base() { }
+            internal ClassicFactoryException(string message) : base(message) { }
+            internal ClassicFactoryException(string message, Exception innerException) : base(message, innerException) { }
+            internal ClassicFactoryException(string message, IDataContainer container, uint id) : base(message) 
+            {
+                this.idxdatInfo = (container as MulContainer).FNameIdx;
+                this.muldatInfo = (container as MulContainer).FNameMul;
+                this.dataidInfo = id;
+            }
+           
+            protected  ClassicFactoryException(SerializationInfo info, StreamingContext context) : base(info, context)
+            {
+                idxdatInfo = info.GetString("IdxdatInfo");
+                muldatInfo = info.GetString("MuldatInfo");
+                dataidInfo = info.GetUInt32("DataidInfo");
+            }
+
+            public override void GetObjectData(SerializationInfo info, StreamingContext context)
+            {
+                info.AddValue("IdxdatInfo", idxdatInfo);
+                info.AddValue("MuldatInfo", muldatInfo);
+                info.AddValue("DataidInfo", dataidInfo);
+
+                base.GetObjectData(info, context);
+            }
+
+            public override string ToString()
+            {
+                return base.ToString();
+            }
         }
 
     }

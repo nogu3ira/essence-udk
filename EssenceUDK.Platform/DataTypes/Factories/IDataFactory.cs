@@ -8,13 +8,25 @@ namespace EssenceUDK.Platform.Factories
 {
     public interface IDataFactory
     {
-        ILandTile[] GetLandTiles();
+        ILandTile[]  GetLandTiles();
+        IItemTile[]  GetItemTiles();
+        IGumpEntry[] GetGumpSurfs();
+        IAnimation[] GetAnimations();
+    }
+
+    internal interface IDataFactoryReader
+    {
         ISurface GetLandSurface(uint id);
         ISurface GetTexmSurface(uint id);
-
-        IItemTile[] GetItemTiles();
         ISurface GetItemSurface(uint id);
+        ISurface GetGumpSurface(uint id);
+    }
 
-        IAnimation[] GetAnimations();
+    internal interface IDataFactoryWriter
+    {
+        void SetLandSurface(uint id, ISurface surface);
+        void SetTexmSurface(uint id, ISurface surface);
+        void SetItemSurface(uint id, ISurface surface);
+        void SetGumpSurface(uint id, ISurface surface);
     }
 }

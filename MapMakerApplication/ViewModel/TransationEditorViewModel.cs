@@ -249,13 +249,13 @@ namespace MapMakerApplication.ViewModel
 
         private void TileAddExecuted()
         {
-            SelectedLineTransition.Add((int)_selectedTile.TileId);
+            SelectedLineTransition.Add((int)_selectedTile.EntryId);
         }
         private Boolean TileAddCanExecute()
         {
             return _selectedTile != null &&
                 SelectedLineTransition != null &&
-                !SelectedLineTransition.Contains((int)_selectedTile.TileId);
+                !SelectedLineTransition.Contains((int)_selectedTile.EntryId);
         }
 
         private Boolean TileRemoveCanExecute()

@@ -2,11 +2,16 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:Converters="clr-namespace:EssenceUDK.Controls.Converters">
 
+    
     <Converters:ConverterImageSourceTextureISurface x:Key="ImageFromISurface"/>
     <Converters:ConverterImageSourceItemsLandsFromISurface x:Key="ImageTextureFromISourface"/>
+    
+    
     <Converters:ConverterImageSourceTextureFromInt x:Key="ImageTextureFromIntConverter"/>
     <Converters:ConverterImageSourceLandFromInt x:Key="ConverterImageSourceLandFromInt"/>
     <Converters:ConverterImageSourceItemFromInt x:Key="converterImageSourceItemFromInt"/>
+    <Converters:ConverterImageSourceGumpFromInt x:Key="ConverterImageSourceGumpFromInt"/>
+
     <Converters:ConverterInvertVisibility x:Key="VisibilityInverter"/>
 
 </ResourceDictionary>

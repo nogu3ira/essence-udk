@@ -208,7 +208,7 @@ namespace EssenceUDK.Platform.MiscHelper
             foreach (var itemData in datalist)
             {
                 Tile tile;
-                uint number = itemData.TileId;
+                uint number = itemData.EntryId;
 
                 var tiles = from cat in list
                             let t = cat.FindTile(number)

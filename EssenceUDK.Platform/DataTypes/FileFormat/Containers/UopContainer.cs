@@ -265,6 +265,10 @@ int idx = ind++;
             get { return (uint)IdxTable.Length; }
         }
 
+        uint IDataContainer.GetExtra(uint id) { return 0; }
+
+        void IDataContainer.SetExtra(uint id, uint value) { }
+
         byte[] IDataContainer.this[uint id] {
             get { return Read(id); }
             set { Write(id, value); }
@@ -280,7 +284,6 @@ int idx = ind++;
             throw new NotImplementedException();
         }
 
-
         private byte[] Read(uint id)
         {
             if (id >= IdxTable.Length)
@@ -292,6 +295,17 @@ int idx = ind++;
             var uncomdata = IdxTable[id].Length == IdxTable[id].Uncomp ? comprdata
                           : new ZipNativeCompressor().Decompress(comprdata, IdxTable[id].Uncomp);
             return uncomdata;
+        }
+
+
+        void IDataContainer.Write<T>(uint id, uint offset, T data)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDataContainer.Write<T>(uint id, uint offset, T[] data, uint sfrom, uint count)
+        {
+            throw new NotImplementedException();
         }
 
         private void Write(uint id, byte[] rawdata)

@@ -428,12 +428,12 @@ namespace EssenceUDK.Platform.DataTypes
         private short _X1, _Y1, _X2, _Y2;
         private ushort _Width, _Height;
 
-        public short X1 { get { return _X1; } set { _Width = (ushort)(_X2 - (_X1 = value)); } }
-        public short X2 { get { return _X2; } set { _Width = (ushort)((_X2 = value) - _X1); } }
-        public short Y1 { get { return _Y1; } set { _Height = (ushort)(_Y2 - (_Y1 = value)); } }
-        public short Y2 { get { return _Y2; } set { _Height = (ushort)((_Y2 = value) - _Y1); } }
-        public ushort Width { get { return _Width; } set { _X2 = (short)(_X1 + (_Width = value)); } }
-        public ushort Height { get { return _Height; } set { _Y2 = (short)(_Y1 + (_Height = value)); } }
+        public short X1 { get { return _X1; } set { _Width = (ushort)(1 + _X2 - (_X1 = value)); } }
+        public short X2 { get { return _X2; } set { _Width = (ushort)(1 + (_X2 = value) - _X1); } }
+        public short Y1 { get { return _Y1; } set { _Height = (ushort)(1 + _Y2 - (_Y1 = value)); } }
+        public short Y2 { get { return _Y2; } set { _Height = (ushort)(1 + (_Y2 = value) - _Y1); } }
+        public ushort Width { get { return _Width; } set { _X2 = (short)(_X1 + (_Width = value) - 1); } }
+        public ushort Height { get { return _Height; } set { _Y2 = (short)(_Y1 + (_Height = value) - 1); } }
 
         public Clipper2D(short x1, short y1, ushort width, ushort height)
         {

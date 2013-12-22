@@ -299,6 +299,7 @@ namespace EssenceUDK.Platform
             // TODO: We need separeted thread for data working
             StorageLand = dataFactory.GetLandTiles();
             StorageItem = dataFactory.GetItemTiles();
+            StorageGump = dataFactory.GetGumpSurfs();
             StorageAnim = dataFactory.GetAnimations();
         }
 
@@ -313,6 +314,7 @@ namespace EssenceUDK.Platform
         // Cached storages (always using caching)
         private ILandTile[]  StorageLand;
         private IItemTile[]  StorageItem;
+        private IGumpEntry[] StorageGump;
         private IAnimation[] StorageAnim;
         
 
@@ -378,6 +380,36 @@ namespace EssenceUDK.Platform
             return new ObservableCollection<ModelLandData>(StorageLand.Where(t => t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelLandData(t)));
         }
 
+        public IGumpEntry GetGumpSurf(int id)
+        {
+            return StorageGump[id];
+        }
+
+        public IGumpEntry GetGumpSurf(uint id)
+        {
+            return StorageGump[id];
+        }
+
+        public IGumpEntry GetGumpSurf(short id)
+        {
+            return StorageGump[id];
+        }
+
+        public IGumpEntry GetGumpSurf(ushort id)
+        {
+            return StorageGump[id];
+        }
+
+        public IEnumerable<ModelGumpSurf> GetGumpSurf()
+        {
+            return new ObservableCollection<ModelGumpSurf>(StorageGump.Select(t => new ModelGumpSurf(t)));
+        }
+
+        public IEnumerable<ModelGumpSurf> GetGumpSurf(bool valid = true)
+        {
+            return new ObservableCollection<ModelGumpSurf>(StorageGump.Where(t => t.IsValid == valid).Select(t => new ModelGumpSurf(t)));
+
+        }
 
         #endregion
 

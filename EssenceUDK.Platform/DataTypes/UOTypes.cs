@@ -230,14 +230,14 @@ namespace EssenceUDK.Platform.DataTypes
     {
     }
 
-    public interface ILandData : ITileData
+    public interface ILandData  : ITileData
     {
         string     Name         { get; set; }
         TileFlag   Flags        { get; set; }
         ushort     TexID        { get; set; }
     }
 
-    public interface IItemData : ITileData
+    public interface IItemData  : ITileData
     {
         string     Name         { get; set; }
         TileFlag   Flags        { get; set; }
@@ -248,25 +248,37 @@ namespace EssenceUDK.Platform.DataTypes
         byte       StackingOff  { get; set; }
     }
 
-    public interface IEntryTile : ITileData
+    public interface IEntryData
     {
-        uint       TileId       { get; set; }
-        ISurface   Surface      { get; set; }
+        uint       EntryId      { get; set; }
         bool       IsValid      { get; }
     }
 
-    public interface ILandTile : IEntryTile, ILandData
+    public interface IEntrySurf : IEntryData
+    {
+        ISurface   Surface      { get; set; }
+    }
+
+    public interface IEntryTile : IEntrySurf, ITileData
+    {
+    }
+
+    public interface ILandTile  : IEntryTile, ILandData
     {
         ISurface   Texture      { get; set; }
     }
 
-    public interface IItemTile : IEntryTile, IItemData
+    public interface IItemTile  : IEntryTile, IItemData
     { 
+    }
+
+    public interface IGumpEntry : IEntrySurf
+    {
     }
 
     public abstract class EntryTile : IEntryTile
     {
-        protected uint      _TileId;
+        protected uint      _EntryId;
         protected ISurface  _Surface;
         protected ITileData _TileData;
         protected bool      _IsValid;
@@ -276,22 +288,22 @@ namespace EssenceUDK.Platform.DataTypes
         protected IDataFactory dataFactory;
         internal  EntryTile(uint id, IDataFactory factory, ITileData tiledata, bool valid)
         {
-            _TileId     = id;
+            _EntryId    = id;
             dataFactory = factory;
             _TileData   = tiledata;
             _IsValid    = valid;
         }
 
-        public uint TileId  { get { return _TileId; } set { _TileId = value; } }
+        public uint EntryId { get { return _EntryId; } set { _EntryId = value; } }
         public bool IsValid { get { return _IsValid; } }
         public abstract ISurface Surface { get; set; }
     }
 
-    public sealed class ItemTile : EntryTile, IItemTile, IItemData
+    public sealed class ItemTile  : EntryTile, IItemTile, IItemData
     {
         public override ISurface     Surface {
-            get { return _Surface ?? (_Surface = dataFactory.GetItemSurface(_TileId)); }
-            set { ; }
+            get { return _Surface ?? (_Surface = (dataFactory as IDataFactoryReader).GetItemSurface(_EntryId)); }
+            set { (dataFactory as IDataFactoryWriter).SetItemSurface(_EntryId, _Surface = value); }
         }
 
         string   IItemData.Name         { get { return ((IItemData)_TileData).Name; }           set { ((IItemData)_TileData).Name = value; } }
@@ -307,16 +319,16 @@ namespace EssenceUDK.Platform.DataTypes
         }
     }
 
-    public sealed class LandTile : EntryTile, ILandTile, ILandData
+    public sealed class LandTile  : EntryTile, ILandTile, ILandData
     {
         public override ISurface     Surface {
-            get { return _Surface ?? (_Surface = dataFactory.GetLandSurface(_TileId)); }
-            set { ; }
+            get { return _Surface ?? (_Surface = (dataFactory as IDataFactoryReader).GetLandSurface(_EntryId)); }
+            set { (dataFactory as IDataFactoryWriter).SetLandSurface(_EntryId, _Surface = value); }
         }
 
         public          ISurface     Texture {
-            get { return _Texture ?? (_Texture = dataFactory.GetTexmSurface(((ILandData)_TileData).TexID)); }
-            set { ; }
+            get { return _Texture ?? (_Texture = (dataFactory as IDataFactoryReader).GetTexmSurface(((ILandData)_TileData).TexID)); }
+            set { (dataFactory as IDataFactoryWriter).SetTexmSurface(((ILandData)_TileData).TexID, _Texture = value); }
         }
         protected ISurface _Texture;
 
@@ -329,7 +341,28 @@ namespace EssenceUDK.Platform.DataTypes
         }
     }
 
+    public sealed class GumpEntry : IGumpEntry
+    {
+        protected uint _EntryId;
+        protected ISurface _Surface;
+        protected bool _IsValid;
 
+        protected IDataFactory dataFactory;
+        internal GumpEntry(uint id, IDataFactory factory, bool valid)
+        {
+            _EntryId    = id;
+            dataFactory = factory;
+            _IsValid    = valid;
+        }
+
+        public uint EntryId { get { return _EntryId; } set { _EntryId = value; } }
+        public bool IsValid { get { return _IsValid; } }
+        
+        public ISurface Surface {
+            get { return _Surface ?? (_Surface = (dataFactory as IDataFactoryReader).GetGumpSurface(_EntryId)); }
+            set { (dataFactory as IDataFactoryWriter).SetGumpSurface(_EntryId, _Surface = value); }
+        }
+    }
 
     public interface IAnimation
     {     

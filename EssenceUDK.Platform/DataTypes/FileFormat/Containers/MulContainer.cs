@@ -87,6 +87,16 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             internal uint Append;
         }
 
+        uint IDataContainer.GetExtra(uint id)
+        {
+            return IdxTable[id].Append;
+        }
+
+        void IDataContainer.SetExtra(uint id, uint value)
+        {
+            IdxTable[id].Append = value;
+        }
+
         private void WriteIdx(uint id)
         {
             if (IdxTable == null) return;
@@ -152,11 +162,64 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             }
         }
 
-        private void Write(uint id, byte[] rawdata)
+        void IDataContainer.Write<T>(uint id, uint offset, T data)
         {
+            if (id >= _EntryLength || (IdxTable == null && Marshal.SizeOf(typeof(T)) != EntrySize))
+                throw new ArgumentOutOfRangeException();
+            (this as IDataContainer).Write<T>(id, offset, new T[] { data }, 0, 1 ); 
+        }
+
+        void IDataContainer.Write<T>(uint id, uint offset, T[] data, uint sfrom, uint count)
+        {
+            if (!StreamMul.CanWrite || (StreamIdx != null && !StreamIdx.CanWrite))
+                throw new AccessViolationException();
+            if (id >= _EntryLength || (IdxTable == null && data != null && Marshal.SizeOf(typeof(T)) != EntrySize))
+                throw new ArgumentOutOfRangeException();
+
+            if (IdxTable == null) {
+                StreamMul.Seek(_EntryOff + id * EntrySize + offset, SeekOrigin.Begin);
+            } else {
+                var length = IdxTable[id].Length;
+                IdxTable[id].Length = (uint)(offset + data.Length * Marshal.SizeOf(typeof(T)));
+                if (IdxTable[id].Offset != 0xFFFFFFFF && length != 0xFFFFFFFF && length >= IdxTable[id].Length)
+                    StreamMul.Seek(_EntryOff + IdxTable[id].Offset + offset, SeekOrigin.Begin);
+                else {
+                    StreamMul.Seek(_EntryOff + IdxTable[id].Offset, SeekOrigin.Begin);
+                    var rawdata = new byte[offset];
+                    StreamMul.Read(rawdata, 0, (int)offset);
+                    IdxTable[id].Offset = (uint)StreamMul.Seek(0, SeekOrigin.End);
+                    StreamMul.Write(rawdata, 0, (int)offset);
+                }
+                StreamIdx.Seek(id * Marshal.SizeOf(typeof(IndexEntry)), SeekOrigin.Begin);
+                Utils.ArrayWrite<IndexEntry>(StreamIdx, IdxTable, (int)id, 1);
+            }
+
+            Utils.ArrayWrite<T>(StreamMul, data, (int)sfrom, (int)count);
+        }
+
+        private unsafe void Write(uint id, byte[] rawdata)
+        {
+            if (!StreamMul.CanWrite || (StreamIdx != null && !StreamIdx.CanWrite))
+                throw new AccessViolationException("Can't write data to mul file");
             if (id >= _EntryLength || (IdxTable == null && rawdata != null && rawdata.Length != EntrySize))
                 throw new ArgumentOutOfRangeException();
-            throw new NotImplementedException();
+
+            if (IdxTable == null) {
+                StreamMul.Seek((_EntryOff + id) * EntrySize, SeekOrigin.Begin);
+            } else {
+                var length = IdxTable[id].Length;
+                IdxTable[id].Length = (uint)rawdata.Length;
+                if (IdxTable[id].Offset != 0xFFFFFFFF && length != 0xFFFFFFFF && length >= IdxTable[id].Length)
+                    StreamMul.Seek(IdxTable[id].Offset, SeekOrigin.Begin);
+                else
+                    IdxTable[id].Offset = (uint)StreamMul.Seek(0, SeekOrigin.End);
+                StreamIdx.Seek((_EntryOff + id) * sizeof(IndexEntry), SeekOrigin.Begin);
+                Utils.ArrayWrite<IndexEntry>(StreamIdx, IdxTable, (int)id, 1);
+                StreamIdx.Flush();
+            }
+
+            Utils.ArrayWrite<byte>(StreamMul, rawdata, 0, (int)IdxTable[id].Length);
+            StreamMul.Flush();
         }
 
         internal void Replace(uint id1, uint id2)
@@ -165,6 +228,11 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
         }
 
         internal void Delete(uint id)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Resize(uint entries)
         {
             throw new NotImplementedException();
         }

@@ -51,6 +51,11 @@ namespace EssenceUDK.Controls.Ultima
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ListBoxViewTiles), new FrameworkPropertyMetadata(typeof(ListBoxViewTiles)));
         }
 
+        public ListBoxViewTiles() : base()
+        {
+            ItemsSource = new System.Collections.ObjectModel.ObservableCollection<EssenceUDK.Platform.UOBaseViewModel>();
+        }
+
         public bool Texture
         {
             get { return (bool)GetValue(TextureProperty); }

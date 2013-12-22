@@ -950,7 +950,7 @@ namespace MapMakerApplication.ViewModel
 
                     if (tile != null)
                         if (collection != null)
-                            collection.List.Add((int)tile.TileId);
+                            collection.List.Add((int)tile.EntryId);
                 }
                 catch (Exception e)
                 {
@@ -1214,7 +1214,7 @@ namespace MapMakerApplication.ViewModel
             {
                 var selected = SelectedAreaTexture as AreaTextures;
                 var tile = SelectedAreaTextureTile as IEntryTile;
-                selected.List.Add((int)tile.TileId);
+                selected.List.Add((int)tile.EntryId);
             }
             catch (Exception e)
             {
@@ -1230,7 +1230,7 @@ namespace MapMakerApplication.ViewModel
             var condition1 = tile != null;
             var condition2 = selected != null;
 
-            return (condition1 && condition2 && !selected.List.Contains((int)tile.TileId));
+            return (condition1 && condition2 && !selected.List.Contains((int)tile.EntryId));
 
         }
 
@@ -1311,7 +1311,7 @@ namespace MapMakerApplication.ViewModel
                 var selectedtile = SelectedAreaItemTile as IEntryTile;
                 var selectedCollection = SelectedAreaItem as CollectionItem;
 
-                selectedCollection.List.Add(new SingleItem() { Id = (int)selectedtile.TileId });
+                selectedCollection.List.Add(new SingleItem() { Id = (int)selectedtile.EntryId });
 
             }
             catch (Exception e)
@@ -1415,13 +1415,13 @@ namespace MapMakerApplication.ViewModel
                 {
                     case 0:
                         {
-                            SelectedWater.Add((int)((IEntryTile)SelectedCoastTile).TileId);
+                            SelectedWater.Add((int)((IEntryTile)SelectedCoastTile).EntryId);
                         }
                         break;
 
                     case 1:
                         {
-                            SelectedGround.Add((int)((IEntryTile)SelectedCoastTile).TileId);
+                            SelectedGround.Add((int)((IEntryTile)SelectedCoastTile).EntryId);
                         }
                         break;
                 }
@@ -1442,12 +1442,12 @@ namespace MapMakerApplication.ViewModel
                 case 0:
                     {
 
-                        return SelectedCoastTile is IEntryTile && SelectedWater != null && !SelectedWater.Contains((int)((IEntryTile)SelectedCoastTile).TileId);
+                        return SelectedCoastTile is IEntryTile && SelectedWater != null && !SelectedWater.Contains((int)((IEntryTile)SelectedCoastTile).EntryId);
                     }
 
                 case 1:
                     {
-                        return SelectedCoastTile is IEntryTile && SelectedGround != null && !SelectedGround.Contains((int)((IEntryTile)SelectedCoastTile).TileId);
+                        return SelectedCoastTile is IEntryTile && SelectedGround != null && !SelectedGround.Contains((int)((IEntryTile)SelectedCoastTile).EntryId);
                     }
                 default:
                     return false;
@@ -1459,7 +1459,7 @@ namespace MapMakerApplication.ViewModel
             try
             {
                 var area = CollectionAreaColorSelected;
-                area.Coasts.Coast.Texture = ((int)((IEntryTile)SelectedCoastTile).TileId);
+                area.Coasts.Coast.Texture = ((int)((IEntryTile)SelectedCoastTile).EntryId);
             }
             catch (Exception e)
             {

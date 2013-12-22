@@ -15,7 +15,7 @@ namespace MapMakerApplication.Converters
             var surface = value as ISurface;
             if (surface != null)
             {
-                var image = surface.Image;
+                var image = surface.GetSurface().Image;
                 return image;
             }
 
@@ -40,7 +40,7 @@ namespace MapMakerApplication.Converters
             if (texture == null)
                 return null;
 
-            return texture.Image;
+            return texture.GetSurface().Image;
 
         }
 
@@ -62,7 +62,7 @@ namespace MapMakerApplication.Converters
             if (image == null)
                 return null;
 
-            return image.Image;
+            return image.GetSurface().Image;
 
         }
 
@@ -84,7 +84,7 @@ namespace MapMakerApplication.Converters
             if (image == null)
                 return null;
 
-            return image.Image;
+            return image.GetSurface().Image;
 
         }
 
