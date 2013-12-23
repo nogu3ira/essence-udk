@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -18,6 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using EssenceUDK.Controls;
 using EssenceUDK.Controls.Common;
 using EssenceUDK.Controls.Ultima;
 using EssenceUDK.Platform;
@@ -54,8 +56,17 @@ namespace EssenceUDK.Add_ins.Client
         public TileMerger()
         {
             InitializeComponent();
+            
             nudHamming.OnValueChanged += OnHammingValueChanged;
             tileItemView1.OnSelectionChanged += OnTileViewSelectionChanged;
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            if (!WpfHelper.IsInDesignMode)
+                this.Background = new SolidColorBrush(Colors.Transparent);
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -213,9 +224,28 @@ namespace EssenceUDK.Add_ins.Client
 
         // -------------
 
-        
+        private void MenuItem_ImportAll(object sender, RoutedEventArgs e)
+        {
+            int count = 0;
+            foreach (var file in FileEntries) {
+                var id = file.GetFileIndex();
+                var sr = _UODataManager.CreateSurface(System.IO.Path.Combine(_DirectoryPath, file.FileName));
 
-        
+                ++count;
+                if ((int)tileItemView1.Tag == 0 && id < _UODataManager.ItemCapacity)
+                    _UODataManager.GetItemTile(id).Surface = sr;
+                else if ((int)tileItemView1.Tag == 1 && id < _UODataManager.LandCapacity)
+                    _UODataManager.GetLandTile(id).Surface = sr;
+                else if ((int)tileItemView1.Tag == 2 && id < _UODataManager.LandCapacity)
+                    _UODataManager.GetLandTile(id).Texture = sr;
+                else if ((int) tileItemView1.Tag == 3 && id < _UODataManager.GumpCapacity)
+                    _UODataManager.GetGumpSurf(id).Surface = sr;
+                else
+                    --count;
+            }
+            System.Windows.MessageBox.Show(String.Format("Import done, loaded {0} surfaces", count));
+        }
+         
     }
 
     internal class FileEntry
@@ -223,6 +253,23 @@ namespace EssenceUDK.Add_ins.Client
         public string FileName { get; set; }
         public string FileExts { get; set; }
         public ImageSource FileIcon { get; set; }
+
+        public uint GetFileIndex()
+        {
+            var res = 0xFFFFFFFF;
+            var hex = false;
+            var str = FileName.Substring(1);
+            if (str.StartsWith("0x", true, CultureInfo.CurrentCulture)) { 
+                str = str.Substring(2);
+                hex = true;
+            }
+            if (hex)
+                UInt32.TryParse(str, NumberStyles.AllowHexSpecifier, null, out res);
+            else
+                UInt32.TryParse(str, NumberStyles.None, null, out res);
+
+            return res;
+        }
 
         [DllImport("gdi32")]
         private static extern int DeleteObject(IntPtr o);

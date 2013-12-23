@@ -320,6 +320,11 @@ namespace EssenceUDK.Platform
 
         #region StorageItem Interfaces
 
+        public uint ItemCapacity 
+        {
+            get { return (uint)StorageItem.Length; }
+        }
+
         public IItemTile GetItemTile(int id)
         {
             return StorageItem[id];
@@ -350,6 +355,11 @@ namespace EssenceUDK.Platform
             return new ObservableCollection<ModelItemData>(StorageItem.Where(t => t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelItemData(t)));
         }
 
+        public uint LandCapacity
+        {
+            get { return (uint)StorageLand.Length; }
+        }
+
         public ILandTile GetLandTile(int id)
         {
             return StorageLand[id];
@@ -378,6 +388,11 @@ namespace EssenceUDK.Platform
         public IEnumerable<ModelLandData> GetLandTile(TileFlag flags = TileFlag.None, bool valid = true)
         {
             return new ObservableCollection<ModelLandData>(StorageLand.Where(t => t.IsValid == valid && t.Flags.HasFlag(flags)).Select(t => new ModelLandData(t)));
+        }
+
+        public uint GumpCapacity
+        {
+            get { return (uint)StorageGump.Length; }
         }
 
         public IGumpEntry GetGumpSurf(int id)

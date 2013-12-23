@@ -7,7 +7,7 @@
              xmlns:common="clr-namespace:EssenceUDK.Controls.Common;assembly=EssenceUDK.Controls"
              mc:Ignorable="d" 
              Name="root"
-             d:DesignHeight="409" d:DesignWidth="696" Loaded="UserControl_Loaded">
+             d:DesignHeight="409" d:DesignWidth="696" Loaded="UserControl_Loaded" Background="Gray">
     <Grid x:Name="LayoutRoot" DataContext="{Binding ElementName=root}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260" />
@@ -37,6 +37,15 @@
         </Grid>
 
         <ListView Name="lvFileList"  Grid.Column="0" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled"  SelectionChanged="lvFileList_SelectionChanged" BorderThickness="0">
+            <ListView.ContextMenu>
+                <ContextMenu AllowDrop="True">
+                    <MenuItem Header="Import All"  Click="MenuItem_ImportAll">
+                        <MenuItem.Icon>
+                            <Image Source="/EssenceUDK.Resources/Resources/Flags/Flag016-RU.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="40" x:Name="Image">
