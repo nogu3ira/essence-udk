@@ -1,6 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.CodeDom;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -17,35 +20,6 @@ using System.Windows.Shapes;
 
 namespace EssenceUDK.Controls.Common
 {
-    /// <summary>
-    /// Выполните шаги 1a или 1b, а затем 2, чтобы использовать этот пользовательский элемент управления в файле XAML.
-    ///
-    /// Шаг 1a. Использование пользовательского элемента управления в файле XAML, существующем в текущем проекте.
-    /// Добавьте атрибут XmlNamespace в корневой элемент файла разметки, где он 
-    /// будет использоваться:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:EssenceUDK.Controls.Common"
-    ///
-    ///
-    /// Шаг 1б. Использование пользовательского элемента управления в файле XAML, существующем в другом проекте.
-    /// Добавьте атрибут XmlNamespace в корневой элемент файла разметки, где он 
-    /// будет использоваться:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:EssenceUDK.Controls.Common;assembly=EssenceUDK.Controls.Common"
-    ///
-    /// Потребуется также добавить ссылку из проекта, в котором находится файл XAML,
-    /// на данный проект и пересобрать во избежание ошибок компиляции:
-    ///
-    ///     Щелкните правой кнопкой мыши нужный проект в обозревателе решений и выберите
-    ///     "Добавить ссылку"->"Проекты"->[Поиск и выбор проекта]
-    ///
-    ///
-    /// Шаг 2)
-    /// Теперь можно использовать элемент управления в файле XAML.
-    ///
-    ///     <MyNamespace:CustomControl1/>
-    ///
-    /// </summary>
     public class NumericUpDown : Control, INotifyPropertyChanged
     {
         private TextBox      _TextBox;
@@ -58,12 +32,36 @@ namespace EssenceUDK.Controls.Common
 
         static NumericUpDown()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(NumericUpDown), new FrameworkPropertyMetadata(typeof(NumericUpDown)));
+            if (!WpfHelper.IsInDesignMode)
+                DefaultStyleKeyProperty.OverrideMetadata(typeof(NumericUpDown), new FrameworkPropertyMetadata(typeof(NumericUpDown)));
             MaximumProperty = DependencyProperty.Register("Maximum",    typeof(int), typeof(NumericUpDown), new UIPropertyMetadata(255));
             MinimumProperty = DependencyProperty.Register("Minimum",    typeof(int), typeof(NumericUpDown), new UIPropertyMetadata(0));
             StepProperty    = DependencyProperty.Register("StepValue",  typeof(int), typeof(NumericUpDown), new FrameworkPropertyMetadata(1));
             ValueProperty   = DependencyProperty.Register("Value",      typeof(int), typeof(NumericUpDown), new FrameworkPropertyMetadata(0));
         }
+
+        public NumericUpDown()
+        {
+            //InitializeComponent();
+        }
+
+        #region InitializeComponent
+        
+        private bool _contentLoaded;
+
+        [System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public void InitializeComponent()
+        {
+            if (_contentLoaded) {
+                return;
+            }
+            _contentLoaded = true;
+            //Uri resourceLocater = new Uri("/EssenceUDK.Controls.Common;component/NumericUpDown.xaml", UriKind.Relative);
+            Uri resourceLocater = new Uri("/EssenceUDK.Controls.Common", UriKind.Relative);
+            Application.LoadComponent(this, resourceLocater);
+        }
+
+        #endregion
 
         public delegate void ValueChangeHandler(object sender);
         public event ValueChangeHandler OnValueChanged;
@@ -71,16 +69,19 @@ namespace EssenceUDK.Controls.Common
 
 
         #region DpAccessior
+        [DefaultValue(2147483647)]
         public int Maximum
         {
             get { return (int)GetValue(MaximumProperty); }
             set { SetValue(MaximumProperty, value); }
         }
+        [DefaultValue(-2147483647)]
         public int Minimum
         {
             get { return (int)GetValue(MinimumProperty); }
             set { SetValue(MinimumProperty, value); }
         }
+        [DefaultValue(0)]
         public int Value
         {
             get { return (int)GetValue(ValueProperty); }
@@ -92,6 +93,7 @@ namespace EssenceUDK.Controls.Common
                 }
             }
         }
+        [DefaultValue(1)]
         public int StepValue
         {
             get { return (int)GetValue(StepProperty); }
@@ -128,6 +130,7 @@ namespace EssenceUDK.Controls.Common
             }
         }
 
+        [DefaultValue("0")]
         public String Text
         {
             get { return Value.ToString(); }

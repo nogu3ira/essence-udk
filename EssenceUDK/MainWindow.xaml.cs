@@ -57,19 +57,19 @@ namespace EssenceUDK
                 tileLandView1.ItemsSource = lands;
                 tileTexmView1.ItemsSource = lands;
 
-                manager.GetLandTile(0x0001).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x002A.bmp");
-                manager.GetLandTile(0x0002).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x0089.bmp");
-                manager.GetLandTile(0x0003).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x321D.bmp");
-                manager.GetLandTile(0x0004).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x3472.bmp");
-                manager.GetLandTile(0x0005).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x346E.bmp");
-                manager.GetLandTile(0x0006).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x3475.bmp");
+                //manager.GetLandTile(0x0001).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x002A.bmp");
+                //manager.GetLandTile(0x0002).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x0089.bmp");
+                //manager.GetLandTile(0x0003).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x321D.bmp");
+                //manager.GetLandTile(0x0004).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x3472.bmp");
+                //manager.GetLandTile(0x0005).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x346E.bmp");
+                //manager.GetLandTile(0x0006).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\L0x3475.bmp");
 
-                manager.GetLandTile(0x0001).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x002A.bmp");
-                manager.GetLandTile(0x0002).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x0089.bmp");
-                manager.GetLandTile(0x0003).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x321D.bmp");
-                manager.GetLandTile(0x0004).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x3472.bmp");
-                manager.GetLandTile(0x0005).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x346E.bmp");
-                manager.GetLandTile(0x0006).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x3475.bmp");
+                //manager.GetLandTile(0x0001).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x002A.bmp");
+                //manager.GetLandTile(0x0002).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x0089.bmp");
+                //manager.GetLandTile(0x0003).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x321D.bmp");
+                //manager.GetLandTile(0x0004).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x3472.bmp");
+                //manager.GetLandTile(0x0005).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x346E.bmp");
+                //manager.GetLandTile(0x0006).Texture = manager.CreateSurface(@"E:\______________________\3d\++\ss\T0x3475.bmp");
 
                 //manager.GetItemTile(0x0001).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\I0xF6C2.bmp");
                 //manager.GetItemTile(0x0002).Surface = manager.CreateSurface(@"E:\______________________\3d\++\ss\I0xF6FC.bmp");

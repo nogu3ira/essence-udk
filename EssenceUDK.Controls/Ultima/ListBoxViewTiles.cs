@@ -48,7 +48,8 @@ namespace EssenceUDK.Controls.Ultima
     {
         static ListBoxViewTiles()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(ListBoxViewTiles), new FrameworkPropertyMetadata(typeof(ListBoxViewTiles)));
+            if (!WpfHelper.IsInDesignMode)
+                DefaultStyleKeyProperty.OverrideMetadata(typeof(ListBoxViewTiles), new FrameworkPropertyMetadata(typeof(ListBoxViewTiles)));
         }
 
         public ListBoxViewTiles() : base()

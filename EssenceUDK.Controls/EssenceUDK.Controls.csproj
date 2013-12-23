@@ -76,6 +76,7 @@
     <Compile Include="Ultima\TileItemView.cs" />
     <Compile Include="Ultima\TileLandView.cs" />
     <Compile Include="Ultima\TileTexmView.cs" />
+    <Compile Include="WpfHelper.cs" />
     <Compile Include="XSButton.cs" />
   </ItemGroup>
   <ItemGroup>
