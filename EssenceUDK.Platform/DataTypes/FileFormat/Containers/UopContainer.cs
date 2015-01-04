@@ -265,6 +265,8 @@ int idx = ind++;
             get { return (uint)IdxTable.Length; }
         }
 
+        bool IDataContainer.IsIndexBased { get { return false; } }
+
         uint IDataContainer.GetExtra(uint id) { return 0; }
 
         void IDataContainer.SetExtra(uint id, uint value) { }
@@ -275,6 +277,11 @@ int idx = ind++;
         }
 
         T IDataContainer.Read<T>(uint id, uint offset)
+        {
+            throw new NotImplementedException();
+        }
+
+        T[] IDataContainer.ReadAll<T>(uint id, uint offset)
         {
             throw new NotImplementedException();
         }
@@ -314,5 +321,28 @@ int idx = ind++;
                 throw new ArgumentOutOfRangeException();
             throw new NotImplementedException();
         }
+
+
+        void IDataContainer.Replace(uint id1, uint id2)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDataContainer.Delete(uint id)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDataContainer.Resize(uint entries)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDataContainer.Defrag()
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
 }

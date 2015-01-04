@@ -1,6 +1,7 @@
 ﻿﻿﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+﻿﻿using System.ComponentModel;
+﻿﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -106,6 +107,12 @@ map5.mul
             return File.Exists(flocat) ? flocat : null;
         }
 
+        private string GetPath(string format, params object[] args)
+        {
+            var path = String.Format(format, args);
+            return GetPath(path);
+        }
+
         internal ClassicFactory(UODataManager data)
         {
             Data = data;
@@ -123,14 +130,18 @@ map5.mul
             container_LandData = new MulContainer(virtualcontainer, 0, (_LandLength>>5), (uint)(data.DataType.HasFlag(UODataType.UseNewDatas) ?  964 :  836));
             container_ItemData = new MulContainer(virtualcontainer,    (_LandLength>>5)* (uint)(data.DataType.HasFlag(UODataType.UseNewDatas) ?  964 :  836), 
                                                                                       0, (uint)(data.DataType.HasFlag(UODataType.UseNewDatas) ? 1316 : 1188));
-            
-            virtualcontainer   = MulContainer.GetVirtual(GetPath("artidx.mul"), GetPath("art.mul"), data.RealTime);
-            container_LandTile = new MulContainer(virtualcontainer, 0, _LandLength);
-            container_ItemTile = new MulContainer(virtualcontainer, _LandLength, 0);
 
-            container_LandTexm = new MulContainer(GetPath("texidx.mul"),  GetPath("texmaps.mul"), data.RealTime);
+            if (!String.IsNullOrEmpty(GetPath("artidx.mul")) && !String.IsNullOrEmpty(GetPath("art.mul"))) {
+                virtualcontainer   = MulContainer.GetVirtual(GetPath("artidx.mul"), GetPath("art.mul"), data.RealTime);
+                container_LandTile = new MulContainer(virtualcontainer, 0, _LandLength);
+                container_ItemTile = new MulContainer(virtualcontainer, _LandLength, 0);
+             }
 
-            container_GumpData = new MulContainer(GetPath("gumpidx.mul"), GetPath("gumpart.mul"), data.RealTime);
+            if (!String.IsNullOrEmpty(GetPath("texidx.mul")) && !String.IsNullOrEmpty(GetPath("texmaps.mul"))) 
+                container_LandTexm = new MulContainer(GetPath("texidx.mul"),  GetPath("texmaps.mul"), data.RealTime);
+
+            if (!String.IsNullOrEmpty(GetPath("gumpidx.mul")) && !String.IsNullOrEmpty(GetPath("gumpart.mul"))) 
+                container_GumpData = new MulContainer(GetPath("gumpidx.mul"), GetPath("gumpart.mul"), data.RealTime);
 
             //container_ItemAnim = new MulContainer(0, GetPath("animdata.mul"), realtime);
 
@@ -155,6 +166,21 @@ map5.mul
                 animationcontainer.Add(new UopContainer(GetPath("animationframe4.uop"), data.RealTime));
             container_Animation = animationcontainer.ToArray();
 
+            var maps = data.DataOptions.majorFacet.Length;
+            container_Map    = new IDataContainer[maps];
+            container_Sta    = new IDataContainer[maps];
+            //container_MapDif = new IDataContainer[maps];
+            //container_StaDif = new IDataContainer[maps];
+            //container_Facet  = new IDataContainer[maps];
+            for (int m = 0; m < maps; ++m) {
+                string path1, path2, x = data.DataType.HasFlag(UODataType.UseExtFacet) ? "x" : String.Empty;
+                container_Map[m] =  !String.IsNullOrEmpty(path2=GetPath("map{0}{1}.mul",m,x)) ? new MulContainer(196, path2, data.RealTime) : null;
+                container_Sta[m] = (!String.IsNullOrEmpty(path1=GetPath("staidx{0}{1}.mul",m,x)) && !String.IsNullOrEmpty(path2=GetPath("statics{0}{1}.mul",m,x)))
+                                 ? new MulContainer(path1, path2, data.RealTime) : null;
+
+
+                //container_Facet[m] = !String.IsNullOrEmpty(path2 = GetPath("facet0{0}.mul", m)) ? new MulContainer(1, path2, data.RealTime) : null;
+            }
 
             /*
             container_Map    = new IDataContainer[6];
@@ -173,6 +199,95 @@ map5.mul
         }
 
         #region Data Types
+
+        [StructLayout(LayoutKind.Sequential, Size = 3, Pack = 1)]
+        internal unsafe struct LandMapTileData : ILandMapTile
+        {
+            private ushort _TileId;
+            private sbyte  _Altitude;
+
+            public ushort TileId  { get { return _TileId; }   set { _TileId = value; } }
+            public sbyte Altitude { get { return _Altitude; } set { _Altitude = value; } }
+
+            public LandMapTileData(ILandMapTile data)
+            {
+                _TileId   = data.TileId;
+                _Altitude = data.Altitude;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential, Size = 7, Pack = 1)]
+        internal unsafe struct ItemMapTileData : IItemMapTile
+        {
+            private ushort _TileId;
+            private byte   _XOffset;
+            private byte   _YOffset;
+            private sbyte  _Altitude;
+            private ushort _Palette;
+
+            public ushort  TileId { get { return _TileId; } set { _TileId = value; } }
+            public byte   XOffset { get { return _XOffset; } set { _XOffset = value; } }
+            public byte   YOffset { get { return _YOffset; } set { _YOffset = value; } }
+            public sbyte Altitude { get { return _Altitude; } set { _Altitude = value; } }
+            public ushort Palette { get { return _Palette; } set { _Palette = value; } }
+
+            public ItemMapTileData(byte x, byte y, IItemMapTile data)
+            {
+                _XOffset = x;
+                _YOffset = y;
+                _TileId = data.TileId;
+                _Palette = data.Palette;
+                _Altitude = data.Altitude;
+            }
+
+            public ItemMapTileData(byte xy, IItemMapTile data) : this((byte)(xy >> 3), (byte)(xy % 8), data)
+            {
+            }
+        }
+
+        internal sealed class MapBlockData : IMapBlockData
+        {
+            private uint _LandHeader;
+            private LandMapTile[]   _Lands;
+            private ItemMapTile[][] _Items;
+
+            public uint LandHeader { get { return _LandHeader; } set { _LandHeader = value; } }
+            public LandMapTile[]   Lands { get { return _Lands; } set { _Lands = value; } }
+            public ItemMapTile[][] Items { get { return _Items; } set { _Items = value; } }
+
+            public MapBlockData(uint header, LandMapTileData[] lands, ItemMapTileData[][] items)
+            {
+                _LandHeader = header;
+                _Lands = new LandMapTile[64];
+                _Items = new ItemMapTile[64][];
+                for (int i = 0; i < 64; ++i)
+                {
+                    _Lands[i] = new LandMapTile(lands[i].TileId, lands[i].Altitude);
+                    _Items[i] = new ItemMapTile[items[i].Length];
+                    for (int k = 0; k < items[i].Length; ++k)
+                        _Items[i][k] = new ItemMapTile(items[i][k].TileId, items[i][k].Palette, items[i][k].Altitude);
+                }
+            } 
+
+            public MapBlockData(LandMapTileData[] lands, ItemMapTileData[][] items) : this(0, lands, items)
+            {
+            }
+
+            public MapBlockData(uint header, IMapTile[] tiles)
+            {
+                _LandHeader = header;
+                _Lands = new LandMapTile[64];
+                _Items = new ItemMapTile[64][];
+                for (int t = 0; t < 64; ++t) {
+                    _Lands[t] = tiles[t].Land as LandMapTile;
+                    _Items[t] = new ItemMapTile[tiles[t].Count];
+                    for (int i = 0; i < tiles[t].Count; ++i)
+                        _Items[t][i] = tiles[t][i] as ItemMapTile;
+                }
+            }
+        }
+
+
 
         private const uint _LandLength = 0x4000;
 
@@ -253,7 +368,7 @@ map5.mul
                                                         set { ; } }
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 26, Pack = 1)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Size = 30, Pack = 1)]
         private unsafe struct NewLandData : LandData.IRawData
         {
             [MarshalAs(UnmanagedType.U8)]
@@ -776,16 +891,66 @@ map5.mul
 
         #endregion
 
+        IMapFacet[] IDataFactory.GetMapFacets()
+        {
+            var count = Math.Max(container_Map.Length, container_Sta.Length);
+            var facet = new IMapFacet[count];
+            for (byte m = 0; m < count; ++m)
+                facet[m] = new MapFacet(this, m, (!Data.DataType.HasFlag(UODataType.UseExtFacet) ? Data.DataOptions.majorFacet : Data.DataOptions.minorFacet)[m]);
+            return facet;
+        }
+
+        IMapBlockData IDataFactoryReader.GetMapBlock(byte mapindex, uint id)
+        {
+            var lhead = container_Map[mapindex].Read<uint>(id, 0);
+            var lands = container_Map[mapindex].Read<LandMapTileData>(id, 4, 64);
+            var tiles = container_Sta[mapindex].ReadAll<ItemMapTileData>(id, 0);
+            var items = new ItemMapTileData[64][];
+        
+            if (tiles != null) {
+                List<ItemMapTileData>[] tilelist = new List<ItemMapTileData>[64];
+                for (int i = 0; i < 64; ++i)
+                    tilelist[i] = new List<ItemMapTileData>(128);
+
+                for (int i = 0; i < tiles.Length; ++i)
+                    tilelist[tiles[i].XOffset * 8 + tiles[i].YOffset].Add(new ItemMapTileData(tiles[i].XOffset, tiles[i].YOffset, tiles[i]));
+
+                for (int i = 0; i < 64; ++i)
+                    items[i] = tilelist[i].OrderBy(t => t.Altitude).ToArray();
+            } else {
+                for (int i = 0; i < 64; ++i)
+                    items[i] = null;
+            }
+            return new MapBlockData(lhead, lands, items);
+        }
+
+        void IDataFactoryWriter.SetMapBlock(byte mapindex, uint id, IMapBlockData tiles)
+        {
+            //container_Map[mapindex].Write(id, 0, (tiles as MapBlockData).LandHeader);
+            var lands = tiles.Lands.Select(t => new LandMapTileData(t)).ToArray();
+            container_Map[mapindex].Write(id, 4, lands, 0, 64);
+            var items = new ItemMapTileData[tiles.Items.Sum(t=>t.Length)];
+            for (int i = -1, c = 0; c < 64; ++c)
+                for (int e = 0; e < tiles.Items[c].Length; ++e)
+                    items[++i] = new ItemMapTileData((byte)c, tiles.Items[c][e]);
+            container_Sta[mapindex].Write(id, 0, items, 0, (uint)items.Length);
+        }
+
         ILandTile[] IDataFactory.GetLandTiles()
         {
             uint i;
-            var tiles = new LandTile[container_LandTile.EntryLength];
-            for (uint b = i = 0; i < tiles.Length && b < container_LandData.EntryLength; ++b, ++i) {
-                var tdata = Data.DataType.HasFlag(UODataType.UseNewDatas) // we just skip block header
-                          ? container_LandData.Read<NewLandData>(b, 4, 32).Select(t=>(ILandData)new LandData(Data.Language, t)).ToArray()
-                          : container_LandData.Read<OldLandData>(b, 4, 32).Select(t=>(ILandData)new LandData(Data.Language, t)).ToArray();
-                for (uint c = 0; i < tiles.Length && c < 32; ++c, ++i)
-                    tiles[i] = new LandTile(i, this, tdata[c], container_LandTile.IsValid(i) || container_LandTexm.IsValid(tdata[c].TexID));
+            uint tilelen = (container_LandTile != null) ? container_LandTile.EntryLength : _LandLength;
+            uint datalen = (container_LandData != null) ? container_LandData.EntryLength : _LandLength;
+
+            var tiles = new LandTile[Math.Max(tilelen, datalen)];
+            for (uint d = 0, b = i = 0; i < tilelen && b < datalen; d = 0, ++b, ++i) {
+                var tdata = (container_LandData != null) ? Data.DataType.HasFlag(UODataType.UseNewDatas) // we just skip block header
+                            ? container_LandData.Read<NewLandData>(b, 4, 32).Select(t=>(ILandData)new LandData(Data.Language, t)).ToArray()
+                            : container_LandData.Read<OldLandData>(b, 4, 32).Select(t=>(ILandData)new LandData(Data.Language, t)).ToArray()
+                            : new NewLandData[32].Select(t=>{(t as LandData.IRawData).TexID=(ushort)(i+d++); return (ILandData)new LandData(Data.Language,t);}).ToArray();
+                for (uint c = 0; i < tilelen && c < 32; ++c, ++i)
+                    tiles[i] = new LandTile(i, this, tdata[c], ((container_LandTile != null) && container_LandTile.IsValid(i)) 
+                                                            || ((container_LandTexm != null) && container_LandTexm.IsValid(tdata[c].TexID)));
                 --i;
             }
             return tiles;
@@ -816,6 +981,26 @@ map5.mul
             return surface;
         }
 
+        void IDataFactoryWriter.Defrag(ContainerDataType datatype)
+        {
+            var list = new List<IDataContainer>(16);
+            if (datatype.HasFlag(ContainerDataType.GumpArt))
+                list.Add(container_GumpData);
+            if (datatype.HasFlag(ContainerDataType.Texture))
+                list.Add(container_LandTexm);
+            if (datatype.HasFlag(ContainerDataType.LandArt) || datatype.HasFlag(ContainerDataType.ItemArt))
+                if (container_ItemTile is MulContainer)
+                    list.Add(MulContainer.GetParent(container_ItemTile as MulContainer));
+
+            for (int i = 0; i < 6; ++i) 
+                if (datatype.HasFlag((ContainerDataType)((uint)ContainerDataType.Facet00 << i)) && Data.DataOptions.majorFacet.Length > i) {
+                    list.Add(container_Sta[i]);
+                }
+            
+            for (int i = 0; i < list.Count; ++i)
+                list[i].Defrag();
+        }
+
         void IDataFactoryWriter.SetTexmSurface(uint id, ISurface surface)
         { 
             try {
@@ -832,13 +1017,18 @@ map5.mul
         IItemTile[] IDataFactory.GetItemTiles()
         {
             uint i;
-            var tiles = new ItemTile[container_ItemTile.EntryLength];
-            for (uint b = i = 0; i < tiles.Length && b < container_ItemData.EntryLength; ++b, ++i) {
-                var tdata = Data.DataType.HasFlag(UODataType.UseNewDatas) // we just skip block header
+            uint deftlen = Data.DataType.HasFlag(UODataType.UseNewDatas) ? 0xFFDCU : 0x8000U; // it's not correct, but it's no such thing that is used in normal situations...
+            uint tilelen = (container_ItemTile != null) ? container_ItemTile.EntryLength : deftlen;
+            uint datalen = (container_ItemData != null) ? container_ItemData.EntryLength : deftlen;
+
+            var tiles = new ItemTile[Math.Max(tilelen, datalen)];
+            for (uint b = i = 0; i < tilelen && b < datalen; ++b, ++i) {
+                var tdata = (container_ItemData != null) ? Data.DataType.HasFlag(UODataType.UseNewDatas) // we just skip block header
                           ? container_ItemData.Read<NewItemData>(b, 4, 32).Select(t=>(IItemData)new ItemData(Data.Language, t)).ToArray()
-                          : container_ItemData.Read<OldItemData>(b, 4, 32).Select(t=>(IItemData)new ItemData(Data.Language, t)).ToArray();
+                          : container_ItemData.Read<OldItemData>(b, 4, 32).Select(t=>(IItemData)new ItemData(Data.Language, t)).ToArray()
+                          : new NewItemData[32].Select(t=>(IItemData)new ItemData(Data.Language, t)).ToArray();
                 for (uint c = 0; i < tiles.Length && c < 32; ++c, ++i)
-                    tiles[i] = new ItemTile(i, this, tdata[c], container_ItemTile.IsValid(i));
+                    tiles[i] = new ItemTile(i, this, tdata[c], (container_ItemTile != null) && container_ItemTile.IsValid(i));
                 --i;
             }
             return tiles;
@@ -864,9 +1054,10 @@ map5.mul
 
         IGumpEntry[] IDataFactory.GetGumpSurfs()
         {
-            var gumps = new GumpEntry[container_GumpData.EntryLength];
-            for (uint i = 0; i < gumps.Length && i < container_GumpData.EntryLength; ++i)
-                gumps[i] = new GumpEntry(i, this, container_GumpData.IsValid(i));
+            var galen = (container_GumpData != null) ? container_GumpData.EntryLength : 0x10000;
+            var gumps = new GumpEntry[galen];
+            for (uint i = 0; i < gumps.Length && i < galen; ++i)
+                gumps[i] = new GumpEntry(i, this, (container_GumpData != null) && container_GumpData.IsValid(i));
             return gumps;
         }
 

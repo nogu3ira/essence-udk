@@ -249,6 +249,7 @@ namespace EssenceUDK.Platform
         public readonly bool       RealTime;
 
         public UODataOptions DataOptions { get { return dataOptions; } }
+        public IDataFactory  DataFactory { get { return dataFactory; } }
         private          UODataOptions dataOptions;
         private readonly IDataFactory  dataFactory;
 
@@ -297,6 +298,7 @@ namespace EssenceUDK.Platform
 
             // Initialize data... its loading, wait, wait
             // TODO: We need separeted thread for data working
+            StorageMaps = dataFactory.GetMapFacets();
             StorageLand = dataFactory.GetLandTiles();
             StorageItem = dataFactory.GetItemTiles();
             StorageGump = dataFactory.GetGumpSurfs();
@@ -312,6 +314,7 @@ namespace EssenceUDK.Platform
         }
 
         // Cached storages (always using caching)
+        private IMapFacet[]  StorageMaps;
         private ILandTile[]  StorageLand;
         private IItemTile[]  StorageItem;
         private IGumpEntry[] StorageGump;
@@ -319,6 +322,36 @@ namespace EssenceUDK.Platform
         
 
         #region StorageItem Interfaces
+
+        public uint MapsCapacity
+        {
+            get { return (uint)StorageMaps.Length; }
+        }
+
+        public IMapFacet GetMapFacet(int id)
+        {
+            return StorageMaps[id];
+        }
+
+        public IMapFacet GetMapFacet(uint id)
+        {
+            return StorageMaps[id];
+        }
+
+        public IMapFacet GetMapFacet(short id)
+        {
+            return StorageMaps[id];
+        }
+
+        public IMapFacet GetMapFacet(ushort id)
+        {
+            return StorageMaps[id];
+        }
+
+        public IMapFacet GetMapFacet(byte id)
+        {
+            return StorageMaps[id];
+        }
 
         public uint ItemCapacity 
         {

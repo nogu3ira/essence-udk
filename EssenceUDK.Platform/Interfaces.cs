@@ -83,18 +83,25 @@ namespace EssenceUDK.Platform
     {
     }
 
-    
 
-    internal interface IDataContainer
+
+    public interface IDataContainer
     {
         bool IsValid(uint id);
         uint EntryLength { get; }
+        bool IsIndexBased { get; }
         uint GetExtra(uint id);
         void SetExtra(uint id, uint value);
         byte[] this[uint id] { get; set; }
         T   Read<T>(uint id, uint offset) where T : struct;
+        T[] ReadAll<T>(uint id, uint offset) where T : struct;
         T[] Read<T>(uint fromId, uint offset, uint count) where T : struct;
         void Write<T>(uint id, uint offset, T data) where T : struct;
         void Write<T>(uint id, uint offset, T[] data, uint sfrom, uint count) where T : struct;
+
+        void Replace(uint id1, uint id2);
+        void Delete(uint id);
+        void Resize(uint entries);
+        void Defrag();
     }
 }

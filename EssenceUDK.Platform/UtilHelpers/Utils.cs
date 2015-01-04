@@ -27,6 +27,19 @@ namespace EssenceUDK.Platform.UtilHelpers
             return true;
         }
 
+        public static bool ArrayIdentical<T>(T[] a1, T[] a2, int from, int count) where T : struct
+        {
+            var upplen = from + count;
+            if (a1.Length < upplen || a2.Length < upplen)
+                return false;
+
+            for (int i = from; i < upplen; i++)
+                if (!a1[i].Equals(a2[i]))
+                    return false;
+
+            return true;
+        }
+
         public unsafe static bool ArrayIdentical(byte* a1, byte* a2, int count, bool nullterminate = true)
         {
             for (int c = 0; c < count; ++c)

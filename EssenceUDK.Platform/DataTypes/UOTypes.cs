@@ -25,17 +25,19 @@ namespace EssenceUDK.Platform.DataTypes
             RealHeight = rheight;
         }
 
-        public static readonly FacetDesc PreAlpha   = new FacetDesc("Britania", 128, 128, 128, 128);
-        public static readonly FacetDesc OldFelucca = new FacetDesc("Felucca",  768, 512, 640, 512);
-        public static readonly FacetDesc NewFelucca = new FacetDesc("Felucca",  896, 512, 640, 512);
-        public static readonly FacetDesc ExtFelucca = new FacetDesc("Felucca",  896, 512, 640, 512);
-        public static readonly FacetDesc OldTrammel = new FacetDesc("Trammel",  768, 512, 640, 512);
-        public static readonly FacetDesc NewTrammel = new FacetDesc("Trammel",  896, 512, 640, 512);
-        public static readonly FacetDesc ExtTrammel = new FacetDesc("Trammel",  896, 512, 640, 512);
-        public static readonly FacetDesc Ilshenar   = new FacetDesc("Ilshenar", 288, 200, 288, 200);
-        public static readonly FacetDesc Malas      = new FacetDesc("Malas",    320, 256, 320, 256);
-        public static readonly FacetDesc Tokuno     = new FacetDesc("Tokuno",   181, 181, 181, 181);
-        public static readonly FacetDesc TerMur     = new FacetDesc("TerMur",   160, 512, 160, 512);
+        public static readonly FacetDesc PreAlpha   = new FacetDesc("Britania",  128,  128,  128,  128);
+        public static readonly FacetDesc OldFelucca = new FacetDesc("Felucca",   768,  512,  640,  512);
+        public static readonly FacetDesc NewFelucca = new FacetDesc("Felucca",   896,  512,  640,  512);
+        public static readonly FacetDesc ExtFelucca = new FacetDesc("Felucca",   896,  512,  640,  512);
+        public static readonly FacetDesc OldTrammel = new FacetDesc("Trammel",   768,  512,  640,  512);
+        public static readonly FacetDesc NewTrammel = new FacetDesc("Trammel",   896,  512,  640,  512);
+        public static readonly FacetDesc ExtTrammel = new FacetDesc("Trammel",   896,  512,  640,  512);
+        public static readonly FacetDesc Ilshenar   = new FacetDesc("Ilshenar",  288,  200,  288,  200);
+        public static readonly FacetDesc Malas      = new FacetDesc("Malas",     320,  256,  320,  256);
+        public static readonly FacetDesc Tokuno     = new FacetDesc("Tokuno",    181,  181,  181,  181);
+        public static readonly FacetDesc TerMur     = new FacetDesc("TerMur",    160,  512,  160,  512);
+
+        public static readonly FacetDesc Assidiya   = new FacetDesc("Assidiya", 1536, 1024, 1536, 1024);
     }
 
     /// <summary>
@@ -393,4 +395,262 @@ namespace EssenceUDK.Platform.DataTypes
         private short       _SCentrY;
     }
 
+
+
+
+    // ---- Maps -----------------------------------------------------------------------------------
+
+    public interface IEntryMapTile
+    {
+        ushort TileId   { get; set; }
+        sbyte  Altitude { get; set; }
+    }
+
+    public interface ILandMapTile : IEntryMapTile
+    {
+    }
+
+    public interface IItemMapTile : IEntryMapTile
+    {
+        ushort Palette { get; set; }
+    }
+
+    public sealed class LandMapTile : ILandMapTile
+    {
+        private ushort _TileId;
+        private sbyte  _Altitude;
+
+        public ushort TileId   { get { return _TileId; }   set { _TileId = value; } }
+        public sbyte  Altitude { get { return _Altitude; } set { _Altitude = value; } }
+
+        public LandMapTile(ushort tileid, sbyte altitude)
+        {
+            _TileId   = tileid;
+            _Altitude = altitude;
+        }
+    }
+
+    public sealed class ItemMapTile : IItemMapTile
+    {
+        private ushort _TileId;
+        private ushort _Palette;
+        private sbyte  _Altitude;
+
+        public ushort TileId   { get { return _TileId; }   set { _TileId = value; } }
+        public ushort Palette  { get { return _Palette; }  set { _Palette = value; } }
+        public sbyte  Altitude { get { return _Altitude; } set { _Altitude = value; } }
+
+        public ItemMapTile(ushort tileid, ushort palette, sbyte altitude)
+        {
+            _TileId   = tileid;
+            _Palette  = palette;
+            _Altitude = altitude;
+        }
+    }
+
+    public interface IMapTile
+    {
+        ILandMapTile    Land  { get; }
+        int             Count { get; }
+        IItemMapTile    this[int index] { get; }
+
+        IItemMapTile    Add(ushort tileid, ushort palette, sbyte altitude);
+        IItemMapTile    Add();
+        void            Remove(int index);
+    }
+
+    public sealed class MapTile : IMapTile
+    {
+        private ILandMapTile        _Land;
+        private List<IItemMapTile>  _Items;
+        private MapBlock            _Parent;
+
+        public ILandMapTile Land { get { return _Land; } }
+        public int Count { get { return _Items.Count; } }
+        public IItemMapTile this[int index] { get { return index < _Items.Count ? _Items[index] : null; } }
+
+        public IItemMapTile Add()
+        {
+            return Add(0, 0, 0);
+        }
+
+        public IItemMapTile Add(ushort tileid, ushort palette, sbyte altitude)
+        {
+            var tile = new ItemMapTile(tileid, palette, altitude);
+            _Items.Add(tile);
+            return tile;
+        }
+
+        public void Remove(int index)
+        {
+            if (index < _Items.Count)
+                _Items.RemoveAt(index);
+        }
+
+        public MapTile(MapBlock parent, ILandMapTile land, IItemMapTile[] items)
+        {
+            _Parent = parent;
+            _Land   = land;
+            _Items  = items != null ? new List<IItemMapTile>(items) : new List<IItemMapTile>(0);
+        }
+    }
+
+    public interface IMapBlockData
+    {
+        LandMapTile[]   Lands { get; }
+        ItemMapTile[][] Items { get; }
+    }
+
+    public interface IMapBlock : IDisposable
+    {
+        uint GetTileId(uint offsetX, uint offsetY);
+        IMapTile this[uint index] { get; }
+        IMapTile this[uint offsetX, uint offsetY] { get; }
+        IMapBlockData GetData();
+    }
+
+    public sealed class MapBlock : IMapBlock
+    {
+        private ushort _EntryId;
+        private MapTile[] _Tiles;
+        private MapFacet _Parent;
+
+        public ushort EntryId { get { return _EntryId; } }
+
+        public uint GetTileId(uint offsetX, uint offsetY)
+        {
+            return (offsetX << 3) + offsetY;
+        }
+
+        public IMapTile this[uint index] {
+            get { return index < 64 ? _Tiles[index] : null;  }
+            set { if (index < 64) _Tiles[index] = (value as MapTile); }
+        }
+
+        public IMapTile this[uint offsetX, uint offsetY] {
+            get { return this[GetTileId(offsetX, offsetY)]; }
+            set {
+                var tile = this[GetTileId(offsetX, offsetY)];
+                if (tile != null) tile = value;
+            }
+        }
+
+        public MapBlock(MapFacet parent, ushort index, IMapBlockData data)
+        {
+            _Parent = parent;
+            _EntryId = index;
+            _Tiles = new MapTile[64];
+            for (int i = 0; i < 64; ++i)
+                _Tiles[i] = new MapTile(this, data.Lands[i], data.Items[i]);
+        }
+
+        public IMapBlockData GetData()
+        {
+            return new ClassicFactory.MapBlockData(0, _Tiles);
+        }
+
+        public void Dispose()
+        {
+            _Tiles = null;
+            _Parent[_EntryId] = null;
+        }
+    }
+
+    public interface IMapFacet
+    {
+        FacetDesc Desc { get; }
+        uint Width     { get; }
+        uint Height    { get; }
+        uint Count     { get; }
+        uint GetBlockId(uint blockX, uint blockY);
+        uint FindBlockId(uint tileX, uint tileY);
+        IMapBlock this[uint index] { get; }
+        IMapTile this[uint tileX, uint tileY] { get; }
+    }
+
+    public sealed class MapFacet : IMapFacet
+    {
+        private MapBlock[] _Blocks;
+        private FacetDesc _Desc;
+        private uint _Width;
+        private uint _Height;
+        private byte _MapIndex;
+        private IDataFactory dataFactory;
+
+        public FacetDesc Desc { get { return _Desc; } }
+        public uint Width  { get { return _Width; } }
+        public uint Height { get { return _Height; } }
+        public uint Count  { get { return (uint)_Blocks.Length; } }
+        public byte MapIndex { get { return _MapIndex; } }
+
+        public uint GetBlockId(uint blockX, uint blockY)
+        {
+            return (blockX * _Width) + blockY;
+        }
+
+        public uint FindBlockId(uint tileX, uint tileY)
+        {
+            return ((tileX >> 3) * _Width) + (tileY >> 3);
+        }
+
+        public IMapBlock this[uint index] {
+            get { return index < _Blocks.Length ? _Blocks[index] ?? 
+                (_Blocks[index] = new MapBlock(this, (ushort)index, (dataFactory as IDataFactoryReader).GetMapBlock(_MapIndex, index))) : null;  }
+            set { if (index < _Blocks.Length) _Blocks[index] = (value as MapBlock); }
+        }
+
+        public IMapTile this[uint tileX, uint tileY] {
+            get {
+                var block = this[FindBlockId(tileX, tileY)] as MapBlock;
+                if (block == null) return null;
+                return block[tileX % 8, tileY % 8]; 
+            }
+            set {
+                var tile = this[tileX, tileY];
+                if (tile != null) tile = value;
+            }
+        }
+
+        public MapFacet(IDataFactory factory, byte mapindex, FacetDesc desc)
+        {
+            _Desc   = desc;
+            _Width  = desc.Width;
+            _Height = desc.Height;
+            _Blocks = new MapBlock[_Width * _Height];
+            dataFactory = factory;
+            _MapIndex = mapindex;
+        }
+    }
+
+
+
+
+
+    /*
+
+
+    public sealed class LandMapBlock : MapBlock
+    {
+        internal LandMapBlock(uint id, IDataFactory factory) : base(id, factory)
+        {
+        }
+
+        public uint Header {
+            get { return _Header; }
+            set { (dataFactory as IDataFactoryWriter).SetLandMapTile(_EntryId, _Header = value); }
+        }
+        protected uint _Header;
+
+        public   ILandMapTile[]     Tiles {
+            get { return _Tiles ?? (_Tiles = (dataFactory as IDataFactoryReader).GetLandMapTile(_EntryId, out _Header)); }
+            set { (dataFactory as IDataFactoryWriter).SetLandMapTile(_EntryId, _Header, _Tiles = value); }
+        }
+        protected ILandMapTile[] _Tiles;
+
+        public ILandMapTile this[uint id] {
+            get { return Tiles[id]; }
+            set { Tiles[id] = value; }
+        }
+    }
+    */
 }

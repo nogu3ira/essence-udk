@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTypes\Factories\BaseSysFactory.cs" />
+    <Compile Include="DataTypes\Factories\ContainerFactory.cs" />
     <Compile Include="DataTypes\FileFormat\Containers\UopContainer.cs" />
     <Compile Include="DataTypes\FileFormat\DefTable.cs" />
     <Compile Include="DataTypes\FileFormat\IniFile.cs" />
