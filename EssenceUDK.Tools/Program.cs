@@ -97,7 +97,7 @@ namespace EssenceUDK.Tools
             + "\nAllias:"
             + "\n"
             + "\n  $MULCON$  ->  <byte_offset> <entry_length> <entry_size> <mulfile>"
-            + "\n  $MULCON$  ->  <byte_offset> <entry_length> <idxfile> <mulfile>"
+            + "\n  $MULCON$  ->  <index_offset> <entry_length> <idxfile> <mulfile>"
             + "\n  $LIST#1$  ->  <index>"
             + "\n  $LIST#1$  ->  <txtfile>"
             + "\n  $LIST#2$  ->  <srs_index> <dst_index>"
@@ -164,9 +164,9 @@ namespace EssenceUDK.Tools
                 int from = 1;
                 if (String.Compare(args[0], "--create", true) == 0) {
                     ResetProcessStatus(1, "Creating container ");
-                    var leng = Convert.ToUInt32(args[from++]);
+                    var leng = StringToUint(args[from++]);
                     uint size = 0; string fidx = null;
-                    try { size = Convert.ToUInt32(args[from++]); }
+                    try { size = StringToUint(args[from++]); }
                     catch (Exception e) { --from; fidx = GetFullPath(args[from++]); }
                     var fmul = GetFullPath(args[from++]);
                     var smul = new FileStream(fmul, FileMode.Create, FileAccess.Write, FileShare.Read, 0x1000, false);
@@ -186,7 +186,7 @@ namespace EssenceUDK.Tools
                     UpdateProcessStatus(1);
                 } else
                 if (String.Compare(args[0], "--resize", true) == 0) {
-                    var leng = Convert.ToUInt32(args[from++]);
+                    var leng = StringToUint(args[from++]);
                     var mulc = GetMulContainer(args, ref from);
                     ResetProcessStatus(mulc.EntryLength, "Resizing container ");
                     mulc.Resize(leng);
@@ -304,8 +304,8 @@ namespace EssenceUDK.Tools
                                     dest.Write(cons, 0, 4);
                                     dest.Write(data, offs + 4, size - 4);
                                 }
-                        }
-                        UpdateProcessStatus((uint)++it);
+                            UpdateProcessStatus((uint)++it);
+                        } 
                     }
                     dest.Flush();
                     dest.Close();
@@ -464,7 +464,12 @@ namespace EssenceUDK.Tools
                     throw new Exception();
             } catch(Exception e) {
                 Console.WriteLine("Proccess aborted: Ither bad agruments or something real very very bad happened..");
-                Console.WriteLine("Run application wiht \"--help\" argumnet for additional info.");
+                Console.WriteLine("Run application wiht \"--help\" argumnet for additional info.");              
+                var exception = e;
+                while (exception != null) {
+                    Console.WriteLine("\n\nError: {0}\n\n{1}", exception.Message, exception.StackTrace);
+                    exception = exception.InnerException;
+                }
             }
             
         }
@@ -585,7 +590,7 @@ namespace EssenceUDK.Tools
         private static int  curleft = 0, workset = 0, lastupd = 0, maxiter = 0;
         private static void UpdateProcessStatus(uint curIteration)
         {
-            if (Environment.TickCount - lastupd > 100 || curIteration == maxiter) {
+            if ((Environment.TickCount - lastupd > 100) || (curIteration == maxiter)) {
                 //GC.Collect();
                 workset = (int)(Environment.WorkingSet >> 20);
                 lastupd = Environment.TickCount;

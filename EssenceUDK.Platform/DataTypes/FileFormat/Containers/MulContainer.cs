@@ -85,6 +85,7 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
         private MulContainer(bool realTime, string idxFile, string mulFile)
         {
             IsVirtual = true;
+            _Chields  = new List<MulContainer>();
             StreamMul = new FileStream(FNameMul = mulFile, FileMode.Open, realTime ? FileAccess.ReadWrite : FileAccess.Read, FileShare.Read, 0x10000, false);
             if (!String.IsNullOrEmpty(idxFile))
                 StreamIdx = new FileStream(FNameIdx = idxFile, FileMode.Open, realTime ? FileAccess.ReadWrite : FileAccess.Read, FileShare.Read, 192, false);
