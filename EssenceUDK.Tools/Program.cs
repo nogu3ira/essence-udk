@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
@@ -24,8 +25,10 @@ namespace EssenceUDK.Tools
         private static string usage = ""
             + "\n  This software is part of EssenceUDK project "
             + "\n  <http://dev.uoquint.ru/projects/essence-udk>"
+            + String.Format("\n   EssenceUDK.Tool      version: {0}", Assembly.GetExecutingAssembly().GetName().Version)
+            + String.Format("\n   EssenceUDK.Platform  version: {0}", Assembly.GetAssembly(typeof(UODataManager)).GetName().Version)
             + "\n"
-            + "\nUsage: run EssenceUDK.Tool with command."
+            + String.Format("\nUsage: run \"{0}\" with command.", AppDomain.CurrentDomain.FriendlyName)
             + "\n"
             + "\nCommands:"
             + "\n"
@@ -131,52 +134,27 @@ namespace EssenceUDK.Tools
             + "\n"
             + "\nInfo about muls:"
             + "\n"
-            + "\n| file name    |  entry size | entry count  |"
-            + "\n|--------------|-------------|--------------|"
-            + "\n| tiledata.mul |   836 / 964 |          512 | - land tiles"
-            + "\n| tiledata.mul | 1188 / 1316 | 512/1024/2046| - item tiles(off:428032/493568)"
-            + "\n| animdata.mul |         548 |    items / 8 |"
-            + "\n| radarcol.mul |           2 | land + items |"
-            + "\n| hues.mul     |         708 |          375 |"
-            + "\n| multi.mul    |           - |         8192 |"
+            + "\n | file name    |  entry size | entry count  |"
+            + "\n |--------------|-------------|--------------|"
+            + "\n | tiledata.mul |   836 / 964 |          512 | - land tiles"
+            + "\n | tiledata.mul | 1188 / 1316 | 512/1024/2048| - item tiles(off:428032/493568)"
+            + "\n | animdata.mul |         548 |    items / 8 |"
+            + "\n | radarcol.mul |           2 | land + items |"
+            + "\n | hues.mul     |         708 |          375 |"
+            + "\n | light.mul    |           - |          100 |"
+            + "\n | sound.mul    |           - |         4096 |"
+            + "\n | multi.mul    |           - |         8192 |"
             + "\n"
-            + "\n| file name    | header | item size | item count |"
-            + "\n|--------------|--------|-----------|------------|"
-            + "\n| tiledata.mul |      4 |   26 / 30 |         32 | - land tiles"
-            + "\n| tiledata.mul |      4 |   37 / 41 |         32 | - item tiles"
-            + "\n| animdata.mul |      4 |        68 |          8 |"
-            + "\n| hues.mul     |      4 |        88 |          8 |"
+            + "\n | file name    | header | item size | item count |"
+            + "\n |--------------|--------|-----------|------------|"
+            + "\n | tiledata.mul |      4 |   26 / 30 |         32 | - land tiles"
+            + "\n | tiledata.mul |      4 |   37 / 41 |         32 | - item tiles"
+            + "\n | animdata.mul |      4 |        68 |          8 |"
+            + "\n | hues.mul     |      4 |        88 |          8 |"
+            + "\n"
+            + "\n Length of index based muls can be geted as *.idx length / 12"
             + "\n"
             ;
-
-        // "--create <entry_count> <entry_size> <mulfile>"
-        // "--create <entry_count> <idxfile> <mulfile>"
-        // "--resize <entry_count> $MULCON$"
-        // "--defrag $MULCON$"
-        // "--export <dirpath> $MULCON$"
-        // "--import <dirpath> $MULCON$"
-        // "--merger <dirpath> $MULCON$ <dirpath> $MULCON$"
-        // "--convtd <dstfile> <newformat> <mulfile>"
-
-        // "--copyid $LIST#2$ $MULCON$"
-        // "--moveid $LIST#2$ $MULCON$"
-        // "--remove $LIST#1$ $MULCON$"
-
-        // "--facetm <folder> <uodata> <uoopts> $MAP_COMMAND$"
-
-        // $MAP_COMMAND$ -?
-        // -replid $MPAREA$ $LIST#2$
-        // -reptid $MPAREA$ $LIST#2$
-        // -rephid $MPAREA$ $LIST#2$
-
-        // "$MULCON$  ->  <byte_offset> <entry_length> <entry_size> <mulfile>"
-        // "$MULCON$  ->  <byte_offset> <entry_length> <entry_header_size> <entry_item_size> <entry_item_count> <mulfile>"
-        // "$MULCON$  ->  <byte_offset> <entry_length> <idxfile> <mulfile>"
-        // "$LIST#1$  ->  <index>"
-        // "$LIST#1$  ->  <txtfile>"
-        // "$LIST#2$  ->  <srs_index> <dst_index>"
-        // "$LIST#2$  ->  <txtfile>"
-        // "$MPAREA$  ->  <map_index> <block_x1> <block_y1> <block_x2> <block_y2>"
 
         static void Main(string[] args)
         {
@@ -221,19 +199,23 @@ namespace EssenceUDK.Tools
                 if (String.Compare(args[0], "--export", true) == 0) {
                     var fold = GetFullPath(args[from++]);
                     var mulc = GetMulContainer(args, ref from);
-                    ResetProcessStatus(mulc.EntryLength, "Export data ");
+                    ResetProcessStatus(mulc.EntryLength * mulc.EntryItemsCount, "Export data ");
                     for (uint it = 0, i = 0; i < mulc.EntryLength; ++i) {
                         if (!mulc.IsValid(i))
                             continue;
-                        var file = Path.Combine(fold, String.Format("{0:000000}.mde", i));
-                        var stream = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.Read, 0x1000, false);
-                        if (mulc.IsIndexBased)
-                            stream.Write(Utils.StructToBuff(mulc.GetExtra(i)), 0, 4);
-                        var data = mulc[i];
-                        stream.Write(data, 0, data.Length);
-                        stream.Flush();
-                        stream.Close();
-                        UpdateProcessStatus(++it);
+                        for (uint c = 0; c < mulc.EntryItemsCount; ++c) {
+                            var id = i * mulc.EntryItemsCount + c;
+                            var file = Path.Combine(fold, String.Format("{0:000000}.mde", id));
+                            var stream = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.Read, 0x1000, false);
+                            if (mulc.IsIndexBased)
+                                stream.Write(Utils.StructToBuff(mulc.GetExtra(i)), 0, 4);
+                            var data = mulc[id, mulc.EntryItemsCount > 1];
+                            stream.Write(data, 0, data.Length);
+                            stream.Flush();
+                            stream.Close();
+                            UpdateProcessStatus(++it);
+                        }
+                        
                     }
                 } else
                 if (String.Compare(args[0], "--import", true) == 0) {
@@ -254,7 +236,7 @@ namespace EssenceUDK.Tools
                         }
                         var data = new byte[stream.Length - stream.Position];
                         stream.Read(data, 0, data.Length);
-                        mulc[i] = data;
+                        mulc[i, mulc.EntryItemsCount > 1] = data;
                         UpdateProcessStatus(++it);
                     }
                 } else
@@ -263,11 +245,14 @@ namespace EssenceUDK.Tools
                     var mul1 = GetMulContainer(args, ref from);
                     var fol2 = GetFullPath(args[from++]);
                     var mul2 = GetMulContainer(args, ref from);
+                    if (mul1.EntryItemsCount != mul2.EntryItemsCount || mul1.EntryLength != mul2.EntryLength)
+                        throw new Exception("Both mul containers must be same type.");
                     var cmpr = Math.Min(mul1.EntryLength, mul2.EntryLength);
-                    ResetProcessStatus(cmpr, "Merging data ");
+                    var item = mul1.EntryItemsCount <= 1;
+                    ResetProcessStatus(cmpr * mul1.EntryItemsCount, "Merging data ");
                     for (uint it = 0, i = 0; i < cmpr; ++i) {
                         byte[] dat1 = null; 
-                        byte[] dat2 = null;                  
+                        byte[] dat2 = null;
                         if (!mul1.IsValid(i) || !mul2.IsValid(i)) {
                             if (mul1.IsValid(i))
                                 dat1 = mul1[i];
@@ -275,26 +260,29 @@ namespace EssenceUDK.Tools
                                 dat2 = mul2[i];
                             else
                                 continue;
-                        } else {
-                            dat1 = mul1[i];
-                            dat2 = mul2[i];
+                        }
+                        for (uint c = 0; c < mul1.EntryItemsCount; ++c) {
+                            var id = i * mul1.EntryItemsCount + c;
+                            dat1 = dat1 ?? mul1[id, item];
+                            dat2 = dat2 ?? mul2[id, item];
                             if (Utils.ArrayIdentical(dat1, dat2))
                                 continue;
+                            for (int m = 1; m < 3; ++m) {
+                                var data = (m == 1) ? dat1 : dat2;
+                                if (data == null)
+                                    continue;
+                                var mulc = (m == 1) ? mul1 : mul2;
+                                var file = Path.Combine((m == 1) ? fol1 : fol2, String.Format("{0:000000}.mde", i));
+                                var stream = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.Read, 0x1000, false);
+                                if (mulc.IsIndexBased)
+                                    stream.Write(Utils.StructToBuff(mulc.GetExtra(i)), 0, 4);
+                                stream.Write(data, 0, data.Length);
+                                stream.Flush();
+                                stream.Close();
+                            }
+                            dat1 = dat2 = null;
+                            UpdateProcessStatus(++it);
                         }
-                        for (int m = 1; m < 3; ++m) {
-                            var data = (m == 1) ? dat1 : dat2;
-                            if (data == null)
-                                continue;
-                            var mulc = (m == 1) ? mul1 : mul2;
-                            var file = Path.Combine((m == 1) ? fol1 : fol2, String.Format("{0:000000}.mde", i));
-                            var stream = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.Read, 0x1000, false);
-                            if (mulc.IsIndexBased)
-                                stream.Write(Utils.StructToBuff(mulc.GetExtra(i)), 0, 4);
-                            stream.Write(data, 0, data.Length);
-                            stream.Flush();
-                            stream.Close();
-                        }
-                        UpdateProcessStatus(++it);
                     }   
                 } else
                 if (String.Compare(args[0], "--convtd", true) == 0) {
@@ -358,26 +346,28 @@ namespace EssenceUDK.Tools
                 if (String.Compare(args[0], "--copyid", true) == 0) {
                     var list = GetMultiDimentionList(args, ref from);
                     var mulc = GetMulContainer(args, ref from);
+                    var virt = mulc.EntryItemsCount > 1;
                     ResetProcessStatus((uint)list.Count, "Copying entries ");
                     for (int it = 0, i = 0; i < list.Count; ++i) {
                         var sors = list[i][0];
                         var dest = list[i][1];
                         if (mulc.IsIndexBased)
                             mulc.SetExtra(dest, mulc.GetExtra(sors));
-                        mulc[dest] = mulc[sors];
+                        mulc[dest, virt] = mulc[sors, virt];
                         UpdateProcessStatus((uint)++it);
                     }
                 } else
                 if (String.Compare(args[0], "--moveid", true) == 0) {
                     var list = GetMultiDimentionList(args, ref from);
                     var mulc = GetMulContainer(args, ref from);
+                    var virt = mulc.EntryItemsCount > 1;
                     ResetProcessStatus((uint)list.Count, "Moving entries ");
                     for (int it = 0, i = 0; i < list.Count; ++i) {
                         var sors = list[i][0];
                         var dest = list[i][1];
                         if (mulc.IsIndexBased)
                             mulc.SetExtra(dest, mulc.GetExtra(sors));
-                        mulc[dest] = mulc[sors];
+                        mulc[dest, virt] = mulc[sors, virt];
                         if (mulc.IsIndexBased)
                             mulc.Delete(sors);
                         UpdateProcessStatus((uint)++it);

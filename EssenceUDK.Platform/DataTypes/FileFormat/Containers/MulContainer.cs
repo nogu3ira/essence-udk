@@ -183,6 +183,8 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             get {
                 if (!item)
                     return Read(id);
+                if (StreamIdx != null)
+                    throw new NotSupportedException("Index based mul container can't have items.");
                 var eid = (id / _EntryItemsCount);
                 var dat = Read(eid);
                 var res = new byte[_EntryItemSize];
@@ -194,6 +196,8 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
                     Write(id, value);
                     return;
                 }
+                if (StreamIdx != null)
+                    throw new NotSupportedException("Index based mul container can't have items.");
                 var eid = (id / _EntryItemsCount);
                 var dat = Read(eid);
                 Array.Copy(value, 0, dat, _EntryHeaderSize + (id % _EntryItemsCount) * _EntryItemSize, _EntryItemSize);
