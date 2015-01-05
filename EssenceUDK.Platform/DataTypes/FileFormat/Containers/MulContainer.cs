@@ -16,7 +16,9 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
     internal class MulContainer : IDataContainer
     {
         internal readonly uint EntrySize;       // entry size for non index data
-        private uint _EntryLength, _EntryOff;   // number of entries and ither start position of data for not index data or index shift for index data 
+        private uint _EntryLength, _EntryOff;   // number of entries and ither start position of data for not index data or index shift for index data
+        private readonly uint _EntryHeaderSize, _EntryItemSize, _EntryItemsCount; // this is hack for non index muls, which store entries by blocks with header
+                                                                                  // Note, single supported method for using item indexs is IDataContainer.this[uint id, bool item] 
         internal readonly string FNameIdx, FNameMul;
         internal readonly FileStream StreamIdx, StreamMul;
 
@@ -26,6 +28,8 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
         private  List<MulContainer> _Chields = null;    // chields have only virtual containers
 
         bool IDataContainer.IsIndexBased { get { return IdxTable != null; } }
+        uint IDataContainer.EntryHeaderSize { get { return _EntryHeaderSize; } }
+        uint IDataContainer.EntryItemsCount { get { return _EntryItemsCount; } }
 
         internal MulContainer(uint entrySize, string mulFile, bool realTime)
         {
@@ -34,6 +38,21 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             EntrySize = entrySize;
             IdxTable = null;
             _EntryLength = (uint)(StreamMul.Length / EntrySize);
+            _EntryHeaderSize = 0;
+            _EntryItemsCount = 1;
+            _EntryItemSize = EntrySize;
+        }
+
+        internal MulContainer(uint entryHeaderSize, uint entryItemSize, uint entryItemsCount, string mulFile, bool realTime)
+        {
+            StreamMul = new FileStream(FNameMul = mulFile, FileMode.Open, realTime ? FileAccess.ReadWrite : FileAccess.Read, FileShare.Read, 0x10000, false);
+            StreamIdx = null;
+            EntrySize = entryHeaderSize + entryItemSize * entryItemsCount;
+            IdxTable = null;
+            _EntryLength = (uint)(StreamMul.Length / EntrySize);
+            _EntryHeaderSize = entryHeaderSize;
+            _EntryItemsCount = entryItemsCount;
+            _EntryItemSize = entryItemSize;
         }
 
         internal MulContainer(string idxFile, string mulFile, bool realTime)
@@ -43,6 +62,9 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             IdxTable = Utils.ArrayRead<IndexEntry>(StreamIdx, (int)StreamIdx.Length / 12);
             EntrySize = 0;
             _EntryLength = (uint)IdxTable.Length;
+            _EntryHeaderSize = 0;
+            _EntryItemsCount = 1;
+            _EntryItemSize = 0;
         }
 
         internal MulContainer(MulContainer container, uint entryoff, uint entries = 0, uint entrySize = 0)
@@ -68,6 +90,19 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
                 IdxTable  = null;
                 _EntryLength = entries == 0 ? ((uint)StreamMul.Length - entryoff) / EntrySize : entries;
             }
+            _EntryHeaderSize = 0;
+            _EntryItemsCount = 1;
+            _EntryItemSize = 0;
+        }
+
+        internal MulContainer(MulContainer container, uint entryHeaderSize, uint entryItemSize, uint entryItemsCount, uint entryoff, uint entries = 0)
+            : this(container, entryoff, entries, entryHeaderSize + entryItemSize * entryItemsCount)
+        {
+            if ((container as IDataContainer).IsIndexBased)
+                throw new ArgumentException("Index based mul container can't have items.");
+            _EntryHeaderSize = entryHeaderSize;
+            _EntryItemsCount = entryItemsCount;
+            _EntryItemSize = entryItemSize;
         }
 
         internal static MulContainer GetParent(MulContainer container)
@@ -90,6 +125,9 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             if (!String.IsNullOrEmpty(idxFile))
                 StreamIdx = new FileStream(FNameIdx = idxFile, FileMode.Open, realTime ? FileAccess.ReadWrite : FileAccess.Read, FileShare.Read, 192, false);
             else { StreamIdx = null; }
+            _EntryHeaderSize = 0;
+            _EntryItemsCount = 1;
+            _EntryItemSize = 0;
         }
 
         // TODO: Dispose object
@@ -141,9 +179,26 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
             return true;
         }
 
-        byte[] IDataContainer.this[uint id] {
-            get { return Read(id);  }
-            set { Write(id, value); }
+        byte[] IDataContainer.this[uint id, bool item] {
+            get {
+                if (!item)
+                    return Read(id);
+                var eid = (id / _EntryItemsCount);
+                var dat = Read(eid);
+                var res = new byte[_EntryItemSize];
+                Array.Copy(dat, _EntryHeaderSize + (id % _EntryItemsCount) * _EntryItemSize, res, 0, _EntryItemSize);
+                return res;
+            }
+            set {
+                if (!item) {
+                    Write(id, value);
+                    return;
+                }
+                var eid = (id / _EntryItemsCount);
+                var dat = Read(eid);
+                Array.Copy(value, 0, dat, _EntryHeaderSize + (id % _EntryItemsCount) * _EntryItemSize, _EntryItemSize);
+                Write(eid, dat);
+            }
         }
 
         T IDataContainer.Read<T>(uint id, uint offset)

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using EssenceUDK.Platform;
@@ -58,12 +59,12 @@ namespace EssenceUDK.Tools
             + "\n --convtd    - Make conversation from new tiledta format(HS) to old one and back"
             + "\n   Arguments:"
             + "\n     <dstfile> <newformat> <mulfile>"
-            + "\n       <newformat>  - true\false, true means converting from new format to old"
+            + "\n       <newformat>  - true/false, true means converting from new format to old"
             + "\n"
             + "\n --convmt    - Make conversation from new multi format(HS) to old one and back"
             + "\n   Arguments:"
             + "\n     <newformat> <idxfile> <mulfile>"
-            + "\n       <newformat>  - true\false, true means converting from new format to old"
+            + "\n       <newformat>  - true/false, true means converting from new format to old"
             + "\n"
             + "\n --copyid    - Coping entries with specified numbers to new position"
             + "\n   Arguments:"
@@ -102,8 +103,11 @@ namespace EssenceUDK.Tools
             + "\n"
             + "\nAllias:"
             + "\n"
-            + "\n  $MULCON$  ->  <byte_offset> <entry_length> <entry_size> <mulfile>"
             + "\n  $MULCON$  ->  <index_offset> <entry_length> <idxfile> <mulfile>"
+            + "\n  $MULCON$  ->  <byte_offset> <entry_length> <entry_size> <mulfile>"
+            + "\n  $MULCON$  ->  <byte_offset> <entry_length> <entry_head_size>"
+            + "\n                <entry_item_size> <entry_item_count> <mulfile>"
+            + "\n                   <entry_length> - if 0 then will be set up to the end of file"
             + "\n  $LIST#1$  ->  <index>"
             + "\n  $LIST#1$  ->  <txtfile>"
             + "\n  $LIST#2$  ->  <srs_index> <dst_index>"
@@ -126,14 +130,22 @@ namespace EssenceUDK.Tools
             + "\n  have to start wirh \"0x\" specifier."
             + "\n"
             + "\nInfo about muls:"
+            + "\n"
             + "\n| file name    |  entry size | entry count  |"
-            + "\n|--------------|------------|--------------|"
+            + "\n|--------------|-------------|--------------|"
             + "\n| tiledata.mul |   836 / 964 |          512 | - land tiles"
             + "\n| tiledata.mul | 1188 / 1316 | 512/1024/2046| - item tiles(off:428032/493568)"
             + "\n| animdata.mul |         548 |    items / 8 |"
             + "\n| radarcol.mul |           2 | land + items |"
             + "\n| hues.mul     |         708 |          375 |"
             + "\n| multi.mul    |           - |         8192 |"
+            + "\n"
+            + "\n| file name    | header | item size | item count |"
+            + "\n|--------------|--------|-----------|------------|"
+            + "\n| tiledata.mul |      4 |   26 / 30 |         32 | - land tiles"
+            + "\n| tiledata.mul |      4 |   37 / 41 |         32 | - item tiles"
+            + "\n| animdata.mul |      4 |        68 |          8 |"
+            + "\n| hues.mul     |      4 |        88 |          8 |"
             + "\n"
             ;
 
@@ -158,6 +170,7 @@ namespace EssenceUDK.Tools
         // -rephid $MPAREA$ $LIST#2$
 
         // "$MULCON$  ->  <byte_offset> <entry_length> <entry_size> <mulfile>"
+        // "$MULCON$  ->  <byte_offset> <entry_length> <entry_header_size> <entry_item_size> <entry_item_count> <mulfile>"
         // "$MULCON$  ->  <byte_offset> <entry_length> <idxfile> <mulfile>"
         // "$LIST#1$  ->  <index>"
         // "$LIST#1$  ->  <txtfile>"
@@ -576,12 +589,29 @@ namespace EssenceUDK.Tools
                 var  leng = Convert.ToUInt32(args[from++]);
                 uint size; string fidx = null;
                 if (!uint.TryParse(args[from++], out size)) {
+                    --from;
                     fidx = GetFullPath(args[from++]);
                     size = 0;
+                } else {
+                    uint count;
+                    if (!uint.TryParse(args[from++], out count)) {
+                        --from;
+                    } else {
+                        var head = size;
+                        size = count;
+                        count = Convert.ToUInt32(args[from++]);
+                        var path = GetFullPath(args[from++]);
+                        if ((soff == 0) && (leng == 0)) {
+                            return ContainerFactory.CreateMul(head, size, count, path);
+                        } else {
+                            var virt = ContainerFactory.CreateVirtualMul(null, path);
+                            return ContainerFactory.CreateMul(virt, head, size, count, soff, leng);
+                        }
+                    }
                 }
                 var  fmul = GetFullPath(args[from++]);
 
-                if (soff == 0 && leng == 0) {
+                if ((soff == 0) && (leng == 0)) {
                     return size == 0
                         ? ContainerFactory.CreateMul(fidx, fmul)
                         : ContainerFactory.CreateMul(size, fmul);

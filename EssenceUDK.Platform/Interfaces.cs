@@ -92,7 +92,7 @@ namespace EssenceUDK.Platform
         bool IsIndexBased { get; }
         uint GetExtra(uint id);
         void SetExtra(uint id, uint value);
-        byte[] this[uint id] { get; set; }
+        byte[] this[uint id, bool item = false] { get; set; }
         T   Read<T>(uint id, uint offset) where T : struct;
         T[] ReadAll<T>(uint id, uint offset) where T : struct;
         T[] Read<T>(uint fromId, uint offset, uint count) where T : struct;
@@ -103,5 +103,8 @@ namespace EssenceUDK.Platform
         void Delete(uint id);
         void Resize(uint entries);
         void Defrag();
+
+        uint EntryHeaderSize { get; }
+        uint EntryItemsCount { get; } 
     }
 }

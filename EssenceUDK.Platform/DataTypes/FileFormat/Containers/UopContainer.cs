@@ -266,14 +266,24 @@ int idx = ind++;
         }
 
         bool IDataContainer.IsIndexBased { get { return false; } }
+        uint IDataContainer.EntryHeaderSize { get { return 0; } }
+        uint IDataContainer.EntryItemsCount { get { return 1; } }
 
         uint IDataContainer.GetExtra(uint id) { return 0; }
 
         void IDataContainer.SetExtra(uint id, uint value) { }
 
-        byte[] IDataContainer.this[uint id] {
-            get { return Read(id); }
-            set { Write(id, value); }
+        byte[] IDataContainer.this[uint id, bool item] {
+            get {
+                if (item)
+                    throw new NotSupportedException("Uop container can't have items.");
+                return Read(id);
+            }
+            set {
+                if (item)
+                    throw new NotSupportedException("Uop container can't have items.");
+                Write(id, value);
+            }
         }
 
         T IDataContainer.Read<T>(uint id, uint offset)
