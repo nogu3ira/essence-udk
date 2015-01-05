@@ -58,6 +58,12 @@ namespace EssenceUDK.Tools
             + "\n --convtd    - Make conversation from new tiledta format(HS) to old one and back"
             + "\n   Arguments:"
             + "\n     <dstfile> <newformat> <mulfile>"
+            + "\n       <newformat>  - true\false, true means converting from new format to old"
+            + "\n"
+            + "\n --convmt    - Make conversation from new multi format(HS) to old one and back"
+            + "\n   Arguments:"
+            + "\n     <newformat> <idxfile> <mulfile>"
+            + "\n       <newformat>  - true\false, true means converting from new format to old"
             + "\n"
             + "\n --copyid    - Coping entries with specified numbers to new position"
             + "\n   Arguments:"
@@ -127,6 +133,7 @@ namespace EssenceUDK.Tools
             + "\n| animdata.mul |         548 |    items / 8 |"
             + "\n| radarcol.mul |           2 | land + items |"
             + "\n| hues.mul     |         708 |          375 |"
+            + "\n| multi.mul    |           - |         8192 |"
             + "\n"
             ;
 
@@ -309,6 +316,29 @@ namespace EssenceUDK.Tools
                     }
                     dest.Flush();
                     dest.Close();
+                } else
+                if (String.Compare(args[0], "--convmt", true) == 0) {
+                    var fnew = Boolean.Parse(args[from++]);
+                    var idxf = GetFullPath(args[from++]);
+                    var mulf = GetFullPath(args[from++]);
+                    var mult = ContainerFactory.CreateMul(idxf, mulf);
+                    var cons = new byte[4] {0x00, 0x00, 0x00, 0x00};
+                    ResetProcessStatus(mult.EntryLength, "Converting multi ");
+                    for (uint it = 0, i = 0; i < mult.EntryLength; ++i) {
+                        var dbuf = mult[i];
+                        var data = new byte[(dbuf.Length / (fnew ? 16 : 12)) * (fnew ? 12 : 16)];
+                        if (fnew) // from new to old
+                            for (int t = 0, s = 0; s < dbuf.Length; s += 16, t += 12) {
+                                Array.Copy(dbuf, s, data, t, 12);
+                            }
+                        else // from old to new
+                            for (int t = 0, s = 0; s < dbuf.Length; s += 12, t += 16) {
+                                Array.Copy(dbuf, s, data, t, 12);
+                                Array.Copy(cons, 0, data, t + 12, 4);
+                            }
+                        mult[i] = data;
+                        UpdateProcessStatus(++it);
+                    }
                 } else
 
                 // --------------------------------------------------------------------------
