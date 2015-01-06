@@ -158,7 +158,9 @@ namespace EssenceUDK.Tools
 
         static void Main(string[] args)
         {
+            #if !DEBUG
             try {
+            #endif
                 int from = 1;
                 if (String.Compare(args[0], "--create", true) == 0) {
                     ResetProcessStatus(1, "Creating container ");
@@ -248,7 +250,7 @@ namespace EssenceUDK.Tools
                     if (mul1.EntryItemsCount != mul2.EntryItemsCount || mul1.EntryLength != mul2.EntryLength)
                         throw new Exception("Both mul containers must be same type.");
                     var cmpr = Math.Min(mul1.EntryLength, mul2.EntryLength);
-                    var item = mul1.EntryItemsCount <= 1;
+                    var item = mul1.EntryItemsCount > 1;
                     ResetProcessStatus(cmpr * mul1.EntryItemsCount, "Merging data ");
                     for (uint it = 0, i = 0; i < cmpr; ++i) {
                         byte[] dat1 = null; 
@@ -258,15 +260,19 @@ namespace EssenceUDK.Tools
                                 dat1 = mul1[i];
                             else if (mul2.IsValid(i))
                                 dat2 = mul2[i];
-                            else
+                            else {
+                                it += mul1.EntryItemsCount;
                                 continue;
+                            }
                         }
                         for (uint c = 0; c < mul1.EntryItemsCount; ++c) {
                             var id = i * mul1.EntryItemsCount + c;
                             dat1 = dat1 ?? mul1[id, item];
                             dat2 = dat2 ?? mul2[id, item];
-                            if (Utils.ArrayIdentical(dat1, dat2))
+                            if (dat1 != null && dat2 != null && Utils.ArrayIdentical(dat1, dat2)) {
+                                ++it;
                                 continue;
+                            }
                             for (int m = 1; m < 3; ++m) {
                                 var data = (m == 1) ? dat1 : dat2;
                                 if (data == null)
@@ -495,6 +501,7 @@ namespace EssenceUDK.Tools
                     Console.WriteLine(usage);
                 } else
                     throw new Exception();
+            #if !DEBUG
             } catch(Exception e) {
                 Console.WriteLine("Proccess aborted: Ither bad agruments or something real very very bad happened..");
                 Console.WriteLine("Run application wiht \"--help\" argumnet for additional info.");              
@@ -504,6 +511,7 @@ namespace EssenceUDK.Tools
                     exception = exception.InnerException;
                 }
             }
+            #endif
             
         }
 
@@ -575,8 +583,8 @@ namespace EssenceUDK.Tools
         private static IDataContainer GetMulContainer(string[] args, ref int from)
         {
             try {
-                var  soff = Convert.ToUInt32(args[from++]);
-                var  leng = Convert.ToUInt32(args[from++]);
+                var  soff = StringToUint(args[from++]);
+                var  leng = StringToUint(args[from++]);
                 uint size; string fidx = null;
                 if (!uint.TryParse(args[from++], out size)) {
                     --from;
@@ -589,7 +597,7 @@ namespace EssenceUDK.Tools
                     } else {
                         var head = size;
                         size = count;
-                        count = Convert.ToUInt32(args[from++]);
+                        count = StringToUint(args[from++]);
                         var path = GetFullPath(args[from++]);
                         if ((soff == 0) && (leng == 0)) {
                             return ContainerFactory.CreateMul(head, size, count, path);
