@@ -292,21 +292,25 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
                 throw new ArgumentOutOfRangeException();
 
             if (IdxTable == null) {
-                StreamMul.Seek((_EntryOff + id) * EntrySize, SeekOrigin.Begin);
+                StreamMul.Seek(_EntryOff + id * EntrySize, SeekOrigin.Begin);
             } else {
-                var length = IdxTable[id].Length;
-                IdxTable[id].Length = (uint)rawdata.Length;
-                if (IdxTable[id].Offset != 0xFFFFFFFF && length != 0xFFFFFFFF && length >= IdxTable[id].Length)
-                    StreamMul.Seek(IdxTable[id].Offset, SeekOrigin.Begin);
-                else
-                    IdxTable[id].Offset = (uint)StreamMul.Seek(0, SeekOrigin.End);
+                if (rawdata != null) {
+                    var length = IdxTable[id].Length;
+                    IdxTable[id].Length = (uint)rawdata.Length;
+                    if (IdxTable[id].Offset != 0xFFFFFFFF && length != 0xFFFFFFFF && length >= IdxTable[id].Length)
+                        StreamMul.Seek(IdxTable[id].Offset, SeekOrigin.Begin);
+                    else
+                        IdxTable[id].Offset = (uint)StreamMul.Seek(0, SeekOrigin.End);
+                } else
+                    (this as IDataContainer).Delete(id);
                 StreamIdx.Seek((_EntryOff + id) * sizeof(IndexEntry), SeekOrigin.Begin);
                 Utils.ArrayWrite<IndexEntry>(StreamIdx, IdxTable, (int)id, 1);
                 StreamIdx.Flush();
             }
-
-            Utils.ArrayWrite<byte>(StreamMul, rawdata, 0, (int)IdxTable[id].Length);
-            StreamMul.Flush();
+            if (rawdata != null) {
+                Utils.ArrayWrite<byte>(StreamMul, rawdata, 0, rawdata.Length);
+                StreamMul.Flush();
+            }
         }
 
         void IDataContainer.Replace(uint id1, uint id2)
@@ -337,8 +341,8 @@ namespace EssenceUDK.Platform.DataTypes.FileFormat.Containers
                 throw new MethodAccessException("Only non virtual mul containers with idx tables support deleting data.");
             }
 
-            IdxTable[id].Offset = 0xFFFFFFFF;
-            IdxTable[id].Length = 0xFFFFFFFF;
+            IdxTable[id].Offset = 0xFFFFFFFFu;
+            IdxTable[id].Length = 0xFFFFFFFFu;
         }
 
         unsafe void IDataContainer.Resize(uint entries)
