@@ -25,6 +25,7 @@ namespace EssenceUDK.Platform.DataTypes
             RealHeight = rheight;
         }
 
+        // OSI Maps
         public static readonly FacetDesc PreAlpha   = new FacetDesc("Britania",  128,  128,  128,  128);
         public static readonly FacetDesc OldFelucca = new FacetDesc("Felucca",   768,  512,  640,  512);
         public static readonly FacetDesc NewFelucca = new FacetDesc("Felucca",   896,  512,  640,  512);
@@ -37,6 +38,8 @@ namespace EssenceUDK.Platform.DataTypes
         public static readonly FacetDesc Tokuno     = new FacetDesc("Tokuno",    181,  181,  181,  181);
         public static readonly FacetDesc TerMur     = new FacetDesc("TerMur",    160,  512,  160,  512);
 
+        // Quint maps
+        public static readonly FacetDesc Dangeons   = new FacetDesc("Dangeons",  896,  512, 896, 512);
         public static readonly FacetDesc Assidiya   = new FacetDesc("Assidiya", 1536, 1024, 1536, 1024);
     }
 
@@ -519,7 +522,7 @@ namespace EssenceUDK.Platform.DataTypes
 
         public uint GetTileId(uint offsetX, uint offsetY)
         {
-            return (offsetX << 3) + offsetY;
+            return (offsetY << 3) + offsetX;
         }
 
         public IMapTile this[uint index] {
@@ -585,12 +588,12 @@ namespace EssenceUDK.Platform.DataTypes
 
         public uint GetBlockId(uint blockX, uint blockY)
         {
-            return (blockX * _Width) + blockY;
+            return (blockX * _Height) + blockY;
         }
 
         public uint FindBlockId(uint tileX, uint tileY)
         {
-            return ((tileX >> 3) * _Width) + (tileY >> 3);
+            return ((tileX >> 3) * _Height) + (tileY >> 3);
         }
 
         public IMapBlock this[uint index] {

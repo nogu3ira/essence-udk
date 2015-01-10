@@ -913,7 +913,7 @@ map5.mul
                     tilelist[i] = new List<ItemMapTileData>(128);
 
                 for (int i = 0; i < tiles.Length; ++i)
-                    tilelist[tiles[i].XOffset * 8 + tiles[i].YOffset].Add(new ItemMapTileData(tiles[i].XOffset, tiles[i].YOffset, tiles[i]));
+                    tilelist[tiles[i].YOffset * 8 + tiles[i].XOffset].Add(new ItemMapTileData(tiles[i].XOffset, tiles[i].YOffset, tiles[i]));
 
                 for (int i = 0; i < 64; ++i)
                     items[i] = tilelist[i].OrderBy(t => t.Altitude).ToArray();

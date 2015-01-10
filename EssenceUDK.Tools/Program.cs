@@ -35,18 +35,20 @@ namespace EssenceUDK.Tools
             + "\n"
             + "\n --fsutil    - Operation over file system (rename, moving, deleteing files)"
             + "\n   Arguments:"
-            + "\n     [-pfx <string>] [-min <number>] [-max <number>] [-ren <beg|end>]"
-            + "\n     [-mov <number>] [-len <number>] [-hex] [-del] <in_dir> <out_dir>"
+            + "\n     [-pfx <string>] [-min <number>] [-max <number>] [-ren <beg|end|file>]"
+            + "\n     [-mov <number>] [-len <number>] [-hex] [-del] <in_dir> <out_dir> [<list>]"
             + "\n       -pfx <string>  Prefix for file names: I, L, T, G and others."
             + "\n       -min <number>  Ignore all files with ID < number."
             + "\n       -max <number>  Ignore all files with ID > number."
             + "\n       -ren <beg|end> Rename all files from end or start without skipping ID."
+            + "\n       -ren <file>    Rename files from files according to there rule"
             + "\n       -mov <number>  Shift each result ID by specified value."
             + "\n       -len <number>  Count of digits in output names (default 5 and 4 for hex)"
             + "\n       -hex           Save file names in HEX format."
             + "\n       -del           Delete file from <in_dir> after coping ti <out_dir>."
             + "\n       <in_dir>       Path to input folder."
             + "\n       <out_dir>      Path to output folder."
+            + "\n       <list>         Path to output text file to store list of id's"
             + "\n"
             + "\n --create    - Create new index or not index *.mul file with specidied size"
             + "\n   Arguments:"
@@ -187,14 +189,16 @@ namespace EssenceUDK.Tools
                 if (String.Compare(args[0], "--fsutil", true) == 0) {
                     var srsdir = String.Empty;
                     var trgdir = String.Empty;
+                    var lspath = String.Empty;
                     var imgcls = String.Empty;
-                    var lminid = 0x0000;
-                    var lmaxid = 0xFFFF;
+                    var lminid = 0x00000000;
+                    var lmaxid = 0x0FFFFFFF;
                     var lcount = 0;
                     var trimsp = (int)0;
                     var shmove = (int)0;
                     var outhex = false;
                     var outdel = false;
+                    List<uint[]> inrule = null;
 
                     args = args.Select(a => a.ToLower()).Skip(1).ToArray();
                     var enumerator = args.GetEnumerator();
@@ -215,7 +219,11 @@ namespace EssenceUDK.Tools
 
                         if (arg == "-ren" && enumerator.MoveNext()) {
                             arg = enumerator.Current as String;
-                            trimsp = (arg == "beg") ? 1 : (arg == "end") ? -1 : 0;
+                            if (arg != "beg" && arg != "end") {
+                                int f = 0;
+                                inrule = GetMultiDimentionList(new [] {arg}, ref f);
+                            } else
+                                trimsp = (arg == "beg") ? 1 : (arg == "end") ? -1 : 0;
                         } else
 
                         if (arg == "-mov" && enumerator.MoveNext()) {
@@ -242,6 +250,9 @@ namespace EssenceUDK.Tools
                         if (String.IsNullOrWhiteSpace(trgdir)) {
                             trgdir = GetFullPath(arg);
                         } else
+                        if (String.IsNullOrWhiteSpace(lspath)) {
+                            lspath = GetFullPath(arg);
+                        } else
 
                         continue;
                     }
@@ -251,39 +262,53 @@ namespace EssenceUDK.Tools
                     if (String.IsNullOrWhiteSpace(srsdir) || String.IsNullOrWhiteSpace(trgdir)) 
                         throw new ArgumentException();
 
-                    var searchPattern = new Regex(@"[\\/][" + imgcls + @"](0x[A-F0-9\-]{4}|[0-9\-]{5})\.(bmp|png|tif|tiff|gif)$", RegexOptions.IgnoreCase);
+                    var searchPattern = new Regex((!String.IsNullOrEmpty(imgcls) ? (@"[\\/][" + imgcls + @"]") : @"[\\/]") + @"(0x[A-F0-9\-]{" + lcount + @"}|[0-9\-]{" + lcount + @"})\.(mde|bmp|png|tif|tiff|gif|wav|vd)$", RegexOptions.IgnoreCase);
                     var lfiles = Directory.GetFiles(srsdir, "*", SearchOption.TopDirectoryOnly).Where(f => searchPattern.IsMatch(f)).Select(f => f.Substring(f.LastIndexOf('\\') + 1).ToLower()).ToArray();
                     var entries = lfiles.Select(f => {
                         var _ext = f.Substring(f.LastIndexOf(@"."));
                         var _nam = f.Substring(0, f.Length - _ext.Length);
                         var _hex = _nam.Contains("0x");
-                        var _str = _hex ? _nam.LastIndexOf('x') + 1 : _nam.Reverse().SkipWhile(c => !Char.IsDigit(c)).Count();
+                        var _str = _hex ? _nam.LastIndexOf('x') + 1 : (_nam.Length - _nam.Reverse().SkipWhile(c => !Char.IsDigit(c)).Count());
                         var _len = f.Length - _ext.Length - _str;
                         var _idx = UInt32.Parse(f.Substring(_str, _len), _hex ? NumberStyles.AllowHexSpecifier : NumberStyles.None);
                         return new FileDesc(_ext, _hex, (ushort)_len, (ushort)_idx);
                     }).ToList();
+                    if (inrule != null) {
+                        for (int i = entries.Count - 1; i >= 0; --i) {
+                            var id = entries[i].OrigIndex;
+                            var nr = inrule.FirstOrDefault(r => r[0] == id);
+                            if (nr == null)
+                                entries.RemoveAt(i);
+                            else
+                                entries[i].SetMoveIndex((int)nr[1]);
+                        }
+                    }
                     entries = entries.Where(e => e.OrigIndex >= lminid && e.OrigIndex <= lmaxid).ToList();
                     entries.Sort(FileDesc.CompareFileDescByOrigIndex);
 
-                    if (trimsp > 0)
-                        for (int idx = (int)entries.First().OrigIndex, i = 0; i < entries.Count; ++i)
-                            entries[i].SetMoveIndex(idx++);
-                    if (trimsp < 0)
-                        for (int idx = (int)entries.Last().OrigIndex, i = entries.Count - 1; i >= 0; --i)
-                            entries[i].SetMoveIndex(idx--);
                     if (shmove != 0)
                         for (int i = 0; i < entries.Count; ++i)
                             entries[i].SetMoveIndex(entries[i].OrigIndex + shmove);
+                    if (trimsp > 0)
+                        for (int idx = (int)entries.First().MoveIndex, i = 0; i < entries.Count; ++i)
+                            entries[i].SetMoveIndex(idx++);
+                    if (trimsp < 0)
+                        for (int idx = (int)entries.Last().MoveIndex, i = entries.Count - 1; i >= 0; --i)
+                            entries[i].SetMoveIndex(idx--);                
 
+                    var list = String.Empty;
                     enumerator = entries.GetEnumerator();
                     while (enumerator.MoveNext()) {
                         var entry = (FileDesc)enumerator.Current;
                         var path1 = Path.Combine(srsdir, String.Format("{0}{1}{2}", imgcls.ToUpper(), String.Format((entry.HexFormat ? "0x{0:X" : "{0:D") + entry.OrigCount + "}", entry.OrigIndex), entry.Extension));
                         var path2 = Path.Combine(trgdir, String.Format("{0}{1}{2}", imgcls.ToUpper(), String.Format((outhex ? "0x{0:X" : "{0:D") + entry.OrigCount + "}", entry.MoveIndex), entry.Extension));
+                        list += String.Format("0x{0:X5} -> 0x{1:X5}{2}", entry.OrigIndex, entry.MoveIndex, Environment.NewLine);
                         File.Copy(path1, path2);
                         if (outdel)
                             File.Delete(path1);
                     }
+                    if (!String.IsNullOrWhiteSpace(lspath))
+                        File.WriteAllText(lspath, list);
                 } else
 
                 if (String.Compare(args[0], "--create", true) == 0) {
@@ -379,15 +404,15 @@ namespace EssenceUDK.Tools
                     for (uint it = 0, i = 0; i < cmpr; ++i) {
                         byte[] dat1 = null; 
                         byte[] dat2 = null;
-                        if (!mul1.IsValid(i) || !mul2.IsValid(i)) {
-                            if (mul1.IsValid(i))
-                                dat1 = mul1[i];
-                            else if (mul2.IsValid(i))
-                                dat2 = mul2[i];
-                            else {
+                        if (!mul1.IsValid(i) && !mul2.IsValid(i)) {
+                            //if (mul1.IsValid(i))
+                            //    dat1 = mul1[i];
+                            //else if (mul2.IsValid(i))
+                            //    dat2 = mul2[i];
+                            //else {
                                 it += mul1.EntryItemsCount;
                                 continue;
-                            }
+                            //}
                         }
                         for (uint c = 0; c < mul1.EntryItemsCount; ++c) {
                             var id = i * mul1.EntryItemsCount + c;
@@ -519,7 +544,7 @@ namespace EssenceUDK.Tools
                     var uodata = (UODataType)StringToUint(args[from++]);
                     var uoopta = args[from++].Split(new []{'|'}, StringSplitOptions.RemoveEmptyEntries).Select(s => (ushort)StringToUint(s)).ToArray();
                     var uoopts = new UODataOptions();
-                    for (int a = 0; a < uoopta.Length / 3; a+=3)
+                    for (int a = 0; a < uoopta.Length; a+=3)
                         uoopts.majorFacet[uoopta[a]] = new FacetDesc(String.Format("Facet0{0}", uoopta[a]), uoopta[a+1], uoopta[a+2], uoopta[a+1], uoopta[a+2]);
                     var manager = new UODataManager(new Uri(folder), uodata, Language.English, uoopts, true);
                     var dwriter = manager.DataFactory as IDataFactoryWriter;
@@ -532,7 +557,7 @@ namespace EssenceUDK.Tools
                         ResetProcessStatus((x2 - x1 + 1) * (y2 - y1 + 1), "Replacing land tiles in map ");
                         for (uint it = 1, x = x1; x <= x2; ++x) {
                             for (uint y = y1; y <= y2; ++y, ++it) {
-                                var i= f.GetBlockId(x, y);
+                                var i = f.GetBlockId(x, y);
                                 var b = f[i];
                                 var c = false;
                                 for (uint k = 0; k < 64; ++k) {
@@ -559,7 +584,7 @@ namespace EssenceUDK.Tools
                         ResetProcessStatus((x2 - x1 + 1) * (y2 - y1 + 1), "Replacing item tiles in map ");
                         for (uint it = 1, x = x1; x <= x2; ++x) {
                             for (uint y = y1; y <= y2; ++y, ++it) {
-                                var i= f.GetBlockId(x, y);
+                                var i = f.GetBlockId(x, y);
                                 var b = f[i];
                                 if (b == null) {
                                     UpdateProcessStatus(it);
@@ -592,7 +617,7 @@ namespace EssenceUDK.Tools
                         ResetProcessStatus((x2 - x1 + 1) * (y2 - y1 + 1), "Replacing item colors in map ");
                         for (uint it = 1, x = x1; x <= x2; ++x) {
                             for (uint y = y1; y <= y2; ++y, ++it) {
-                                var i= f.GetBlockId(x, y);
+                                var i = f.GetBlockId(x, y);
                                 var b = f[i];
                                 if (b == null) {
                                     UpdateProcessStatus(it);
