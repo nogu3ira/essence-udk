@@ -456,6 +456,7 @@ namespace EssenceUDK.Platform.DataTypes
         ILandMapTile    Land  { get; }
         int             Count { get; }
         IItemMapTile    this[int index] { get; }
+        List<IItemMapTile> ItemsList { get; }
 
         IItemMapTile    Add(ushort tileid, ushort palette, sbyte altitude);
         IItemMapTile    Add();
@@ -471,6 +472,8 @@ namespace EssenceUDK.Platform.DataTypes
         public ILandMapTile Land { get { return _Land; } }
         public int Count { get { return _Items.Count; } }
         public IItemMapTile this[int index] { get { return index < _Items.Count ? _Items[index] : null; } }
+
+        public List<IItemMapTile> ItemsList { get {return _Items; } }
 
         public IItemMapTile Add()
         {
@@ -510,19 +513,33 @@ namespace EssenceUDK.Platform.DataTypes
         IMapTile this[uint index] { get; }
         IMapTile this[uint offsetX, uint offsetY] { get; }
         IMapBlockData GetData();
+        MapFacet Parent { get; }
+        uint EntryId { get; }
+        //bool LandPatch { get; }
+        //bool ItemPatch { get; }
     }
 
     public sealed class MapBlock : IMapBlock
     {
-        private ushort _EntryId;
+        private uint _EntryId;
         private MapTile[] _Tiles;
+        //private MapTile[] _Patch;
         private MapFacet _Parent;
 
-        public ushort EntryId { get { return _EntryId; } }
+        //private bool _ItemPatch;
+        //private bool _LandPatch;
+
+        
+
+        //public bool LandPatch { get { return _LandPatch; } }
+        //public bool ItemPatch { get { return _ItemPatch; } }
+
+        public MapFacet Parent { get { return _Parent; } }
+        public uint EntryId { get { return _EntryId; } }
 
         public uint GetTileId(uint offsetX, uint offsetY)
         {
-            return (offsetY << 3) + offsetX;
+            return (offsetY << 3) + offsetX; // WYF??
         }
 
         public IMapTile this[uint index] {
@@ -538,10 +555,11 @@ namespace EssenceUDK.Platform.DataTypes
             }
         }
 
-        public MapBlock(MapFacet parent, ushort index, IMapBlockData data)
+        public MapBlock(MapFacet parent, uint index, IMapBlockData data)
         {
             _Parent = parent;
             _EntryId = index;
+            //_Patch = null;
             _Tiles = new MapTile[64];
             for (int i = 0; i < 64; ++i)
                 _Tiles[i] = new MapTile(this, data.Lands[i], data.Items[i]);
@@ -551,6 +569,11 @@ namespace EssenceUDK.Platform.DataTypes
         {
             return new ClassicFactory.MapBlockData(0, _Tiles);
         }
+
+        //public IMapBlockData GetPatchData()
+        //{
+        //    return new ClassicFactory.MapBlockData(0, _Patch);
+        //}
 
         public void Dispose()
         {
@@ -598,7 +621,7 @@ namespace EssenceUDK.Platform.DataTypes
 
         public IMapBlock this[uint index] {
             get { return index < _Blocks.Length ? _Blocks[index] ?? 
-                (_Blocks[index] = new MapBlock(this, (ushort)index, (dataFactory as IDataFactoryReader).GetMapBlock(_MapIndex, index))) : null;  }
+                (_Blocks[index] = new MapBlock(this, (uint)index, (dataFactory as IDataFactoryReader).GetMapBlock(_MapIndex, index))) : null;  }
             set { if (index < _Blocks.Length) _Blocks[index] = (value as MapBlock); }
         }
 

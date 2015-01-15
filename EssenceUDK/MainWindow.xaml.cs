@@ -18,6 +18,7 @@ using EssenceUDK.Platform;
 ﻿using EssenceUDK.Platform.DataTypes;
 using EssenceUDK.Platform.UtilHelpers;
 ﻿using EssenceUDK.Resources;
+﻿using PixelFormat = EssenceUDK.Platform.DataTypes.PixelFormat;
 ﻿using UOLang = EssenceUDK.Platform.UtilHelpers.Language;
 
 namespace EssenceUDK
@@ -34,7 +35,7 @@ namespace EssenceUDK
             // ThemeManager.GetThemes()[0];
 
             // test - lets switch to our tab at startup
-            tabControl1.SelectedIndex = 2;
+            tabControl1.SelectedIndex = 6;
 
             // Lets try to find clients at system
             var clients = ClientInfo.GetInSystem();
@@ -81,15 +82,188 @@ namespace EssenceUDK
                 // PS xaml is good, but lets devide all properties of controls in two types: visual-style and visual-logic.
                 // The first one is part of theme or control design. The second are user customizable or controll changeble,
                 // for example - sizes of tiles in tileItemView1 (we just add some Properties to it later). The idea is that if
-                // we decide ti rewrite control in future to own we can easily change it without any problems.
-
+                // we decide ti rewrite control in future to own we can easily change it without any problems.  
             } else {
                 // it's seems we cant find clients so we just throw Exception
                 throw new Exception("No one \"Ultima Online\" client was founded.");
             }
 
             
+            
         }
+
+        private int cmdlast = 20;
+        private UODataManager UOManager;
+        private ISurface surf = null;
+
+        private void Render(int cmd)
+        {
+            var flt = cmd < 20;
+            if (flt)
+                cmd -= 10;
+            else
+                cmd -= 20;
+            cmdlast = flt ? 10 : 20;
+
+            switch (cmd) {
+                case 7: nudX.Value -= 1; break;
+                case 3: nudX.Value += 1; break;
+                case 9: nudY.Value -= 1; break;
+                case 1: nudY.Value += 1; break;
+                case 8: nudX.Value -= 1; nudY.Value -= 1; break;
+                case 2: nudX.Value += 1; nudY.Value += 1; break;
+                case 4: nudX.Value -= 1; nudY.Value += 1; break;
+                case 6: nudX.Value += 1; nudY.Value -= 1; break;
+                default: break;
+            }
+
+            var map = (byte)nudM.Value;
+            var range = (byte)nudR.Value;
+            var tcx = (ushort)nudX.Value;
+            var tcy = (ushort)nudY.Value;
+            var minz = (sbyte)nudMinZ.Value;
+            var maxz = (sbyte)nudMaxZ.Value;
+            var alt = (sbyte)(map == 1 ? -45 : 0);
+            
+
+            //if (surf == null)
+                //surf = UOManager.CreateSurface((ushort)2560, (ushort)1600, PixelFormat.Bpp16X1R5G5B5);
+            #if DEBUG
+                surf = UOManager.CreateSurface((ushort)800, (ushort)800, PixelFormat.Bpp16X1R5G5B5);
+            #else
+                surf = UOManager.CreateSurface((ushort)2560, (ushort)1600, PixelFormat.Bpp16X1R5G5B5);
+            #endif
+
+            
+
+            if (flt)
+                UOManager.FacetRender.DrawFlatMap(map, alt, ref surf, range, tcx, tcy, minz, maxz);
+            else
+                UOManager.FacetRender.DrawObliqueMap(map, alt, ref surf, range, tcx, tcy, minz, maxz);
+
+            //var bid = UOManager.GetMapFacet(map).GetBlockId((uint)nudX.Value, (uint)nudY.Value);
+            //UOManager.FacetRender.DrawBlock(ref surf, map, bid);
+            imgFacet.Source = surf.GetSurface().Image;
+        }
+
+        private void btnRender_Click(object sender, RoutedEventArgs e)
+        {
+            var tag = Convert.ToInt32((sender as Button).Tag);
+            Render(tag);
+        }
+
+        private void keyRender_MoveU(object sender, ExecutedRoutedEventArgs e)
+        {
+            Render(cmdlast + 8);
+        }
+
+        private void keyRender_MoveD(object sender, ExecutedRoutedEventArgs e)
+        {
+            Render(cmdlast + 2);
+        }
+
+        private void keyRender_MoveL(object sender, ExecutedRoutedEventArgs e)
+        {
+            Render(cmdlast + 4);
+        }
+
+        private void keyRender_MoveR(object sender, ExecutedRoutedEventArgs e)
+        {
+            Render(cmdlast + 6);
+        }
+
+        private void keyRender_MoveUL(object sender, ExecutedRoutedEventArgs e)
+        {
+            Render(cmdlast + 7);
+        }
+
+        private void keyRender_MoveUR(object sender, ExecutedRoutedEventArgs e)
+        {
+            Render(cmdlast + 9);
+        }
+
+        private void keyRender_MoveDL(object sender, ExecutedRoutedEventArgs e)
+        {
+            Render(cmdlast + 1);
+        }
+
+        private void keyRender_MoveDR(object sender, ExecutedRoutedEventArgs e)
+        {
+            Render(cmdlast + 3);
+        }
+
+        private void keyRender_MoveO(object sender, ExecutedRoutedEventArgs e)
+        {
+            Render(cmdlast + 0);
+        }
+
+        private void AddHotKeys(ExecutedRoutedEventHandler handler, Key key, ModifierKeys mod = ModifierKeys.None)
+        {
+            try {
+                RoutedCommand firstSettings = new RoutedCommand();
+                firstSettings.InputGestures.Add(new KeyGesture(key, mod));
+                CommandBindings.Add(new CommandBinding(firstSettings, handler));
+                //private void My_first_event_handler(object sender, ExecutedRoutedEventArgs e) 
+                //private void My_second_event_handler(object sender, RoutedEventArgs e)
+            }
+            catch (Exception err)
+            {
+                //handle exception error
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var datauri = new Uri(@"C:\UltimaOnline\distro\__deploy\__output\uoassets\_override");
+            var dataopt = new UODataOptions();
+            dataopt.majorFacet[0] = FacetDesc.Dangeons;
+            dataopt.majorFacet[1] = FacetDesc.Assidiya;
+            var _manager = new UODataManager(datauri, UODataType.ClassicAdventuresOnHighSeas, UOLang.Russian, dataopt, true);
+            UOManager = _manager;
+
+            AddHotKeys(keyRender_MoveU, Key.Up);
+            AddHotKeys(keyRender_MoveL, Key.Left);
+            AddHotKeys(keyRender_MoveR, Key.Right);
+            AddHotKeys(keyRender_MoveD, Key.Down);
+
+            AddHotKeys(keyRender_MoveU, Key.NumPad8);
+            AddHotKeys(keyRender_MoveL, Key.NumPad4);
+            AddHotKeys(keyRender_MoveR, Key.NumPad6);
+            AddHotKeys(keyRender_MoveD, Key.NumPad2);
+
+            AddHotKeys(keyRender_MoveUL, Key.NumPad7);
+            AddHotKeys(keyRender_MoveUR, Key.NumPad9);
+            AddHotKeys(keyRender_MoveDL, Key.NumPad1);
+            AddHotKeys(keyRender_MoveDR, Key.NumPad3);
+
+            AddHotKeys(keyRender_MoveUL, Key.Home);
+            AddHotKeys(keyRender_MoveUR, Key.PageUp);
+            AddHotKeys(keyRender_MoveDL, Key.End);
+            AddHotKeys(keyRender_MoveDR, Key.PageDown);
+
+
+            nudMinZ.Minimum = nudMaxZ.Minimum = nudMinZ.Value = - 128;
+            nudMinZ.Maximum = nudMaxZ.Maximum = nudMaxZ.Value = + 127;
+
+            nudM.Minimum = 0;
+            nudM.Maximum = 5;
+            nudR.Minimum = 0;
+            nudR.Maximum = 255;
+
+            nudX.Minimum = 0;
+            nudX.Maximum = 12288;
+            nudY.Minimum = 0;
+            nudY.Maximum = 8192;
+
+            nudM.Value = 1;
+            nudR.Value = 30;
+            nudX.Value = 7320;//913 * 8 + 3;
+            nudY.Value = 3364;//411 * 8 + 3;
+            this.Width = 1278;
+            this.Height = 938;
+        }
+
+        
     }
 
 }

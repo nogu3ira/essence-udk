@@ -6,7 +6,8 @@ using System.Linq;
 using System.Text;
 using EssenceUDK.Platform.DataTypes;
 using EssenceUDK.Platform.Factories;
-﻿using EssenceUDK.Platform.UtilHelpers;
+﻿﻿using EssenceUDK.Platform.TileEngine;
+﻿﻿using EssenceUDK.Platform.UtilHelpers;
 
 namespace EssenceUDK.Platform
 {
@@ -250,8 +251,10 @@ namespace EssenceUDK.Platform
 
         public UODataOptions DataOptions { get { return dataOptions; } }
         public IDataFactory  DataFactory { get { return dataFactory; } }
+        public FacetRender   FacetRender { get { return facetRender ?? (facetRender = new FacetRender(this)); } }
         private          UODataOptions dataOptions;
         private readonly IDataFactory  dataFactory;
+        private          FacetRender   facetRender;
 
         //public static UODataManager[] Instanes { get { return m_Instanes.Values; } }
         private static Hashtable m_Instanes = new Hashtable(2);
@@ -294,7 +297,7 @@ namespace EssenceUDK.Platform
             m_Instanes[uri] = this;
 
             dataOptions = dataoptions ?? new UODataOptions(Location);
-            dataFactory = type.HasFlag(UODataType.UseMulFiles) || type.HasFlag(UODataType.UseUopFiles) ? new ClassicFactory(this) : null;
+            dataFactory = (type.HasFlag(UODataType.UseMulFiles) || type.HasFlag(UODataType.UseUopFiles)) ? new ClassicFactory(this) : null;
 
             // Initialize data... its loading, wait, wait
             // TODO: We need separeted thread for data working
