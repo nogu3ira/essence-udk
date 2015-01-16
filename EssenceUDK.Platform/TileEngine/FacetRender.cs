@@ -459,10 +459,18 @@ namespace EssenceUDK.Platform.TileEngine
 
         public void DrawFlatMap(byte map, short sealvl, ref ISurface dest, byte range, ushort tx, ushort ty, sbyte minz = -128, sbyte maxz = +127)
         {
-            var icx = (int)(dest.Width /2 - 16*(tx%8 - 0));
-            var icy = (int)(dest.Height/2 - 16*(ty%8 - 3) + 2*sealvl);
+            var sea = 14142*sealvl/10000;
+            var icx = (int)(dest.Width /2 + 8 - 16*(tx%8 - 0) + sea);
+            var icy = (int)(dest.Height/2 - 8 - 16*(ty%8 - 0) + sea);
 
             DrawFacet(icx, icy, 128, 0, 0, 128, map, sealvl, ref dest, range, tx, ty, minz, maxz, DrawFlatBlock);  
+
+            #if DEBUG
+                DrawCross(dest, icx + 96 - sea, icy + 112 - sea, 0xFFE0, 5);
+                DrawCross(dest, icx + 96 - sea, icy + 112 - sea, 0xFC1F, 3);
+                DrawCross(dest, dest.Width / 2 - 8, dest.Height / 2 - 8, 0x83E0, 3);
+                DrawCross(dest, dest.Width / 2 - 8, dest.Height / 2 - 8, 0x83FF, 5);
+            #endif
         }
 
         #endregion
