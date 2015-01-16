@@ -92,28 +92,37 @@ namespace EssenceUDK
             
         }
 
-        private int cmdlast = 20;
+        private static bool defaultflat = true;
+        private int cmdlast = defaultflat ? 10 : 20;
         private UODataManager UOManager;
         private ISurface surf = null;
 
         private void Render(int cmd)
         {
             var flt = cmd < 20;
-            if (flt)
-                cmd -= 10;
-            else
-                cmd -= 20;
+            //if (flt)
+            //    cmd -= 10;
+            //else
+            //    cmd -= 20;
             cmdlast = flt ? 10 : 20;
 
             switch (cmd) {
-                case 7: nudX.Value -= 1; break;
-                case 3: nudX.Value += 1; break;
-                case 9: nudY.Value -= 1; break;
-                case 1: nudY.Value += 1; break;
-                case 8: nudX.Value -= 1; nudY.Value -= 1; break;
-                case 2: nudX.Value += 1; nudY.Value += 1; break;
-                case 4: nudX.Value -= 1; nudY.Value += 1; break;
-                case 6: nudX.Value += 1; nudY.Value -= 1; break;
+                case 17: goto case 28;
+                case 13: goto case 22;
+                case 19: goto case 26;
+                case 11: goto case 24;
+                case 18: goto case 29;
+                case 12: goto case 21;
+                case 14: goto case 27;
+                case 16: goto case 23;
+                case 27: nudX.Value -= 1; break;
+                case 23: nudX.Value += 1; break;
+                case 29: nudY.Value -= 1; break;
+                case 21: nudY.Value += 1; break;
+                case 28: nudX.Value -= 1; nudY.Value -= 1; break;
+                case 22: nudX.Value += 1; nudY.Value += 1; break;
+                case 24: nudX.Value -= 1; nudY.Value += 1; break;
+                case 26: nudX.Value += 1; nudY.Value -= 1; break;
                 default: break;
             }
 
@@ -129,7 +138,7 @@ namespace EssenceUDK
             //if (surf == null)
                 //surf = UOManager.CreateSurface((ushort)2560, (ushort)1600, PixelFormat.Bpp16X1R5G5B5);
             #if DEBUG
-                surf = UOManager.CreateSurface((ushort)800, (ushort)800, PixelFormat.Bpp16X1R5G5B5);
+                surf = UOManager.CreateSurface((ushort)1200, (ushort)1200, PixelFormat.Bpp16X1R5G5B5);
             #else
                 surf = UOManager.CreateSurface((ushort)2560, (ushort)1600, PixelFormat.Bpp16X1R5G5B5);
             #endif

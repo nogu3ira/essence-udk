@@ -24,23 +24,8 @@ namespace EssenceUDK.Platform.TileEngine
             tileCache = new List<IEntryMapTile>(128);
             tileComparer = new TilesComparer(dataManager);
 
-            if (newx == null || newy == null) {
-                var leny = uphy - uply + 1;
-                var lenx = uphx - uplx + 1;
-                newx = new int[leny][];
-                newy = new int[leny][];
-                for (int iy = 0, y = uply; y <= uphy; ++y, ++iy) {
-                    newx[iy] = new int[lenx];
-                    newy[iy] = new int[lenx];
-                    for (int ix = 0, x = uplx; x <= uphx; ++x, ++ix) {
-                        newx[iy][ix] = (int)(((double)x * cos45 - (double)y * sin45) * scale);
-                        newy[iy][ix] = (int)(((double)x * sin45 + (double)y * cos45) * scale);
-                    }
-                }
-            }
-
-            if (texm064 == null || texm128 == null)
-                InitObliqueRender();
+            InitFlatRender();
+            InitObliqueRender();
         }
 
         internal class TilesComparer : IComparer<IEntryMapTile>
@@ -113,6 +98,136 @@ namespace EssenceUDK.Platform.TileEngine
             }
         }
 
+        private delegate void DrawTexm(ISurface srs, sbyte z, sbyte zl, sbyte zr, sbyte zd, ref ISurface dst, int cx, int cy);
+        private delegate void DrawTile(ISurface srs, sbyte z, byte alpha, ref ISurface dst, int cx, int cy);
+        private void DrawBlock(IMapBlock mapblock, uint x, uint y, IMapBlock[][] block, uint b, ref ISurface dest, int dest_rx, int dest_by, DrawTile drawtile, DrawTexm drawtexm)
+        {
+            var maptile = mapblock[x, y]; 
+
+            tileCache.Clear();
+            if (tileComparer.IsValid(maptile.Land))
+                tileCache.Add(maptile.Land);
+            for (int i = 0; i < maptile.Count; ++i)
+                if (tileComparer.IsValid(maptile[i]))
+                    tileCache.Add(maptile[i]);
+            tileCache.Sort(tileComparer);
+
+            for (int t = 0; t < tileCache.Count; ++t) {
+                var tile = tileCache[t];
+                if (tile as ILandMapTile != null) {
+                    var landtile = dataManager.GetLandTile(tile.TileId);
+                    if (!landtile.IsValid)
+                        continue;
+
+                    sbyte ul, ur, ud;
+
+                    if (y < 7) {
+                        ul = mapblock[x, y + 1u].Land.Altitude;
+                    } else {
+                        ul = block[0][b+1][x,0].Land.Altitude;
+                    }
+                    if (x < 7) {
+                        ur = mapblock[x + 1u, y].Land.Altitude;
+                    } else {
+                        ur = block[1][b][0,y].Land.Altitude;
+                    }
+                    if (y < 7 && x < 7) {
+                        ud = mapblock[x + 1u, y + 1u].Land.Altitude;
+                    } else if (x != 7) {
+                        ud = block[0][b+1][x+1u,0].Land.Altitude;
+                    } else if (y != 7) {
+                        ud = block[1][b][0,y+1u].Land.Altitude;
+                    } else {
+                        ud = block[1][b+1][0,0].Land.Altitude;
+                    }
+
+                    var tl = ((int)tile.Altitude - ul);
+                    var tr = ((int)tile.Altitude - ur);
+                    var td = ((int)tile.Altitude - ud);
+
+                    if ((landtile.Texture != null) && ((td != 0) || (tl != 0) || (tr != 0))) {
+                        drawtexm(landtile.Texture, tile.Altitude, ul, ur, ud, ref dest, dest_rx, dest_by);
+                    } else {
+                        drawtile(landtile.Surface, tile.Altitude, 0xFF, ref dest, dest_rx, dest_by);
+                    }
+                    continue;
+                }
+
+                var itemtile = dataManager.GetItemTile(tile.TileId);
+                if (itemtile.IsValid)
+                    drawtile(itemtile.Surface, tile.Altitude, itemtile.Flags.HasFlag(TileFlag.Translucent)
+                                                    ? (byte)alphavl : (byte)0xFF, ref dest, dest_rx, dest_by);
+            }
+        }
+
+        private delegate void DrawBlocks(ref ISurface dest, int cx, int cy, IMapBlock[][] block, uint b1, uint b2, byte x1, byte x2, byte y1, byte y2);
+        private void DrawFacet(int icx, int icy, int bxdw, int bxdh, int bydw, int bydh, byte map, sbyte sealvl, ref ISurface dest, byte range, ushort tx, ushort ty, sbyte minz, sbyte maxz, DrawBlocks drawblocks)
+        {
+            if (dest.PixelFormat != PixelFormat.Bpp16A1R5G5B5 && dest.PixelFormat != PixelFormat.Bpp16X1R5G5B5)
+                throw new ArgumentException("Only 16 bpp surfaces with pixel format A1R5G5B5 or X1R5G5B5 are supported.");
+
+            var facet = dataManager.GetMapFacet(map);
+            tileComparer.MinFilterZ = minz;
+            tileComparer.MaxFilterZ = maxz;
+
+            var tx1 = tx - range;
+            var ty1 = ty - range;
+            var tx2 = tx + range;
+            var ty2 = ty + range;
+
+            var bx0 = (uint)(tx  / 8);
+            var by0 = (uint)(ty  / 8);
+            var bx1 = (uint)(tx1 / 8);
+            var by1 = (uint)(ty1 / 8);
+            var bx2 = (uint)(tx2 / 8);
+            var by2 = (uint)(ty2 / 8);
+
+            var x1 = (byte)(tx1 % 8);
+            var y1 = (byte)(ty1 % 8);
+            var x2 = (byte)(tx2 % 8);
+            var y2 = (byte)(ty2 % 8);
+            int dest_cx, dest_cy;
+
+            IMapBlock[][] blocks = new IMapBlock[2][];
+            blocks[0] = new IMapBlock[2+by2-by1];
+            blocks[1] = new IMapBlock[2+by2-by1];
+            for (uint i = 0, by = by1; by <= by2+1; ++by, ++i)
+                blocks[1][i] = facet[facet.GetBlockId(bx1, by)];
+
+            lock (dest) {
+                for (uint bx = bx1; bx <= bx2; ++bx) {
+                    Array.Copy(blocks[1], blocks[0], 2 + by2 - by1);
+                    for (uint i = 0, by = by1; by <= by2+1; ++by, ++i)
+                        blocks[1][i] = facet[facet.GetBlockId(bx+1, by)];
+
+                    var ox1 = bx == bx1 ? x1 : (byte)0;
+                    var ox2 = bx == bx2 ? x2 : (byte)7;
+                    dest_cx = (int)(icx + bxdw * (bx - bx0) - bxdh * (by1 - by0));
+                    dest_cy = (int)(icy + bydw * (bx - bx0) + bydh * (by1 - by0));
+                    drawblocks(ref dest, dest_cx, dest_cy, blocks, 0, by2 - by1, ox1, ox2, y1, y2);
+                    
+                }
+            }         
+        }
+
+        #region Notes
+
+        // DrawTexm ( 
+        //      ISurface    srs    - sourse surface of 16 bit texture 64x64 or 128x128
+        //      sbyte       z      - altitude of tile (i.e. upper corner)
+        //      sbyte       zl     - z - Altitude of left corner (tile with coords x,y+1)
+        //      sbyte       zr     - z - Altitude of right corner (tile with coords x+1,y)
+        //      sbyte       zd     - z - Altitude of bottom corner (tile with coords x+1,y+1)
+        //      ISurface    dst    - dest surface to draw
+        //      int         cx     - x position on dest surface
+        //      int         cy     - y position on dest surface
+        // )
+        
+        
+
+        #endregion
+
+        // Just for debuging purposes
         private unsafe void DrawCross(ISurface dest, int cx, int cy, ushort color, ushort cs, bool locked = true)
         {
             if (!locked)
@@ -141,72 +256,129 @@ namespace EssenceUDK.Platform.TileEngine
             }
         }
 
+        
+
+        
+        
+
         #region Flat Render
 
         private static double scale = 0.5;
         private static double angle = -Math.PI / 4.0;
         private static double sin45 = Math.Sin(angle);
         private static double cos45 = Math.Cos(angle);
-        private static int     uplx = -132;
-        private static int     uphx = +132;
+        private static int     uplx = -176;
+        private static int     uphx = +176;
         private static int     uply = -680;
         private static int     uphy = +510;
         private static int[][] newx = null;
         private static int[][] newy = null;
 
-        private unsafe void DrawRotatedTile(ISurface srs, sbyte z, ref ISurface dst, int cx, int cy)
+        private static void InitFlatRender()
         {
-            lock (dst) {
-                lock (srs) {
-                    var dst_line = dst.ImageWordPtr;
-                    var dst_strd = dst.Stride >> 1;
-                    dst_line += cy*dst_strd + cx;
-                    var dst_pixl = dst_line;
+            if (newx != null && newy != null)
+                return;
 
-                    var srs_orgx = srs.Width >> 1;
-                    var srs_orgy = srs.Height + 4 * z;
-
-                    var srs_line = srs.ImageWordPtr;
-                    var srs_strd = srs.Stride >> 1;
-                    var srs_pixl = srs_line;
-                    for (int sy = 0; sy < srs.Height; ++sy) {
-                        for (int sx = 0; sx < srs.Width; ++sx, ++srs_pixl) {
-                            if (*srs_pixl == 0x0000)
-                                continue;
-
-
-                            var srs_roty = sy - srs_orgy - uply;
-                            var srs_rotx = sx - srs_orgx - uplx;
-                            var dst_roty = newy[srs_roty][srs_rotx];
-                            var dst_rotx = newx[srs_roty][srs_rotx];
-
-                            //var srs_roty = sy - srs_orgy;
-                            //var srs_rotx = sx - srs_orgx;
-                            //var dst_rotx = (int)((double)srs_rotx * cos45 - (double)srs_roty * sin45);
-                            //var dst_roty = (int)((double)srs_rotx * sin45 + (double)srs_roty * cos45);
-
-                            var dy = dst_roty;// + srs_orgy;
-                            var dx = dst_rotx;// + srs_orgx;
-
-                            dst_pixl = dst_line + dy*dst_strd + dx;
-                            *dst_pixl = *srs_pixl;
-                        }
-                        srs_pixl = (srs_line += srs_strd);
-                    }
-
-                    *dst_line = 0xFC00;
-                    *(dst_line - 1) = *dst_line;
-                    *(dst_line + 1) = *dst_line;
-                    *(dst_line - dst_strd) = *dst_line;
-                    *(dst_line + dst_strd) = *dst_line;
+            var leny = uphy - uply + 1;
+            var lenx = uphx - uplx + 1;
+            newx = new int[leny][];
+            newy = new int[leny][];
+            for (int iy = 0, y = uply; y <= uphy; ++y, ++iy) {
+                newx[iy] = new int[lenx];
+                newy[iy] = new int[lenx];
+                for (int ix = 0, x = uplx; x <= uphx; ++x, ++ix) {
+                    newx[iy][ix] = (int)(((double)x * cos45 - (double)y * sin45) * scale);
+                    newy[iy][ix] = (int)(((double)x * sin45 + (double)y * cos45) * scale);
                 }
             }
         }
 
-        public unsafe void DrawBlock(ref ISurface dest, byte map, uint id)
+        private unsafe void DrawFlatTexm(ISurface srs, sbyte z, sbyte zl, sbyte zr, sbyte zd, ref ISurface dst, int cx, int cy)
         {
-            if (dest.PixelFormat != PixelFormat.Bpp16A1R5G5B5 && dest.PixelFormat != PixelFormat.Bpp16X1R5G5B5)
-                throw new ArgumentException("Only 16 bpp surfaces with pixel format A1R5G5B5 or X1R5G5B5 are supported.");
+        }
+
+        private unsafe void DrawFlatTile(ISurface srs, sbyte z, byte alpha, ref ISurface dst, int cx, int cy)
+        {
+            lock (srs) {
+                /*
+                var dst_xdel = srs.Width >> 1;
+                var dst_ydel = srs.Height + 2 * z;
+
+                var srs_xmin = Math.Max(0, dst_xdel - cx);
+                var srs_xmax = Math.Min(dst.Width - cx + dst_xdel, srs.Width);
+                var srs_ymin = Math.Max(0, dst_ydel - cy);
+                var srs_ymax = Math.Min(Math.Max(0, dst.Height - cy + dst_ydel - srs_ymin), srs.Height);
+
+                var dst_strd = dst.Stride >> 1;
+                var dst_line = dst.ImageWordPtr + (cy - dst_ydel + srs_ymin) * dst_strd + cx - dst_xdel + srs_xmin;
+                var dst_pixl = dst_line;
+
+                var srs_strd = srs.Stride >> 1;
+                var srs_line = srs.ImageWordPtr + srs_ymin * srs_strd + srs_xmin;
+                var srs_pixl = srs_line;
+                */
+
+                int dst_width = dst.Width;
+                int dst_heigh = dst.Height;
+                int srs_width = srs.Width;
+                int srs_heigh = srs.Height;
+
+                var dst_line = dst.ImageWordPtr;
+                var dst_strd = dst.Stride >> 1;
+                dst_line += cy*dst_strd + cx;
+                var dst_pixl = dst_line;
+
+                var srs_orgx = srs_width >> 1;
+                var srs_orgy = srs_heigh + 4 * z;
+
+                var srs_line = srs.ImageWordPtr;
+                var srs_strd = srs.Stride >> 1;
+                var srs_pixl = srs_line;
+
+
+                int sx, sy, srs_roty, srs_rotx, dst_roty, dst_rotx, dx, dy;
+                for (sy = 0; sy < srs_heigh; ++sy) {
+                    for (sx = 0; sx < srs_width; ++sx, ++srs_pixl) {
+                        if (*srs_pixl == 0x0000)
+                            continue;
+
+
+                        srs_roty = sy - srs_orgy - uply;
+                        srs_rotx = sx - srs_orgx - uplx;
+                        dst_roty = newy[srs_roty][srs_rotx];
+                        dst_rotx = newx[srs_roty][srs_rotx];
+
+                        //var srs_roty = sy - srs_orgy;
+                        //var srs_rotx = sx - srs_orgx;
+                        //var dst_rotx = (int)((double)srs_rotx * cos45 - (double)srs_roty * sin45);
+                        //var dst_roty = (int)((double)srs_rotx * sin45 + (double)srs_roty * cos45);
+
+                        dy = dst_roty + cy;// + srs_orgy;
+                        dx = dst_rotx + cx;// + srs_orgx;
+
+                        if (dy < 0 || dy >= dst_heigh || dx < 0 || dx >= dst_width)
+                            continue;
+
+                        dy -= cy;//dst_roty;// + srs_orgy;
+                        dx -= cx;// dst_rotx;// + srs_orgx;
+
+                        dst_pixl = dst_line + dy*dst_strd + dx;
+                        *dst_pixl = *srs_pixl;
+                    }
+                    srs_pixl = (srs_line += srs_strd);
+                    //dst_pixl = (dst_line += dst_strd);
+                }
+
+                //*dst_line = 0xFC00;
+                //*(dst_line - 1) = *dst_line;
+                //*(dst_line + 1) = *dst_line;
+                //*(dst_line - dst_strd) = *dst_line;
+                //*(dst_line + dst_strd) = *dst_line;
+            }
+        }
+
+        public unsafe void ________DrawFlatBlock(ref ISurface dest, byte map, uint id)
+        {
 
             lock (dest) {
                 ushort* line = dest.ImageWordPtr;
@@ -243,7 +415,7 @@ namespace EssenceUDK.Platform.TileEngine
                         //if (y != 7) continue;
                         var px = 100 + y * 16;
                         var py = 150 + x * 16;
-                        DrawRotatedTile(dataManager.GetItemTile(tile.TileId).Surface, tile.Altitude, ref dest, px, py);
+                        DrawFlatTile(dataManager.GetItemTile(tile.TileId).Surface, tile.Altitude, 0xFF, ref dest, px, py);
                       
                         var bx = 300 - 22*(x - 0) + 22*(y - 0);
                         var by = 200 + 22*(x - 3) + 22*(y - 3);
@@ -258,9 +430,38 @@ namespace EssenceUDK.Platform.TileEngine
 
         }
 
+        private void DrawFlatBlock(ref ISurface dest, int cx, int cy, IMapBlock[][] block, uint b1, uint b2, byte x1 = 0, byte x2 = 7, byte y1 = 0, byte y2 = 7)
+        {
+            int dest_rx, dest_by;
+            //cx += 22;
+            for (byte x = x1; x <= x2; ++x) {
+                dest_rx = cx + 16*x;
+                dest_by = cy;
+                for (uint b = b1; b <= b2; ++b) {
+                    var mapblok = block[0][b];
+                    var by1 = b == b1 ? y1 : (byte)0;
+                    var by2 = b == b2 ? y2 : (byte)7;
+                    //dest_rx -= 22*by1;
+                    dest_by += 16*by1;
+
+                    for (byte y = by1; y <= by2; ++y) {
+                        var maptile = mapblok[x, y]; 
+                        //dest_rx -= 22;
+                        dest_by += 16;
+
+                        DrawBlock(mapblok, x, y, block, b, ref dest, dest_rx, dest_by, DrawFlatTile, DrawFlatTexm);
+                        //DrawCross(dest, dest_rx, dest_by, 0xFC00, 4);
+                    }   
+                }
+            }
+        }
+
         public void DrawFlatMap(byte map, sbyte sealvl, ref ISurface dest, byte range, ushort tx, ushort ty, sbyte minz = -128, sbyte maxz = +127)
         {
+            var icx = (int)(dest.Width /2 - 16*(tx%8 - 0));
+            var icy = (int)(dest.Height/2 - 16*(ty%8 - 3) + 2*sealvl);
 
+            DrawFacet(icx, icy, 128, 0, 0, 128, map, sealvl, ref dest, range, tx, ty, minz, maxz, DrawFlatBlock);  
         }
 
         #endregion
@@ -280,6 +481,9 @@ namespace EssenceUDK.Platform.TileEngine
 
         private static void InitObliqueRender()
         {
+            if (texm064 != null && texm128 != null)
+                return;
+
             var dst_a = 0xFF - alphavl;
             tbalpha = new byte[0x20][];
             for (int s = 0; s < 32; ++s) {
@@ -331,7 +535,7 @@ namespace EssenceUDK.Platform.TileEngine
 
         //private unsafe void Interpolate()
 
-        private unsafe void DrawLine(ushort* dest, uint dstoff, int dstlen, int dstbeg, int dstcnt, ushort* sors, uint srsoff, Point[] line, int srslen)
+        private unsafe void DrawObliqueLine(ushort* dest, uint dstoff, int dstlen, int dstbeg, int dstcnt, ushort* sors, uint srsoff, Point[] line, int srslen)
         {
             int numberpart = srslen / dstlen;
             int fractpart  = srslen % dstlen;
@@ -362,7 +566,7 @@ namespace EssenceUDK.Platform.TileEngine
             }
         }
 
-        private unsafe void DrawLine(ushort* dest, uint dstoff, int dst_height, int cy, int yu, int yd, ushort* sors, uint srsoff, Point[] line)
+        private unsafe void DrawObliqueLine(ushort* dest, uint dstoff, int dst_height, int cy, int yu, int yd, ushort* sors, uint srsoff, Point[] line)
         {
             if (yu > yd)
                 return;
@@ -371,10 +575,10 @@ namespace EssenceUDK.Platform.TileEngine
             var s = Math.Max(0, -(cy + yu));
             var k = l - s - Math.Max(0, 1 + (cy + yd) - dst_height);
             if (k > 0)
-                DrawLine(p, dstoff, l, s, k, sors, srsoff, line, line.Length);
+                DrawObliqueLine(p, dstoff, l, s, k, sors, srsoff, line, line.Length);
         }
 
-        private unsafe void DrawTexm(ISurface srs, sbyte z, sbyte zl, sbyte zr, sbyte zd, ref ISurface dst, int cx, int cy)
+        private unsafe void DrawObliqueTexm(ISurface srs, sbyte z, sbyte zl, sbyte zr, sbyte zd, ref ISurface dst, int cx, int cy)
         {
             var srs_xmin = Math.Max( 0, 22 - cx);
             var srs_xmax = Math.Min(45, 22 - cx + dst.Width);
@@ -414,22 +618,22 @@ namespace EssenceUDK.Platform.TileEngine
                 var dst_rdat = dst_line + 23 - srs_rmin;
 
                 if (srs_xmin < 24 && srs_xmax > 22)
-                    DrawLine(dst_line, dst_strd, dst.Height, cy, czu, czd, srs_line, srs_strd, pre_texm[22]);
+                    DrawObliqueLine(dst_line, dst_strd, dst.Height, cy, czu, czd, srs_line, srs_strd, pre_texm[22]);
 
                 for (int x = srs_lmin; x < srs_lmax; ++x) {
                     yu = (int)(czl - tlu * x);
                     yd = (int)(czl - tld * x);
-                    DrawLine(++dst_ldat, dst_strd, dst.Height, cy, yu, yd, srs_line, srs_strd, pre_texm[x]);
+                    DrawObliqueLine(++dst_ldat, dst_strd, dst.Height, cy, yu, yd, srs_line, srs_strd, pre_texm[x]);
                 }
                 for (int x = srs_rmin; x < srs_rmax; ++x) {
                     yu = (int)(czr - tru * x);
                     yd = (int)(czr - trd * x);
-                    DrawLine(--dst_rdat, dst_strd, dst.Height, cy, yu, yd, srs_line, srs_strd, pre_texm[43 -x]);
+                    DrawObliqueLine(--dst_rdat, dst_strd, dst.Height, cy, yu, yd, srs_line, srs_strd, pre_texm[43 - x]);
                 }
             }
         }
 
-        private unsafe void DrawTile(ISurface srs, sbyte z, byte alpha, ref ISurface dst, int cx, int cy)
+        private unsafe void DrawObliqueTile(ISurface srs, sbyte z, byte alpha, ref ISurface dst, int cx, int cy)
         {
             lock (srs)
             {
@@ -510,7 +714,6 @@ namespace EssenceUDK.Platform.TileEngine
   
         private void DrawObliqueBlock(ref ISurface dest, int cx, int cy, IMapBlock[][] block, uint b1, uint b2, byte x1 = 0, byte x2 = 7, byte y1 = 0, byte y2 = 7)
         {
-            var bl = block[0].Length;
             int dest_rx, dest_by;
             //cx += 22;
             for (byte x = x1; x <= x2; ++x) {
@@ -523,126 +726,22 @@ namespace EssenceUDK.Platform.TileEngine
                     dest_rx -= 22*by1;
                     dest_by += 22*by1;
 
-                    for (byte y = by1; y <= by2; ++y) {
-                        var maptile = mapblok[x, y]; 
+                    for (byte y = by1; y <= by2; ++y) { 
                         dest_rx -= 22;
                         dest_by += 22;
-                    
-                        tileCache.Clear();
-                        if (tileComparer.IsValid(maptile.Land))
-                            tileCache.Add(maptile.Land);
-                        for (int i = 0; i < maptile.Count; ++i)
-                            if (tileComparer.IsValid(maptile[i]))
-                                tileCache.Add(maptile[i]);
-                        tileCache.Sort(tileComparer);
 
-                        for (int t = 0; t < tileCache.Count; ++t) {
-                            var tile = tileCache[t];
-                            if (tile as ILandMapTile != null) {
-                                var landtile = dataManager.GetLandTile(tile.TileId);
-                                if (!landtile.IsValid)
-                                    continue;
-
-                                sbyte ul, ur, ud;
-
-                                if (y < 7) {
-                                    ul = mapblok[x, y+1u].Land.Altitude;
-                                } else {
-                                    ul = block[0][b+1][x,0].Land.Altitude;
-                                }
-                                if (x < 7) {
-                                    ur = mapblok[x+1u, y].Land.Altitude;
-                                } else {
-                                    ur = block[1][b][0,y].Land.Altitude;
-                                }
-                                if (y < 7 && x < 7) {
-                                    ud = mapblok[x+1u, y+1u].Land.Altitude;
-                                } else if (x != 7) {
-                                    ud = block[0][b+1][x+1u,0].Land.Altitude;
-                                } else if (y != 7) {
-                                    ud = block[1][b][0,y+1u].Land.Altitude;
-                                } else {
-                                    ud = block[1][b+1][0,0].Land.Altitude;
-                                }
-
-                                var tl = ((int)tile.Altitude - ul);
-                                var tr = ((int)tile.Altitude - ur);
-                                var td = ((int)tile.Altitude - ud);
-
-                                if ((landtile.Texture != null) && ((td != 0) || (tl != 0) || (tr != 0))) {
-                                    DrawTexm(landtile.Texture, tile.Altitude, ul, ur, ud, ref dest, dest_rx, dest_by);
-                                } else {
-                                    DrawTile(landtile.Surface, tile.Altitude, 0xFF, ref dest, dest_rx, dest_by);
-                                }
-                                continue;
-                            }
-
-                            var itemtile = dataManager.GetItemTile(tile.TileId);
-                            if (itemtile.IsValid)
-                                DrawTile(itemtile.Surface, tile.Altitude, itemtile.Flags.HasFlag(TileFlag.Translucent)
-                                                                ? (byte)alphavl : (byte)0xFF, ref dest, dest_rx, dest_by);
-                        }
-
+                        DrawBlock(mapblok, x, y, block, b, ref dest, dest_rx, dest_by, DrawObliqueTile, DrawObliqueTexm);
                     }   
                 }
             }
-
         }
 
         public unsafe void DrawObliqueMap(byte map, sbyte sealvl, ref ISurface dest, byte range, ushort tx, ushort ty, sbyte minz = -128, sbyte maxz = +127)
         {
-            var facet = dataManager.GetMapFacet(map);
-            tileComparer.MinFilterZ = minz;
-            tileComparer.MaxFilterZ = maxz;
-
             var icx = (int)(dest.Width /2 - 22*(tx%8 - 0) + 22*(ty%8 - 0));
             var icy = (int)(dest.Height/2 - 22*(tx%8 - 3) - 22*(ty%8 - 3) + 4*sealvl - 176);
 
-            var tx1 = tx - range;
-            var ty1 = ty - range;
-            var tx2 = tx + range;
-            var ty2 = ty + range;
-
-            var bx0 = (uint)(tx  / 8);
-            var by0 = (uint)(ty  / 8);
-            var bx1 = (uint)(tx1 / 8);
-            var by1 = (uint)(ty1 / 8);
-            var bx2 = (uint)(tx2 / 8);
-            var by2 = (uint)(ty2 / 8);
-
-            var x1 = (byte)(tx1 % 8);
-            var y1 = (byte)(ty1 % 8);
-            var x2 = (byte)(tx2 % 8);
-            var y2 = (byte)(ty2 % 8);
-            int dest_cx, dest_cy;
-
-            IMapBlock[][] blocks = new IMapBlock[2][];
-            blocks[0] = new IMapBlock[2+by2-by1];
-            blocks[1] = new IMapBlock[2+by2-by1];
-            for (uint i = 0, by = by1; by <= by2+1; ++by, ++i)
-                blocks[1][i] = facet[facet.GetBlockId(bx1, by)];
-
-            lock (dest) {
-                for (uint bx = bx1; bx <= bx2; ++bx) {
-                    Array.Copy(blocks[1], blocks[0], 2 + by2 - by1);
-                    for (uint i = 0, by = by1; by <= by2+1; ++by, ++i)
-                        blocks[1][i] = facet[facet.GetBlockId(bx+1, by)];
-
-                    var ox1 = bx == bx1 ? x1 : (byte)0;
-                    var ox2 = bx == bx2 ? x2 : (byte)7;
-                    dest_cx = (int)(icx + 176 * (bx - bx0) - 176 * (by1 - by0));
-                    dest_cy = (int)(icy + 176 * (bx - bx0) + 176 * (by1 - by0));
-                    DrawObliqueBlock(ref dest, dest_cx, dest_cy, blocks, 0, by2-by1, ox1, ox2, y1, y2);
-                    
-                }
-
-                //for (uint bx = bx1; bx <= bx2; ++bx)
-                //    for (uint i = 0, by = by1; by <= by2 + 1; ++by, ++i) {
-                //        dest_cx = (int)(icx + 176 * (bx - bx0) - 176 * (by1 - by0));
-                //        dest_cy = (int)(icy + 176 * (bx - bx0) + 176 * (by1 - by0));
-                //        DrawCross(dest, dest_cx, dest_cy, 0xFC00, 5);
-                //    }
-            }         
+            DrawFacet(icx, icy, 176, 176, 176, 176, map, sealvl, ref dest, range, tx, ty, minz, maxz, DrawObliqueBlock);     
         }
 
         #endregion
