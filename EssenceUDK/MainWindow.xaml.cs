@@ -126,25 +126,20 @@ namespace EssenceUDK
                 default: break;
             }
 
+            var surw = (ushort)nudW.Value;
+            var surh = (ushort)nudH.Value;
             var map = (byte)nudM.Value;
             var range = (byte)nudR.Value;
             var tcx = (ushort)nudX.Value;
             var tcy = (ushort)nudY.Value;
             var minz = (sbyte)nudMinZ.Value;
             var maxz = (sbyte)nudMaxZ.Value;
-            var alt = (sbyte)(map == 1 ? -45 : 0);
-            
-
-            //if (surf == null)
-                //surf = UOManager.CreateSurface((ushort)2560, (ushort)1600, PixelFormat.Bpp16X1R5G5B5);
-            #if DEBUG
-                surf = UOManager.CreateSurface((ushort)1200, (ushort)1200, PixelFormat.Bpp16X1R5G5B5);
-            #else
-                surf = UOManager.CreateSurface((ushort)2560, (ushort)1600, PixelFormat.Bpp16X1R5G5B5);
-            #endif
+            var alt = (short)nudS.Value;
 
             
 
+
+            surf = UOManager.CreateSurface(surw, surh, PixelFormat.Bpp16X1R5G5B5);
             if (flt)
                 UOManager.FacetRender.DrawFlatMap(map, alt, ref surf, range, tcx, tcy, minz, maxz);
             else
@@ -221,15 +216,26 @@ namespace EssenceUDK
             }
         }
 
+        private void btnLoadMuls_Click(object sender, RoutedEventArgs e)
+        {
+            UOManager = null;
+            var datauri = new Uri(tbPath.Text);
+            var dataopt = new UODataOptions();
+            dataopt.majorFacet[0] = new FacetDesc("FacetMap-0", (ushort)nudM0W.Value, (ushort)nudM0H.Value, (ushort)nudM0W.Value, (ushort)nudM0H.Value);
+            dataopt.majorFacet[1] = new FacetDesc("FacetMap-1", (ushort)nudM1W.Value, (ushort)nudM1H.Value, (ushort)nudM1W.Value, (ushort)nudM1H.Value);
+            dataopt.majorFacet[2] = new FacetDesc("FacetMap-2", (ushort)nudM2W.Value, (ushort)nudM2H.Value, (ushort)nudM2W.Value, (ushort)nudM2H.Value);
+            dataopt.majorFacet[3] = new FacetDesc("FacetMap-3", (ushort)nudM3W.Value, (ushort)nudM3H.Value, (ushort)nudM3W.Value, (ushort)nudM3H.Value);
+            dataopt.majorFacet[4] = new FacetDesc("FacetMap-4", (ushort)nudM4W.Value, (ushort)nudM4H.Value, (ushort)nudM4W.Value, (ushort)nudM4H.Value);
+            dataopt.majorFacet[5] = new FacetDesc("FacetMap-5", (ushort)nudM5W.Value, (ushort)nudM5H.Value, (ushort)nudM5W.Value, (ushort)nudM5H.Value);
+            var _manager = new UODataManager(datauri,
+                cbUT.SelectedIndex == 0 ? UODataType.ClassicMondainsLegacy :
+                cbUT.SelectedIndex == 1 ? UODataType.ClassicStygianAbyss   : 
+                UODataType.ClassicAdventuresOnHighSeas, UOLang.Russian, dataopt, true);
+            UOManager = _manager;
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var datauri = new Uri(@"C:\UltimaOnline\distro\__deploy\__output\uoassets\_override");
-            var dataopt = new UODataOptions();
-            dataopt.majorFacet[0] = FacetDesc.Dangeons;
-            dataopt.majorFacet[1] = FacetDesc.Assidiya;
-            var _manager = new UODataManager(datauri, UODataType.ClassicAdventuresOnHighSeas, UOLang.Russian, dataopt, true);
-            UOManager = _manager;
-
             AddHotKeys(keyRender_MoveU, Key.Up);
             AddHotKeys(keyRender_MoveL, Key.Left);
             AddHotKeys(keyRender_MoveR, Key.Right);
@@ -250,9 +256,36 @@ namespace EssenceUDK
             AddHotKeys(keyRender_MoveDL, Key.End);
             AddHotKeys(keyRender_MoveDR, Key.PageDown);
 
+            nudM0W.Minimum = nudM1W.Minimum = nudM2W.Minimum = nudM3W.Minimum = nudM4W.Minimum = nudM5W.Minimum = 1;
+            nudM0H.Minimum = nudM1H.Minimum = nudM2H.Minimum = nudM3H.Minimum = nudM4H.Minimum = nudM5H.Minimum = 1;
+            nudM0W.Maximum = nudM1W.Maximum = nudM2W.Maximum = nudM3W.Maximum = nudM4W.Maximum = nudM5W.Maximum = 1;
+            nudM0H.Maximum = nudM1H.Maximum = nudM2H.Maximum = nudM3H.Maximum = nudM4H.Maximum = nudM5H.Maximum = 1;
+            nudM0W.Value = 896;     nudM0H.Value = 512;
+            nudM1W.Value = 1536;    nudM1H.Value = 1024;
+            nudM2W.Value = 288;     nudM2H.Value = 200;
+            nudM3W.Value = 320;     nudM3H.Value = 256;
+            nudM4W.Value = 181;     nudM4H.Value = 181;
+            nudM5W.Value = 160;     nudM5H.Value = 512;
+
+            nudS.Minimum = -512;
+            nudS.Minimum = +512;
+            nudS.Value   = -45;
 
             nudMinZ.Minimum = nudMaxZ.Minimum = nudMinZ.Value = - 128;
             nudMinZ.Maximum = nudMaxZ.Maximum = nudMaxZ.Value = + 127;
+
+            nudW.Minimum = nudH.Minimum = 176;
+            nudW.Minimum = nudH.Maximum = 10240;
+            #if DEBUG
+                tbPath.Text = @"C:\UltimaOnline\distro\__deploy\__output\uoassets\_override";
+                nudW.Value = 1200;
+                nudH.Value = 1200;
+            #else
+                var clients = ClientInfo.GetInSystem();
+                tbPath.Text = clients.Length > 0 ? clients[0].DirectoryPath : "Enter path to client directory";
+                nudW.Value = 2560;
+                nudH.Value = 1600;
+            #endif
 
             nudM.Minimum = 0;
             nudM.Maximum = 5;
@@ -270,6 +303,10 @@ namespace EssenceUDK
             nudY.Value = 3364;//411 * 8 + 3;
             this.Width = 1278;
             this.Height = 938;
+
+            #if DEBUG
+                btnLoadMuls_Click(null, null);
+            #endif
         }
 
         
