@@ -140,10 +140,13 @@ namespace EssenceUDK
 
 
             surf = UOManager.CreateSurface(surw, surh, PixelFormat.Bpp16X1R5G5B5);
+            var ticks = Environment.TickCount;
             if (flt)
                 UOManager.FacetRender.DrawFlatMap(map, alt, ref surf, range, tcx, tcy, minz, maxz);
             else
                 UOManager.FacetRender.DrawObliqueMap(map, alt, ref surf, range, tcx, tcy, minz, maxz);
+
+            lblStatus.Content = String.Format("Draw in: {0:0000} ms", Environment.TickCount - ticks);
 
             //var bid = UOManager.GetMapFacet(map).GetBlockId((uint)nudX.Value, (uint)nudY.Value);
             //UOManager.FacetRender.DrawBlock(ref surf, map, bid);

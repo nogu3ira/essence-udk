@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using EssenceUDK.Platform.DataTypes;
@@ -328,8 +329,142 @@ namespace EssenceUDK.Platform.TileEngine
         private static int[][] newx = null;
         private static int[][] newy = null;
 
+        private static int srsw = 400;
+        private static int srsh = 500;
+
+        private static int     srlx;
+        private static int     srly;
+        private static int[][] srsx = null;
+        private static int[][] srsy = null;
+        private static FlatPoint[][] srsp = null;
+        private struct FlatPoint {
+            internal short X1, X2, Y1, Y2;
+            internal short   YOffset;
+            internal short[] XOffset;
+            internal short[] XLength;
+            //internal short[] XRunOff;
+        }
+
         private static void InitFlatRender()
         {
+            if (srsp != null)
+                return;
+
+            // Coordinates for rotated max size surface
+            var dx1 = (int)(((double)(-srsw / 2) * cos45 - (double)(-srsh) * sin45) * scale);
+            var dx2 = (int)(((double)(+srsw / 2) * cos45 - (double)(    0) * sin45) * scale);
+            var dy1 = (int)(((double)(+srsw / 2) * sin45 + (double)(-srsh) * cos45) * scale);
+            var dy2 = (int)(((double)(-srsw / 2) * sin45 + (double)(    0) * cos45) * scale);
+            var dxl = dx2 - dx1 + 2;
+            var dyl = dy2 - dy1 + 1;
+
+            srlx = dx1;
+            srly = dy1;
+            srsx = new int[dyl][];
+            srsy = new int[dyl][];
+            for (int dy = 0; dy < dyl; ++dy) {
+                srsx[dy] = new int[dxl];
+                srsy[dy] = new int[dxl];
+                //Array.Clear(srsx[dy], 0, dxl);
+                //Array.Clear(srsy[dy], 0, dxl);
+                for (int dx = 0; dx < dxl; ++dx) {
+                    srsx[dy][dx] = 0xDEAD;
+                    srsy[dy][dx] = 0xDEAD;
+                }
+            }
+
+            for (int sy = -srsh; sy <= 0; ++sy) {
+                for (int sx = -srsw/2; sx <= +srsw/2; ++sx) {
+                    var dx = (int)(((double)sx * cos45 - (double)sy * sin45) * scale) - dx1;
+                    var dy = (int)(((double)sx * sin45 + (double)sy * cos45) * scale) - dy1;
+                    if (srsx[dy][dx] == 0xDEAD || Math.Abs(sx) < Math.Abs(srsx[dy][dx]))
+                        srsx[dy][dx] = sx;
+                    if (srsy[dy][dx] == 0xDEAD || Math.Abs(sy) < Math.Abs(srsy[dy][dx]))
+                        srsy[dy][dx] = sy;
+                }
+            }
+
+            srsp = new FlatPoint[srsh][];
+            for (int sh = srsh-1; sh >= 0; --sh) {
+                srsp[sh] = new FlatPoint[srsw];
+                for (int sw = 0; sw < srsw; ++sw) {
+                    var sx_l = -sw/2;
+                    var sx_r = +sw/2;
+                    var sy_u = -sh;
+
+                    var p = new FlatPoint();
+                    p.X1 = (short)(((double)sx_l * cos45 - (double)sy_u * sin45) * scale);
+                    p.X2 = (short)(((double)sx_r * cos45 - (double)( 0) * sin45) * scale);
+                    p.Y1 = (short)(((double)sx_r * sin45 + (double)sy_u * cos45) * scale);
+                    p.Y2 = (short)(((double)sx_l * sin45 + (double)( 0) * cos45) * scale);
+
+                    var x1y = (short)(((double)sx_l * sin45 + (double)sy_u * cos45) * scale);
+                    var x2y = (short)(((double)sx_r * sin45 + (double)( 0) * cos45) * scale);
+                    var off = (short)(((double)sx_r * cos45 - (double)sy_u * sin45) * scale);
+                    var len = (short)1;
+
+                    var pxl = p.X2 - p.X1 + 1;
+                    var pyl = p.Y2 - p.Y1 + 1;
+                    //p.XRunOff = new short[pyl];
+                    p.XOffset = new short[pyl];
+                    p.XLength = new short[pyl];
+                    p.YOffset = (short)(p.Y1 - dy1);
+
+                    off -= (short)dx1;
+                    x1y -= (short)p.Y1;
+                    x2y -= (short)p.Y1;
+                    var inc_off = (short)-1;
+                    var inc_len = (short)+2;
+                    for (int y = 0; y < pyl; ++y) {
+                        //p.XRunOff[y] = (short)(off + dx1);
+                        p.XOffset[y] = off;
+                        p.XLength[y] = len;
+
+                        if (y == x1y) {
+                            inc_off = (short)+1;
+                            inc_len -= 2;
+                        }
+                        if (y == x2y) {
+                            inc_len -= 2;
+                        }
+
+                        off += inc_off;
+                        len += inc_len;
+
+                        #if DEBUG
+                        var _y = p.YOffset +y;
+                        var _x = p.XOffset[y];
+                        var _l = p.XLength[y];
+                        for (int c = _x; c < _x + _l; ++c) {
+                            //var _c  = c - 
+                            var _sx = srsx[_y][c];
+                            var _sy = srsy[_y][c];
+
+
+                            if (_sx < sx_l)
+                                srsx[_y][c] = sx_l + 1;
+                            if (_sx > sx_r)
+                                srsx[_y][c] = sx_r - 1;
+                            if (_sy <= sy_u)
+                                srsy[_y][c] = sy_u + 1;
+                            if (_sy > 0)
+                                srsy[_y][c] = 0;
+
+                            //if (_sx < sx_l || _sx > sx_r || _sy < sy_u) {    
+                            //    Debug.Assert(true, "Fuck it's out of sors!!!!");
+                            //}
+                                
+                        }
+
+                        #endif
+                    }
+
+                    srsp[sh][sw] = p;
+                }
+            }
+
+
+
             if (newx != null && newy != null)
                 return;
 
@@ -353,25 +488,88 @@ namespace EssenceUDK.Platform.TileEngine
 
         private unsafe void DrawFlatTile(ISurface srs, sbyte z, ushort hue, byte alpha, ref ISurface dst, int cx, int cy)
         {
+            int z_offset = z * 14142 / 10000;
+            int dst_width = dst.Width;
+            int dst_heigh = dst.Height;
+            int srs_width = srs.Width;
+            int srs_heigh = srs.Height;
+
+            var p = srsp[srs_heigh][srs_width];
+            int del_x1 = cx + p.X1 - z_offset;
+            int del_x2 = cx + p.X2 - z_offset;
+            int del_y1 = cy + p.Y1 - z_offset;
+            int del_y2 = cy + p.Y2 - z_offset;
+            
+            int dst_x1 = Math.Max(0,            del_x1);
+            int dst_x2 = Math.Min(dst_width-1,  del_x2);
+            int dst_y1 = Math.Max(0,            del_y1);
+            int dst_y2 = Math.Min(dst_heigh-1,  del_y2);
+            if (dst_x1 > dst_x2 || dst_y1 > dst_y2)
+                return;
+
+            //del_x1 = dst_x1 - del_x1;
+            //del_x2 = dst_x2 - del_x2;
+            //del_y1 = dst_y1 - del_y1;
+            //del_y2 = dst_y2 - del_y2;
+
+            var off_y1 = dst_y1 - del_y1;
+            var off_y2 = p.Y2 - p.Y1 + 1 + (dst_y2 - del_y2);
+            var off_x1 = dst_x1 - del_x1;
+            var off_x2 = p.X2 - p.X1 + 1 + (dst_x2 - del_x2);
+
             lock (srs) {
-                /*
-                var dst_xdel = srs.Width >> 1;
-                var dst_ydel = srs.Height + 2 * z;
-
-                var srs_xmin = Math.Max(0, dst_xdel - cx);
-                var srs_xmax = Math.Min(dst.Width - cx + dst_xdel, srs.Width);
-                var srs_ymin = Math.Max(0, dst_ydel - cy);
-                var srs_ymax = Math.Min(Math.Max(0, dst.Height - cy + dst_ydel - srs_ymin), srs.Height);
-
+ 
                 var dst_strd = dst.Stride >> 1;
-                var dst_line = dst.ImageWordPtr + (cy - dst_ydel + srs_ymin) * dst_strd + cx - dst_xdel + srs_xmin;
+                var dst_line = dst.ImageWordPtr + (cy - z_offset) * dst_strd + (cx - z_offset);
                 var dst_pixl = dst_line;
 
                 var srs_strd = srs.Stride >> 1;
-                var srs_line = srs.ImageWordPtr + srs_ymin * srs_strd + srs_xmin;
+                var srs_line = srs.ImageWordPtr + (srs_heigh-1) * srs_strd + srs_width / 2;
                 var srs_pixl = srs_line;
-                */
 
+                for (int dy = off_y1; dy < off_y2; ++dy) {
+
+                    var oy = p.YOffset + dy;
+                    //var or = p.XRunOff[dy];
+                    var ox = p.XOffset[dy];
+                    var ol = p.XLength[dy];
+                    
+                    if (ox + srlx + (cx - z_offset) < 0) {
+                        var xi = 0 - (ox + srlx + (cx - z_offset));
+                        ox += (short)xi;
+                        ol -= (short)xi;
+                    }
+                    if (ox + ol - 1 + srlx + (cx - z_offset) >= dst_width) {
+                        var xi = (ox + ol - 1 + srlx + (cx - z_offset)) - dst_width + 1;
+                        ol -= (short)xi;
+                    }
+                    if (ol < 1)
+                        continue;
+                    //*/
+                    dst_pixl = dst_line + (oy + srly) * dst_strd + (ox + srlx);
+
+                    var srs_x = srsx[oy];
+                    var srs_y = srsy[oy]; 
+
+                    for (int c = 0; c < ol; ++c, ++ox, ++dst_pixl) {
+                        var srs_px = srs_x[ox];
+                        var srs_py = srs_y[ox];
+
+                        if (srs_px == 0xDEAD || srs_py == 0xDEAD)
+                            continue;
+
+                        srs_pixl = srs_line + srs_py*srs_strd + srs_px;
+                        if (*srs_pixl == 0x0000)
+                            continue;
+
+                        *dst_pixl = *srs_pixl;
+                    }
+                }
+
+
+                return;
+
+                /*
                 int dst_width = dst.Width;
                 int dst_heigh = dst.Height;
                 int srs_width = srs.Width;
@@ -422,36 +620,27 @@ namespace EssenceUDK.Platform.TileEngine
                     srs_pixl = (srs_line += srs_strd);
                     //dst_pixl = (dst_line += dst_strd);
                 }
+                */
 
-                //*dst_line = 0xFC00;
-                //*(dst_line - 1) = *dst_line;
-                //*(dst_line + 1) = *dst_line;
-                //*(dst_line - dst_strd) = *dst_line;
-                //*(dst_line + dst_strd) = *dst_line;
             }
         }
 
         private void DrawFlatBlock(ref ISurface dest, int cx, int cy, IMapBlock[][] block, uint b1, uint b2, byte x1 = 0, byte x2 = 7, byte y1 = 0, byte y2 = 7)
         {
-            int dest_rx, dest_by;
-            //cx += 22;
+            int dest_bx, dest_by;
+            int dest_dx = cx + (x1 << 4) - 16;
             for (byte x = x1; x <= x2; ++x) {
-                dest_rx = cx + 16*x;
+                dest_bx = (dest_dx += 16);
                 dest_by = cy;
                 for (uint b = b1; b <= b2; ++b) {
                     var mapblok = block[0][b];
                     var by1 = b == b1 ? y1 : (byte)0;
                     var by2 = b == b2 ? y2 : (byte)7;
-                    //dest_rx -= 22*by1;
-                    dest_by += 16*by1;
+                    dest_by += (by1<<4);
 
                     for (byte y = by1; y <= by2; ++y) {
-                        var maptile = mapblok[x, y]; 
-                        //dest_rx -= 22;
                         dest_by += 16;
-
-                        DrawBlock(mapblok, x, y, block, b, ref dest, dest_rx, dest_by, DrawFlatTile, DrawFlatTexm);
-                        //DrawCross(dest, dest_rx, dest_by, 0xFC00, 4);
+                        DrawBlock(mapblok, x, y, block, b, ref dest, dest_bx, dest_by, DrawFlatTile, DrawFlatTexm);
                     }   
                 }
             }
