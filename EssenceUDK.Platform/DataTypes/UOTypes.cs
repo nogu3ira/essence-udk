@@ -539,7 +539,7 @@ namespace EssenceUDK.Platform.DataTypes
 
         public uint GetTileId(uint offsetX, uint offsetY)
         {
-            return (offsetY << 3) + offsetX; // WYF??
+            return (offsetY << 3) + offsetX;
         }
 
         public IMapTile this[uint index] {

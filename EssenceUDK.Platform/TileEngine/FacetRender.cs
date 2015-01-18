@@ -337,7 +337,7 @@ namespace EssenceUDK.Platform.TileEngine
         private static int[][] srsx = null;
         private static int[][] srsy = null;
         private static FlatPoint[][] srsp = null;
-        private struct FlatPoint {
+        private class FlatPoint {
             internal short X1, X2, Y1, Y2;
             internal short   YOffset;
             internal short[] XOffset;
@@ -385,14 +385,14 @@ namespace EssenceUDK.Platform.TileEngine
             }
 
             srsp = new FlatPoint[srsh][];
-            for (int sh = srsh-1; sh >= 0; --sh) {
+            for (int sh = srsh-1; sh > 0; --sh) {
                 srsp[sh] = new FlatPoint[srsw];
-                for (int sw = 0; sw < srsw; ++sw) {
+                for (int sw = 4; sw < srsw; ++sw) {
                     var sx_l = -sw/2;
-                    var sx_r = +sw/2;
-                    var sy_u = -sh;
+                    var sx_r = +sw/2-1;
+                    var sy_u = -(sh-1);
 
-                    var p = new FlatPoint();
+                    var p = srsp[sh][sw] = new FlatPoint();
                     p.X1 = (short)(((double)sx_l * cos45 - (double)sy_u * sin45) * scale);
                     p.X2 = (short)(((double)sx_r * cos45 - (double)( 0) * sin45) * scale);
                     p.Y1 = (short)(((double)sx_r * sin45 + (double)sy_u * cos45) * scale);
@@ -442,11 +442,11 @@ namespace EssenceUDK.Platform.TileEngine
 
 
                             if (_sx < sx_l)
-                                srsx[_y][c] = sx_l + 1;
+                                srsx[_y][c] = sx_l;// + 1;
                             if (_sx > sx_r)
-                                srsx[_y][c] = sx_r - 1;
-                            if (_sy <= sy_u)
-                                srsy[_y][c] = sy_u + 1;
+                                srsx[_y][c] = sx_r;// - 1;
+                            if (_sy < sy_u)
+                                srsy[_y][c] = sy_u;//+ 1;
                             if (_sy > 0)
                                 srsy[_y][c] = 0;
 
@@ -459,7 +459,7 @@ namespace EssenceUDK.Platform.TileEngine
                         #endif
                     }
 
-                    srsp[sh][sw] = p;
+                    //srsp[sh][sw] = p;
                 }
             }
 
@@ -489,16 +489,19 @@ namespace EssenceUDK.Platform.TileEngine
         private unsafe void DrawFlatTile(ISurface srs, sbyte z, ushort hue, byte alpha, ref ISurface dst, int cx, int cy)
         {
             int z_offset = z * 14142 / 10000;
+            int z_cx = cx - z_offset;
+            int z_cy = cy - z_offset;
+
             int dst_width = dst.Width;
             int dst_heigh = dst.Height;
             int srs_width = srs.Width;
             int srs_heigh = srs.Height;
 
             var p = srsp[srs_heigh][srs_width];
-            int del_x1 = cx + p.X1 - z_offset;
-            int del_x2 = cx + p.X2 - z_offset;
-            int del_y1 = cy + p.Y1 - z_offset;
-            int del_y2 = cy + p.Y2 - z_offset;
+            int del_x1 = z_cx + p.X1;
+            int del_x2 = z_cx + p.X2;
+            int del_y1 = z_cy + p.Y1;
+            int del_y2 = z_cy + p.Y2;
             
             int dst_x1 = Math.Max(0,            del_x1);
             int dst_x2 = Math.Min(dst_width-1,  del_x2);
@@ -506,11 +509,6 @@ namespace EssenceUDK.Platform.TileEngine
             int dst_y2 = Math.Min(dst_heigh-1,  del_y2);
             if (dst_x1 > dst_x2 || dst_y1 > dst_y2)
                 return;
-
-            //del_x1 = dst_x1 - del_x1;
-            //del_x2 = dst_x2 - del_x2;
-            //del_y1 = dst_y1 - del_y1;
-            //del_y2 = dst_y2 - del_y2;
 
             var off_y1 = dst_y1 - del_y1;
             var off_y2 = p.Y2 - p.Y1 + 1 + (dst_y2 - del_y2);
@@ -520,7 +518,7 @@ namespace EssenceUDK.Platform.TileEngine
             lock (srs) {
  
                 var dst_strd = dst.Stride >> 1;
-                var dst_line = dst.ImageWordPtr + (cy - z_offset) * dst_strd + (cx - z_offset);
+                var dst_line = dst.ImageWordPtr + z_cy * dst_strd + z_cx;
                 var dst_pixl = dst_line;
 
                 var srs_strd = srs.Stride >> 1;
@@ -528,33 +526,31 @@ namespace EssenceUDK.Platform.TileEngine
                 var srs_pixl = srs_line;
 
                 for (int dy = off_y1; dy < off_y2; ++dy) {
-
-                    var oy = p.YOffset + dy;
-                    //var or = p.XRunOff[dy];
+                    var oy = p.YOffset +dy;
                     var ox = p.XOffset[dy];
                     var ol = p.XLength[dy];
-                    
-                    if (ox + srlx + (cx - z_offset) < 0) {
-                        var xi = 0 - (ox + srlx + (cx - z_offset));
+
+                    //--ol;
+                    if (ox + srlx + z_cx < 0) {
+                        var xi = 0 - (ox + srlx + z_cx);
                         ox += (short)xi;
                         ol -= (short)xi;
                     }
-                    if (ox + ol - 1 + srlx + (cx - z_offset) >= dst_width) {
-                        var xi = (ox + ol - 1 + srlx + (cx - z_offset)) - dst_width + 1;
+                    if (ox + ol - 1 + srlx + z_cx >= dst_width) {
+                        var xi = (ox + ol - 1 + srlx + z_cx) - dst_width + 1;
                         ol -= (short)xi;
                     }
                     if (ol < 1)
                         continue;
                     //*/
-                    dst_pixl = dst_line + (oy + srly) * dst_strd + (ox + srlx);
 
+                    dst_pixl = dst_line + (oy + srly) * dst_strd + (ox + srlx);
                     var srs_x = srsx[oy];
                     var srs_y = srsy[oy]; 
 
                     for (int c = 0; c < ol; ++c, ++ox, ++dst_pixl) {
                         var srs_px = srs_x[ox];
                         var srs_py = srs_y[ox];
-
                         if (srs_px == 0xDEAD || srs_py == 0xDEAD)
                             continue;
 
@@ -651,6 +647,27 @@ namespace EssenceUDK.Platform.TileEngine
             var sea = 14142*sealvl/10000;
             var icx = (int)(dest.Width /2 + 8 - 16*(tx%8 - 0) + sea);
             var icy = (int)(dest.Height/2 - 8 - 16*(ty%8 - 0) + sea);
+
+            lock (dest)
+            {
+                var srs = dataManager.GetItemTile(0x0512);
+
+                var z = (sbyte)0;
+                var cx = dest.Width /2;
+                var cy = dest.Height/2;
+
+                DrawFlatTile(srs.Surface, z, 0, 0xFF, ref dest, cx, cy);
+
+                DrawFlatTile(dataManager.GetItemTile(0x0137).Surface, z, 0, 0xFF, ref dest, cx + 100, cy);
+
+                DrawFlatTile(dataManager.GetItemTile(0x0133).Surface, z, 0, 0xFF, ref dest, cx + 200, cy);
+
+
+
+                DrawCross(dest, cx, cy, 0xFFE0, 5);
+                DrawCross(dest, cx, cy, 0xFC1F, 3);
+                //return;
+            }
 
             DrawFacet(icx, icy, 128, 0, 0, 128, map, sealvl, ref dest, range, tx, ty, minz, maxz, DrawFlatBlock);  
 
