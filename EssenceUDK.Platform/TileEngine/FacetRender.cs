@@ -318,19 +318,14 @@ namespace EssenceUDK.Platform.TileEngine
 
         #region Flat Render
 
-        private static double scale = 0.5;
+        private static double scale = 0.549;
         private static double angle = -Math.PI / 4.0;
         private static double sin45 = Math.Sin(angle);
         private static double cos45 = Math.Cos(angle);
-        private static int     uplx = -176;
-        private static int     uphx = +176;
-        private static int     uply = -680;
-        private static int     uphy = +510;
-        private static int[][] newx = null;
-        private static int[][] newy = null;
 
-        private static int srsw = 400;
-        private static int srsh = 500;
+
+        private static int      srsw = 400;
+        private static int      srsh = 500;
 
         private static int     srlx;
         private static int     srly;
@@ -342,7 +337,85 @@ namespace EssenceUDK.Platform.TileEngine
             internal short   YOffset;
             internal short[] XOffset;
             internal short[] XLength;
-            //internal short[] XRunOff;
+            internal FlatPoint(int sh, int sw)
+            {
+                var sx_l = -sw/2;
+                    var sx_r = +sw/2-1;
+                    var sy_u = -(sh-1);
+
+                    var p = this;
+                    p.X1 = (short)(((double)sx_l * cos45 - (double)sy_u * sin45) * scale);
+                    p.X2 = (short)(((double)sx_r * cos45 - (double)( 0) * sin45) * scale);
+                    p.Y1 = (short)(((double)sx_r * sin45 + (double)sy_u * cos45) * scale);
+                    p.Y2 = (short)(((double)sx_l * sin45 + (double)( 0) * cos45) * scale);
+
+                    var x1y = (short)(((double)sx_l * sin45 + (double)sy_u * cos45) * scale);
+                    var x2y = (short)(((double)sx_r * sin45 + (double)( 0) * cos45) * scale);
+                    //var y1x = (short)(((double)sx_r * cos45 + (double)sy_u * sin45) * scale);
+                    //var y2x = (short)(((double)sx_l * cos45 + (double)( 0) * sin45) * scale);
+
+                    var off = (short)(((double)sx_r * cos45 - (double)sy_u * sin45) * scale);
+                    var len = (short)1;
+
+                    //var pxl = p.X2 - p.X1 + 1;
+                    var pyl = p.Y2 - p.Y1 + 1;
+                    //p.XRunOff = new short[pyl];
+                    p.XOffset = new short[pyl];
+                    p.XLength = new short[pyl];
+                    p.YOffset = (short)(p.Y1 - srly);
+
+                    off -= (short)srlx;
+                    x1y -= (short)p.Y1;
+                    x2y -= (short)p.Y1;
+                    var inc_off = (short)-1;
+                    var inc_len = (short)+2;
+                    for (int y = 0; y < pyl; ++y) {
+                        p.XOffset[y] = off;
+                        p.XLength[y] = len;
+
+                        if (y == x1y) {
+                            inc_off = (short)+1;
+                            inc_len -= 2;
+                        }
+                        if (y == x2y) {
+                            inc_len -= 2;
+                        }
+
+                        off += inc_off;
+                        len += inc_len;
+                    
+                        var _y = p.YOffset +y;
+                        var _x = p.XOffset[y];
+                        var _l = p.XLength[y];
+                        for (int c = _x; c < _x + _l; ++c) {
+                            var _sx = srsx[_y][c];
+                            var _sy = srsy[_y][c];
+
+                            if (_sx == 0xDEAD)
+                                srsx[_y][c] = sx_l;
+
+                            if (_sy == 0xDEAD)
+                                srsy[_y][c] = sy_u;
+
+                            if (_sx < sx_l)
+                                srsx[_y][c] = sx_l;// + 1;
+                            if (_sx > sx_r)
+                                srsx[_y][c] = sx_r;// - 1;
+                            if (_sy < sy_u)
+                                srsy[_y][c] = sy_u;//+ 1;
+                            if (_sy > 0)
+                                srsy[_y][c] = 0;
+
+                            #if DEBUG
+                            //if (_sx < sx_l || _sx > sx_r || _sy < sy_u) {    
+                            //    Debug.Assert(true, "Fuck it's out of sors!!!!");
+                            //}   
+                            #endif
+                        }
+
+                        
+                    }
+            }
         }
 
         private static void InitFlatRender()
@@ -373,112 +446,86 @@ namespace EssenceUDK.Platform.TileEngine
                 }
             }
 
-            for (int sy = -srsh; sy <= 0; ++sy) {
-                for (int sx = -srsw/2; sx <= +srsw/2; ++sx) {
+            for (int sy = 0; sy >= -srsh; --sy) {
+                for (int sx = 0; sx >= -srsw/2; --sx) {
+                    label_process_sx_sy: 
                     var dx = (int)(((double)sx * cos45 - (double)sy * sin45) * scale) - dx1;
                     var dy = (int)(((double)sx * sin45 + (double)sy * cos45) * scale) - dy1;
-                    if (srsx[dy][dx] == 0xDEAD || Math.Abs(sx) < Math.Abs(srsx[dy][dx]))
+                    //if (srsx[dy][dx] == 0xDEAD || Math.Abs(sx) < Math.Abs(srsx[dy][dx]))
                         srsx[dy][dx] = sx;
-                    if (srsy[dy][dx] == 0xDEAD || Math.Abs(sy) < Math.Abs(srsy[dy][dx]))
+                    //if (srsy[dy][dx] == 0xDEAD || Math.Abs(sy) < Math.Abs(srsy[dy][dx]))
                         srsy[dy][dx] = sy;
+
+
+                    bool bx1 = dx > 0;
+                    bool bx2 = dx < dxl-1;
+                    bool by1 = dy > 0;
+                    bool by2 = dy < dyl - 1;
+
+                    if (by1) {
+                        if (srsx[dy-1][dx] == 0xDEAD)
+                            srsx[dy-1][dx] = sx+1;    
+                        if (srsy[dy-1][dx] == 0xDEAD)
+                            srsy[dy-1][dx] = sy+1;
+                    }
+                    if (by2) {
+                        if (srsx[dy+1][dx] == 0xDEAD)
+                            srsx[dy+1][dx] = sx-1;
+                        if (srsy[dy+1][dx] == 0xDEAD)
+                            srsy[dy+1][dx] = sy-1;
+                    }
+                    if (bx1) {
+                        if (srsx[dy][dx-1] == 0xDEAD)
+                            srsx[dy][dx-1] = sx-1;
+                        if (srsy[dy][dx-1] == 0xDEAD)
+                            srsy[dy][dx-1] = sy+1;
+                    }   
+                    if (bx2) {
+                        if (srsx[dy][dx+1] == 0xDEAD)
+                            srsx[dy][dx+1] = sx+1;
+                        if (srsy[dy][dx+1] == 0xDEAD)
+                            srsy[dy][dx+1] = sy-1;
+                    }
+                    
+                    if (by1 && bx1) {
+                        if (srsx[dy-1][dx-1] == 0xDEAD)
+                            srsx[dy-1][dx-1] = sx;
+                        if (srsy[dy-1][dx-1] == 0xDEAD)
+                            srsy[dy-1][dx-1] = sy+1;
+                    }
+                    if (by1 && bx2) {
+                        if (srsx[dy-1][dx+1] == 0xDEAD)
+                            srsx[dy-1][dx+1] = sx+1;
+                        if (srsy[dy-1][dx+1] == 0xDEAD)
+                            srsy[dy-1][dx+1] = sy;
+                    }
+                    if (by2 && bx1) {
+                        if (srsx[dy+1][dx-1] == 0xDEAD)
+                            srsx[dy+1][dx-1] = sx-1;
+                        if (srsy[dy+1][dx-1] == 0xDEAD)
+                            srsy[dy+1][dx-1] = sy;
+                    }
+                    if (by2 && bx2) {
+                        if (srsx[dy+1][dx+1] == 0xDEAD)
+                            srsx[dy+1][dx+1] = sx;
+                        if (srsy[dy+1][dx+1] == 0xDEAD)
+                            srsy[dy+1][dx+1] = sy-1;
+                    }
+
+                    if (sx < 0) {
+                        sx = -sx;
+                        goto label_process_sx_sy;
+                    }
+                    if (sx > 0)
+                        sx = -sx;
                 }
+                
             }
 
             srsp = new FlatPoint[srsh][];
             for (int sh = srsh-1; sh > 0; --sh) {
                 srsp[sh] = new FlatPoint[srsw];
-                for (int sw = 4; sw < srsw; ++sw) {
-                    var sx_l = -sw/2;
-                    var sx_r = +sw/2-1;
-                    var sy_u = -(sh-1);
-
-                    var p = srsp[sh][sw] = new FlatPoint();
-                    p.X1 = (short)(((double)sx_l * cos45 - (double)sy_u * sin45) * scale);
-                    p.X2 = (short)(((double)sx_r * cos45 - (double)( 0) * sin45) * scale);
-                    p.Y1 = (short)(((double)sx_r * sin45 + (double)sy_u * cos45) * scale);
-                    p.Y2 = (short)(((double)sx_l * sin45 + (double)( 0) * cos45) * scale);
-
-                    var x1y = (short)(((double)sx_l * sin45 + (double)sy_u * cos45) * scale);
-                    var x2y = (short)(((double)sx_r * sin45 + (double)( 0) * cos45) * scale);
-                    var off = (short)(((double)sx_r * cos45 - (double)sy_u * sin45) * scale);
-                    var len = (short)1;
-
-                    var pxl = p.X2 - p.X1 + 1;
-                    var pyl = p.Y2 - p.Y1 + 1;
-                    //p.XRunOff = new short[pyl];
-                    p.XOffset = new short[pyl];
-                    p.XLength = new short[pyl];
-                    p.YOffset = (short)(p.Y1 - dy1);
-
-                    off -= (short)dx1;
-                    x1y -= (short)p.Y1;
-                    x2y -= (short)p.Y1;
-                    var inc_off = (short)-1;
-                    var inc_len = (short)+2;
-                    for (int y = 0; y < pyl; ++y) {
-                        //p.XRunOff[y] = (short)(off + dx1);
-                        p.XOffset[y] = off;
-                        p.XLength[y] = len;
-
-                        if (y == x1y) {
-                            inc_off = (short)+1;
-                            inc_len -= 2;
-                        }
-                        if (y == x2y) {
-                            inc_len -= 2;
-                        }
-
-                        off += inc_off;
-                        len += inc_len;
-
-                        #if DEBUG
-                        var _y = p.YOffset +y;
-                        var _x = p.XOffset[y];
-                        var _l = p.XLength[y];
-                        for (int c = _x; c < _x + _l; ++c) {
-                            //var _c  = c - 
-                            var _sx = srsx[_y][c];
-                            var _sy = srsy[_y][c];
-
-
-                            if (_sx < sx_l)
-                                srsx[_y][c] = sx_l;// + 1;
-                            if (_sx > sx_r)
-                                srsx[_y][c] = sx_r;// - 1;
-                            if (_sy < sy_u)
-                                srsy[_y][c] = sy_u;//+ 1;
-                            if (_sy > 0)
-                                srsy[_y][c] = 0;
-
-                            //if (_sx < sx_l || _sx > sx_r || _sy < sy_u) {    
-                            //    Debug.Assert(true, "Fuck it's out of sors!!!!");
-                            //}
-                                
-                        }
-
-                        #endif
-                    }
-
-                    //srsp[sh][sw] = p;
-                }
-            }
-
-
-
-            if (newx != null && newy != null)
-                return;
-
-            var leny = uphy - uply + 1;
-            var lenx = uphx - uplx + 1;
-            newx = new int[leny][];
-            newy = new int[leny][];
-            for (int iy = 0, y = uply; y <= uphy; ++y, ++iy) {
-                newx[iy] = new int[lenx];
-                newy[iy] = new int[lenx];
-                for (int ix = 0, x = uplx; x <= uphx; ++x, ++ix) {
-                    newx[iy][ix] = (int)(((double)x * cos45 - (double)y * sin45) * scale);
-                    newy[iy][ix] = (int)(((double)x * sin45 + (double)y * cos45) * scale);
-                }
+                Array.Clear(srsp[sh], 0, srsw);
             }
         }
 
@@ -497,7 +544,7 @@ namespace EssenceUDK.Platform.TileEngine
             int srs_width = srs.Width;
             int srs_heigh = srs.Height;
 
-            var p = srsp[srs_heigh][srs_width];
+            var p = srsp[srs_heigh][srs_width] ?? (srsp[srs_heigh][srs_width] = new FlatPoint(srs_heigh, srs_width));
             int del_x1 = z_cx + p.X1;
             int del_x2 = z_cx + p.X2;
             int del_y1 = z_cy + p.Y1;
@@ -561,63 +608,6 @@ namespace EssenceUDK.Platform.TileEngine
                         *dst_pixl = *srs_pixl;
                     }
                 }
-
-
-                return;
-
-                /*
-                int dst_width = dst.Width;
-                int dst_heigh = dst.Height;
-                int srs_width = srs.Width;
-                int srs_heigh = srs.Height;
-
-                var dst_line = dst.ImageWordPtr;
-                var dst_strd = dst.Stride >> 1;
-                dst_line += cy*dst_strd + cx;
-                var dst_pixl = dst_line;
-
-                var srs_orgx = srs_width >> 1;
-                var srs_orgy = srs_heigh + 4 * z;
-
-                var srs_line = srs.ImageWordPtr;
-                var srs_strd = srs.Stride >> 1;
-                var srs_pixl = srs_line;
-
-
-                int sx, sy, srs_roty, srs_rotx, dst_roty, dst_rotx, dx, dy;
-                for (sy = 0; sy < srs_heigh; ++sy) {
-                    for (sx = 0; sx < srs_width; ++sx, ++srs_pixl) {
-                        if (*srs_pixl == 0x0000)
-                            continue;
-
-
-                        srs_roty = sy - srs_orgy - uply;
-                        srs_rotx = sx - srs_orgx - uplx;
-                        dst_roty = newy[srs_roty][srs_rotx];
-                        dst_rotx = newx[srs_roty][srs_rotx];
-
-                        //var srs_roty = sy - srs_orgy;
-                        //var srs_rotx = sx - srs_orgx;
-                        //var dst_rotx = (int)((double)srs_rotx * cos45 - (double)srs_roty * sin45);
-                        //var dst_roty = (int)((double)srs_rotx * sin45 + (double)srs_roty * cos45);
-
-                        dy = dst_roty + cy;// + srs_orgy;
-                        dx = dst_rotx + cx;// + srs_orgx;
-
-                        if (dy < 0 || dy >= dst_heigh || dx < 0 || dx >= dst_width)
-                            continue;
-
-                        dy -= cy;//dst_roty;// + srs_orgy;
-                        dx -= cx;// dst_rotx;// + srs_orgx;
-
-                        dst_pixl = dst_line + dy*dst_strd + dx;
-                        *dst_pixl = *srs_pixl;
-                    }
-                    srs_pixl = (srs_line += srs_strd);
-                    //dst_pixl = (dst_line += dst_strd);
-                }
-                */
-
             }
         }
 
