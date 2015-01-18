@@ -96,6 +96,8 @@ namespace EssenceUDK
         private int cmdlast = defaultflat ? 10 : 20;
         private UODataManager UOManager;
         private ISurface surf = null;
+        private int avrg_ticks = 0;
+        private int avrg_draws = 0;
 
         private void Render(int cmd)
         {
@@ -104,7 +106,11 @@ namespace EssenceUDK
             //    cmd -= 10;
             //else
             //    cmd -= 20;
-            cmdlast = flt ? 10 : 20;
+            var _cmdlast = flt ? 10 : 20;
+            if (cmdlast != _cmdlast ) {
+                avrg_ticks = avrg_draws = 0;
+                cmdlast = _cmdlast ;
+            }
 
             switch (cmd) {
                 case 17: goto case 28;
@@ -146,7 +152,10 @@ namespace EssenceUDK
             else
                 UOManager.FacetRender.DrawObliqueMap(map, alt, ref surf, range, tcx, tcy, minz, maxz);
 
-            lblStatus.Content = String.Format("Draw in: {0:0000} ms", Environment.TickCount - ticks);
+            var take_ticks = Environment.TickCount - ticks;
+            avrg_ticks += take_ticks;
+            ++avrg_draws;
+            lblStatus.Content = String.Format("Draw in: {0:00000} ms / Avrg: {1:00000}ms", take_ticks, avrg_ticks / avrg_draws);
 
             //var bid = UOManager.GetMapFacet(map).GetBlockId((uint)nudX.Value, (uint)nudY.Value);
             //UOManager.FacetRender.DrawBlock(ref surf, map, bid);
@@ -258,6 +267,8 @@ namespace EssenceUDK
             AddHotKeys(keyRender_MoveUR, Key.PageUp);
             AddHotKeys(keyRender_MoveDL, Key.End);
             AddHotKeys(keyRender_MoveDR, Key.PageDown);
+
+            AddHotKeys(keyRender_MoveO,  Key.Space);
 
             nudM0W.Minimum = nudM1W.Minimum = nudM2W.Minimum = nudM3W.Minimum = nudM4W.Minimum = nudM5W.Minimum = 1;
             nudM0H.Minimum = nudM1H.Minimum = nudM2H.Minimum = nudM3H.Minimum = nudM4H.Minimum = nudM5H.Minimum = 1;

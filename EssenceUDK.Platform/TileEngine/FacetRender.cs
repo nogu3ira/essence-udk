@@ -559,52 +559,45 @@ namespace EssenceUDK.Platform.TileEngine
 
             var off_y1 = dst_y1 - del_y1;
             var off_y2 = p.Y2 - p.Y1 + 1 + (dst_y2 - del_y2);
-            var off_x1 = dst_x1 - del_x1;
-            var off_x2 = p.X2 - p.X1 + 1 + (dst_x2 - del_x2);
+            //var off_x1 = dst_x1 - del_x1;
+            //var off_x2 = p.X2 - p.X1 + 1 + (dst_x2 - del_x2);
 
             lock (srs) {
- 
                 var dst_strd = dst.Stride >> 1;
                 var dst_line = dst.ImageWordPtr + z_cy * dst_strd + z_cx;
-                var dst_pixl = dst_line;
-
                 var srs_strd = srs.Stride >> 1;
                 var srs_line = srs.ImageWordPtr + (srs_heigh-1) * srs_strd + srs_width / 2;
-                var srs_pixl = srs_line;
+                ushort* dst_pixl, srs_pixl;
 
-                for (int dy = off_y1; dy < off_y2; ++dy) {
-                    var oy = p.YOffset +dy;
-                    var ox = p.XOffset[dy];
-                    var ol = p.XLength[dy];
+                int[] srs_x, srs_y;
+                short ol, ox, oy  = (short)(p.YOffset + off_y1);
+                short xi, xz_srlx = (short)(srlx + z_cx);
+                dst_line += (oy + srly - 1)*dst_strd + srlx;
+                for (int dy = off_y1; dy < off_y2; ++dy, ++oy) {
+                    ox = p.XOffset[dy];
+                    ol = p.XLength[dy];
 
-                    //--ol;
-                    if (ox + srlx + z_cx < 0) {
-                        var xi = 0 - (ox + srlx + z_cx);
-                        ox += (short)xi;
-                        ol -= (short)xi;
+                    xi = (short)(xz_srlx + ox);
+                    if (xi < 0) {
+                        ox -= xi;
+                        ol += xi;
+                        xi = 0;
                     }
-                    if (ox + ol - 1 + srlx + z_cx >= dst_width) {
-                        var xi = (ox + ol - 1 + srlx + z_cx) - dst_width + 1;
-                        ol -= (short)xi;
+                    xi += (short)(ol - 1);
+                    if (xi >= dst_width) {
+                        ol -= (short)(xi + 1 - dst_width);
                     }
                     if (ol < 1)
                         continue;
-                    //*/
-
-                    dst_pixl = dst_line + (oy + srly) * dst_strd + (ox + srlx);
-                    var srs_x = srsx[oy];
-                    var srs_y = srsy[oy]; 
+                    
+                    dst_pixl = (dst_line += dst_strd) + ox;
+                    srs_x = srsx[oy];
+                    srs_y = srsy[oy]; 
 
                     for (int c = 0; c < ol; ++c, ++ox, ++dst_pixl) {
-                        var srs_px = srs_x[ox];
-                        var srs_py = srs_y[ox];
-                        if (srs_px == 0xDEAD || srs_py == 0xDEAD)
-                            continue;
-
-                        srs_pixl = srs_line + srs_py*srs_strd + srs_px;
+                        srs_pixl = srs_line + srs_y[ox] * srs_strd + srs_x[ox];
                         if (*srs_pixl == 0x0000)
                             continue;
-
                         *dst_pixl = *srs_pixl;
                     }
                 }
@@ -638,26 +631,19 @@ namespace EssenceUDK.Platform.TileEngine
             var icx = (int)(dest.Width /2 + 8 - 16*(tx%8 - 0) + sea);
             var icy = (int)(dest.Height/2 - 8 - 16*(ty%8 - 0) + sea);
 
-            lock (dest)
-            {
-                var srs = dataManager.GetItemTile(0x0512);
-
-                var z = (sbyte)0;
-                var cx = dest.Width /2;
-                var cy = dest.Height/2;
-
-                DrawFlatTile(srs.Surface, z, 0, 0xFF, ref dest, cx, cy);
-
-                DrawFlatTile(dataManager.GetItemTile(0x0137).Surface, z, 0, 0xFF, ref dest, cx + 100, cy);
-
-                DrawFlatTile(dataManager.GetItemTile(0x0133).Surface, z, 0, 0xFF, ref dest, cx + 200, cy);
-
-
-
-                DrawCross(dest, cx, cy, 0xFFE0, 5);
-                DrawCross(dest, cx, cy, 0xFC1F, 3);
+            //lock (dest)
+            //{
+                //var srs = dataManager.GetItemTile(0x0512);
+                //var z = (sbyte)0;
+                //var cx = dest.Width /2;
+                //var cy = dest.Height/2;            
+                //DrawFlatTile(srs.Surface, z, 0, 0xFF, ref dest, cx, cy);
+                //DrawFlatTile(dataManager.GetItemTile(0x0137).Surface, z, 0, 0xFF, ref dest, cx + 100, cy);
+                //DrawFlatTile(dataManager.GetItemTile(0x0133).Surface, z, 0, 0xFF, ref dest, cx + 200, cy);
+                //DrawCross(dest, cx, cy, 0xFFE0, 5);
+                //DrawCross(dest, cx, cy, 0xFC1F, 3);
                 //return;
-            }
+            //}
 
             DrawFacet(icx, icy, 128, 0, 0, 128, map, sealvl, ref dest, range, tx, ty, minz, maxz, DrawFlatBlock);  
 
