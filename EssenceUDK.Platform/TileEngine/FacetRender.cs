@@ -529,8 +529,231 @@ namespace EssenceUDK.Platform.TileEngine
             }
         }
 
+        private class Edge {
+            internal int cX1, cY1;
+            internal int cX2, cY2;
+            internal int tX1, tY1;
+            internal int tX2, tY2;
+            internal Edge(int cx1, int cy1, int cx2, int cy2, int tx1, int ty1, int tx2, int ty2)
+            {
+                if (cy1 < cy2) {
+                    cX1 = cx1;
+                    cY1 = cy1;
+                    cX2 = cx2;
+                    cY2 = cy2;
+                    tX1 = tx1;
+                    tY1 = ty1;
+                    tX2 = tx2;
+                    tY2 = ty2;
+                } else {
+                    cX1 = cx2;
+                    cY1 = cy2;
+                    cX2 = cx1;
+                    cY2 = cy1;
+                    tX1 = tx2;
+                    tY1 = ty2;
+                    tX2 = tx1;
+                    tY2 = ty1;
+                }
+            }
+        }
+
+        private class Span {
+            internal int cX1, cX2;
+            internal int tX1, tY1;
+            internal int tX2, tY2;
+            internal Span(int cx1, int cx2, int tx1, int ty1, int tx2, int ty2)
+            {
+                if (cx1 < cx2) {
+                    cX1 = cx1;
+                    cX2 = cx2;
+                    tX1 = tx1;
+                    tY1 = ty1;
+                    tX2 = tx2;
+                    tY2 = ty2;
+                } else {
+                    cX1 = cx2;
+                    cX2 = cx1;
+                    tX1 = tx2;
+                    tY1 = ty2;
+                    tX2 = tx1;
+                    tY2 = ty1;
+                }
+            }
+        }
+
+        private unsafe void DrawSpan(ISurface dst, ISurface srs, Span span, int y)
+        {
+            int xdiff = span.cX2 - span.cX1;
+            if (xdiff == 0)
+                return;
+
+            //Color colordiff = span.Color2 - span.Color1;
+
+            float factor = 0.0f;
+            float factorStep = 1.0f / (float)xdiff;
+
+            // draw each pixel in the span
+            ushort* dest = dst.ImageWordPtr + y*(dst.Stride >> 1) + span.cX1;
+            ushort* sors = srs.ImageWordPtr + span.tY1*(srs.Stride >> 1) + span.tX1;
+
+            int scxdiff = span.cX2 - span.cX1;
+            int stxdiff = span.tX2 - span.tX1;
+            int stydiff = span.tY2 - span.tY1;
+
+            var stxstep = (float)stxdiff / scxdiff;
+            var stystep = (float)stydiff / scxdiff;
+            var stxcord = 0f;
+            var stycord = 0f;
+
+            for(int x = span.cX1; x < span.cX2; ++x) {
+
+                sors = srs.ImageWordPtr + (span.tY1 + (int)stycord) * (srs.Stride >> 1) + (span.tX1 + (int)stxcord);
+                stycord += stystep;
+                stxcord += stxstep;
+                //SetPixel(x, y, span.Color1 + (colordiff * factor));
+                //sors = srs.ImageWordPtr;
+                
+                // It's dirty hack to solve problem with brihtness of textures
+                // We need here some kind of interpolation or light modifier
+                *dest++ = tbcolor[*sors & 0x7FFF];
+                //*dest++ = *sors;
+                
+                factor += factorStep;
+            }
+        }
+
+        private void DrawSpan(ISurface dst, ISurface srs, Edge edge1, Edge edge2)
+        {
+            // calculate difference between the y coordinates
+            // of the first edge and return if 0
+            float e1ydiff = (float)(edge1.cY2 - edge1.cY1);
+            if (e1ydiff == 0.0f)
+                return;
+
+            // calculate difference between the y coordinates
+            // of the second edge and return if 0
+            float e2ydiff = (float)(edge2.cY2 - edge2.cY1);
+            if (e2ydiff == 0.0f)
+                return;
+
+            // calculate differences between the x coordinates
+            // and colors of the points of the edges
+            float e1xdiff = (float)(edge1.cX2 - edge1.cX1);
+            float e2xdiff = (float)(edge2.cX2 - edge2.cX1);
+
+            float t1ydiff = (float)(edge1.tY2 - edge1.tY1);
+            float t2ydiff = (float)(edge2.tY2 - edge2.tY1);
+            float t1xdiff = (float)(edge1.tX2 - edge1.tX1);
+            float t2xdiff = (float)(edge2.tX2 - edge2.tX1);
+
+            //Color e1colordiff = (edge1.Color2 - edge1.Color1);
+            //Color e2colordiff = (edge2.Color2 - edge2.Color1);
+
+
+            // calculate factors to use for interpolation
+            // with the edges and the step values to increase
+            // them by after drawing each span
+            float factor1 = (float)(edge2.cY1 - edge1.cY1) / e1ydiff;
+            float factorStep1 = 1.0f / e1ydiff;
+            float factor2     = 0.0f;
+            float factorStep2 = 1.0f / e2ydiff;
+
+
+        float tex_y1factor = t1ydiff / e2ydiff;
+        float tex_y2factor = t2ydiff / e2ydiff;
+        float tex_y1step   = 0.0f;
+        float tex_y2step   = 0.0f;
+
+            // loop through the lines between the edges and draw spans
+            for(int y = edge2.cY1; y < edge2.cY2; y++) {
+                // create and draw span
+                Span span = new Span(edge1.cX1 + (int)(e1xdiff * factor1),
+                                     edge2.cX1 + (int)(e2xdiff * factor2),
+
+                                     edge1.tX1 + (int)(t1xdiff * factor1),
+                                     edge1.tY1 + (int)(t1ydiff * factor1),
+                                     edge2.tX1 + (int)(t2xdiff * factor2),
+                                     edge2.tY1 + (int)(t2ydiff * factor2)
+                                     );
+                      //edge2.Color1 + (e2colordiff * factor2),
+                      //edge1.Color1 + (e1colordiff * factor1),);
+                DrawSpan(dst, srs, span, y);
+
+
+            tex_y1factor += tex_y1step;
+            tex_y2factor += tex_y2step;
+
+                // increase factors
+                factor1 += factorStep1;
+                factor2 += factorStep2;
+
+            }
+        }
+
+        private unsafe void DrawFlatTrng(ISurface srs, int s1x, int s1y, int s2x, int s2y, int s3x, int s3y,
+                                     ref ISurface dst, int d1x, int d1y, int d2x, int d2y, int d3x, int d3y)
+        {
+            Edge[] edges = {
+                new Edge(d1x, d1y, d2x, d2y, s1x, s1y, s2x, s2y),
+                new Edge(d2x, d2y, d3x, d3y, s2x, s2y, s3x, s3y),
+                new Edge(d3x, d3y, d1x, d1y, s3x, s3y, s1x, s1y)
+            };
+
+            int maxLength = 0;
+            int longEdge  = 0;
+
+            // find edge with the greatest length in the y axis
+            for(int i = 0; i < 3; i++) {
+                int length = edges[i].cY2 - edges[i].cY1;
+                if(length > maxLength) {
+                    maxLength = length;
+                    longEdge = i;
+                }
+            }
+
+            int shortEdge1 = (longEdge + 1) % 3;
+            int shortEdge2 = (longEdge + 2) % 3;
+
+            // draw spans between edges; the long edge can be drawn
+            // with the shorter edges to draw the full triangle
+            DrawSpan(dst, srs, edges[longEdge], edges[shortEdge1]);
+            DrawSpan(dst, srs, edges[longEdge], edges[shortEdge2]);
+        }
+
         private unsafe void DrawFlatTexm(ISurface srs, sbyte z, sbyte zl, sbyte zr, sbyte zd, ref ISurface dst, int cx, int cy)
         {
+            int czu =  z * 14142 / 10000;
+            int czl = zl * 14142 / 10000;
+            int czr = zr * 14142 / 10000;
+            int czd = zd * 14142 / 10000;
+
+            int czu_x = cx - czu - 16;
+            int czu_y = cy - czu - 16;
+            int czl_x = cx - czl - 16;
+            int czl_y = cy - czl -  0;
+            int czr_x = cx - czr -  0;
+            int czr_y = cy - czr - 16;
+            int czd_x = cx - czd -  0;
+            int czd_y = cy - czd -  0;
+
+            lock (srs) {
+                var sxy = srs.Width - 1;
+                DrawFlatTrng(srs, 0, sxy,   0,   0, sxy, 0, ref dst, czl_x, czl_y, czu_x, czu_y, czr_x, czr_y);
+                DrawFlatTrng(srs, 0, sxy, sxy, sxy, sxy, 0, ref dst, czl_x, czl_y, czd_x, czd_y, czr_x, czr_y);
+            }
+
+
+            //if (czu_y >= czd_y || czu_y >= czl_y || czr_y >= czd_y || czr_y >= czl_y ||
+            //    czu_x >= czr_x || czu_x >= czd_x || czl_x >= czr_x || czl_x >= czd_x )
+            //    return;
+
+            //var tlu_x = (float)(czl_y - czu_y) / (czu_x - czl_x);
+            //var tld_x = (float)(czl_y - czd_y) / (czd_x - czl_x);
+            //var tru_x = (float)(czr_y - czd_y) / (czu_x - czr_x);
+            //var trd_x = (float)(czr_y - czd_y) / (czd_x - czr_x);
+
+
         }
 
         private unsafe void DrawFlatTile(ISurface srs, sbyte z, ushort hue, byte alpha, ref ISurface dst, int cx, int cy)
@@ -563,6 +786,8 @@ namespace EssenceUDK.Platform.TileEngine
             //var off_x2 = p.X2 - p.X1 + 1 + (dst_x2 - del_x2);
 
             lock (srs) {
+                int srs_r, srs_g, srs_b, dst_r, dst_g, dst_b;
+
                 var dst_strd = dst.Stride >> 1;
                 var dst_line = dst.ImageWordPtr + z_cy * dst_strd + z_cx;
                 var srs_strd = srs.Stride >> 1;
@@ -573,32 +798,104 @@ namespace EssenceUDK.Platform.TileEngine
                 short ol, ox, oy  = (short)(p.YOffset + off_y1);
                 short xi, xz_srlx = (short)(srlx + z_cx);
                 dst_line += (oy + srly - 1)*dst_strd + srlx;
-                for (int dy = off_y1; dy < off_y2; ++dy, ++oy) {
-                    ox = p.XOffset[dy];
-                    ol = p.XLength[dy];
 
-                    xi = (short)(xz_srlx + ox);
-                    if (xi < 0) {
-                        ox -= xi;
-                        ol += xi;
-                        xi = 0;
-                    }
-                    xi += (short)(ol - 1);
-                    if (xi >= dst_width) {
-                        ol -= (short)(xi + 1 - dst_width);
-                    }
-                    if (ol < 1)
-                        continue;
-                    
-                    dst_pixl = (dst_line += dst_strd) + ox;
-                    srs_x = srsx[oy];
-                    srs_y = srsy[oy]; 
+                if (alpha == alphavl) {
+                    //--off_y2;
+                    for (int dy = off_y1; dy < off_y2; ++dy, ++oy) {
+                        ox = p.XOffset[dy];
+                        ol = p.XLength[dy];
 
-                    for (int c = 0; c < ol; ++c, ++ox, ++dst_pixl) {
-                        srs_pixl = srs_line + srs_y[ox] * srs_strd + srs_x[ox];
-                        if (*srs_pixl == 0x0000)
+                        //ox += 1;
+                        //ol -= 2;
+
+                        xi = (short)(xz_srlx + ox);
+                        if (xi < 0) {
+                            ox -= xi;
+                            ol += xi;
+                            xi = 0;
+                        }
+                        xi += (short)(ol - 1);
+                        if (xi >= dst_width) {
+                            ol -= (short)(xi + 1 - dst_width);
+                        }
+                        if (ol < 1)
                             continue;
-                        *dst_pixl = *srs_pixl;
+                    
+                        dst_pixl = (dst_line += dst_strd) + ox;
+                        srs_x = srsx[oy];
+                        srs_y = srsy[oy]; 
+
+                        for (int c = 0; c < ol; ++c, ++ox, ++dst_pixl) {
+                            /*
+                            if (c == 0) {
+                                *dst_pixl  = 0xFC00;
+                                continue;
+                            }
+                            if (c == 1) {
+                                *dst_pixl  = 0x83E0; 
+                                continue;
+                            }
+                            if ( dy == off_y1) {
+                                *dst_pixl  = 0xFFE0;
+                                continue;
+                            }
+                            if ( c == 14) {
+                                *dst_pixl  = 0x83FF;
+                                continue;
+                            }
+                            if ( c == 15) {
+                                *dst_pixl  = 0xFC1F; 
+                                continue;
+                            }*/
+
+                            //srs_pixl = srs_line + srs_y[ox-1] * srs_strd + srs_x[ox-1];
+                            //if (*srs_pixl == 0x0000)
+                            //    continue;
+
+                            srs_pixl = srs_line + srs_y[ox] * srs_strd + srs_x[ox];
+                            if (*srs_pixl == 0x0000)
+                                continue;
+
+                            srs_r = (*srs_pixl & 0x7C00) >> 10;
+                            srs_g = (*srs_pixl & 0x03E0) >> 5;
+                            srs_b = (*srs_pixl & 0x001F);
+
+                            dst_r = (*dst_pixl & 0x7C00) >> 10;
+                            dst_g = (*dst_pixl & 0x03E0) >> 5;
+                            dst_b = (*dst_pixl & 0x001F);
+
+                            *dst_pixl = (ushort)((tbalpha[srs_r][dst_r] << 10) | (tbalpha[srs_g][dst_g] << 5) | tbalpha[srs_b][dst_b]);
+                        }
+                    }
+                } else {
+                    for (int dy = off_y1; dy < off_y2; ++dy, ++oy) {
+                        ox = p.XOffset[dy];
+                        ol = p.XLength[dy];
+
+                        xi = (short)(xz_srlx + ox);
+                        if (xi < 0) {
+                            ox -= xi;
+                            ol += xi;
+                            xi = 0;
+                        }
+                        xi += (short)(ol - 1);
+                        if (xi >= dst_width) {
+                            ol -= (short)(xi + 1 - dst_width);
+                        }
+                        if (ol < 1)
+                            continue;
+                    
+                        dst_pixl = (dst_line += dst_strd) + ox;
+                        srs_x = srsx[oy];
+                        srs_y = srsy[oy]; 
+
+                        for (int c = 0; c < ol; ++c, ++ox, ++dst_pixl) {
+                            srs_pixl = srs_line + srs_y[ox] * srs_strd + srs_x[ox];
+                            if (*srs_pixl == 0x0000)
+                                continue;
+
+                            *dst_pixl = *srs_pixl;
+                        }
                     }
                 }
             }
