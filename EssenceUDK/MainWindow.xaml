@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:contr="clr-namespace:EssenceUDK.Controls.Ultima;assembly=EssenceUDK.Controls"
         xmlns:addin="clr-namespace:EssenceUDK.Add_ins.Client;assembly=EssenceUDK.Add-ins"
-        xmlns:EssenceUDK="clr-namespace:EssenceUDK" Title="Essence UDK (Ultima Developer Kit)" Height="599" Width="853"
+        xmlns:EssenceUDK="clr-namespace:EssenceUDK" Title="Essence UDK (Ultima Developer Kit)" Height="730" Width="853"
         Icon="/EssenceUDK;component/EssenceUDK.ico" xmlns:my="clr-namespace:EssenceUDK.Controllers"
         xmlns:common="clr-namespace:EssenceUDK.Controls.Common;assembly=EssenceUDK.Controls" Loaded="Window_Loaded">
     <Window.Resources />
@@ -11,9 +11,10 @@
     <Grid ShowGridLines="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition MaxWidth="140" MinWidth="140" Width="140" />
-            <ColumnDefinition />
+            <ColumnDefinition Width="40*" />
+            <ColumnDefinition Width="101*"/>
         </Grid.ColumnDefinitions>
-        <TabControl Grid.Column="1" Height="Auto" HorizontalAlignment="Stretch" Name="tabControl1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" TabStripPlacement="Left" Opacity="1">
+        <TabControl Grid.Column="1" Height="Auto" HorizontalAlignment="Stretch" Name="tabControl1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" TabStripPlacement="Left" Opacity="1" Grid.ColumnSpan="2">
             <TabItem Header="tabMain" Name="tabItem1">
                 <Grid />
             </TabItem>
@@ -149,7 +150,7 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBox Name="tbPath" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" Margin="4,0,2,4" TextWrapping="Wrap" Text="Path" />
-                            
+
                             <Label Content="Width0:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" />
                             <common:NumericUpDown Name="nudM0W" Grid.Row="1" Margin="4,0,2,8" Grid.Column="1" />
                             <Label Content="Height0:" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" />
@@ -189,11 +190,41 @@
                         </Grid>
                     </GroupBox>
 
-                    <Label Name="lblStatus" Content="Status"  Grid.Column="1" Grid.ColumnSpan="4"  Grid.Row="5" Height="24" Margin="4,10,4,4" VerticalAlignment="Bottom"/>
+                    <GroupBox Header="Export Flat View" Grid.Column="1" Grid.ColumnSpan="4"  Grid.Row="5" VerticalAlignment="Top"  Height="118" Margin="0,380,0,0" >
+                        <Grid HorizontalAlignment="Left" Height="86" VerticalAlignment="Top" Width="190" Margin="0,3,0,0" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Label Content="X1 Pos:" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" />
+                            <common:NumericUpDown Name="nudSX1" Grid.Column="1" Grid.Row="0" Margin="4,0,2,8" />
+                            <Label Content="Y1 Pos:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" />
+                            <common:NumericUpDown Name="nudSY1" Grid.Column="1" Grid.Row="1" Margin="4,0,2,8" />
+                            
+                            <Label Content="X2 Pos:" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right" />
+                            <common:NumericUpDown Name="nudSX2" Grid.Column="3" Grid.Row="0" Margin="4,0,2,8" />
+                            <Label Content="Y2 Pos:" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" />
+                            <common:NumericUpDown Name="nudSY2" Grid.Column="3" Grid.Row="1" Margin="4,0,2,8" />
+
+                            <TextBox Name="tbSFile" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Margin="4,0,2,4" TextWrapping="Wrap" Text="File Name or Path" />
+                            
+                            <Button Content="Save" Grid.Column="3" Grid.Row="2" Click="btnSaveFacet_Click" />
+                        </Grid>
+                    </GroupBox>
                     
+                    <Label Name="lblStatus" Content="Status"  Grid.Column="1" Grid.ColumnSpan="4"  Grid.Row="5" Height="24" Margin="4,10,4,4" VerticalAlignment="Bottom"/>
+
                 </Grid>
             </TabItem>
-            
+
 
         </TabControl>
     </Grid>

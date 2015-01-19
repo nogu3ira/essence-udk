@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Media.Imaging;
 using EssenceUDK.Platform.DataTypes;
 using EssenceUDK.Platform.Factories;
+using EssenceUDK.Platform.UtilHelpers;
 
 namespace EssenceUDK.Platform.TileEngine
 {
@@ -202,11 +205,6 @@ namespace EssenceUDK.Platform.TileEngine
                 blocks[1][i] = facet[facet.GetBlockId(bx1, by)] ?? fakeblock;
 
             lock (dest) {
-                //bx1 = bx2 = bx0;
-                //by1 = by2 = by0;
-                //x1 = y1 = 0;
-                //x2 = y2 = 7;
-
                 for (int bx = bx1; bx <= bx2; ++bx) {
                     Array.Copy(blocks[1], blocks[0], 2 + by2 - by1);
                     for (int i = 0, by = by1; by <= by2+1; ++by, ++i)
@@ -330,8 +328,8 @@ namespace EssenceUDK.Platform.TileEngine
         private static double cos45 = Math.Cos(angle);
 
 
-        private static int      srsw = 400;
-        private static int      srsh = 500;
+        private static int      srsw = 600;
+        private static int      srsh = 800;
 
         private static int     srlx;
         private static int     srly;
@@ -423,6 +421,8 @@ namespace EssenceUDK.Platform.TileEngine
                     }
             }
         }
+
+        public delegate void SaveFlatMapCallback(float done);
 
         private static void InitFlatRender()
         {
@@ -534,6 +534,9 @@ namespace EssenceUDK.Platform.TileEngine
                 Array.Clear(srsp[sh], 0, srsw);
             }
         }
+
+
+        // Rasterizer
 
         private class Edge {
             internal int cX1, cY1;
@@ -740,18 +743,6 @@ namespace EssenceUDK.Platform.TileEngine
                 DrawFlatTrng(srs, 0, sxy,   0,   0, sxy, 0, ref dst, czl_x, czl_y, czu_x, czu_y, czr_x, czr_y);
                 DrawFlatTrng(srs, 0, sxy, sxy, sxy, sxy, 0, ref dst, czl_x, czl_y, czd_x, czd_y, czr_x, czr_y);
             }
-
-
-            //if (czu_y >= czd_y || czu_y >= czl_y || czr_y >= czd_y || czr_y >= czl_y ||
-            //    czu_x >= czr_x || czu_x >= czd_x || czl_x >= czr_x || czl_x >= czd_x )
-            //    return;
-
-            //var tlu_x = (float)(czl_y - czu_y) / (czu_x - czl_x);
-            //var tld_x = (float)(czl_y - czd_y) / (czd_x - czl_x);
-            //var tru_x = (float)(czr_y - czd_y) / (czu_x - czr_x);
-            //var trd_x = (float)(czr_y - czd_y) / (czd_x - czr_x);
-
-
         }
 
         private unsafe void DrawFlatTile(ISurface srs, sbyte z, ushort hue, byte alpha, ref ISurface dst, int cx, int cy)
@@ -924,6 +915,116 @@ namespace EssenceUDK.Platform.TileEngine
                 DrawCross(dest, dest.Width / 2 - 8, dest.Height / 2 - 8, 0x83E0, 3);
                 DrawCross(dest, dest.Width / 2 - 8, dest.Height / 2 - 8, 0x83FF, 5);
             #endif
+        }
+
+        public unsafe void SaveFlatMap(out ISurface res, byte tsize, byte map, uint bx1, uint by1, uint bx2, uint by2, short sealvl, sbyte minz = -128, sbyte maxz = +127, SaveFlatMapCallback callback = null)
+        {
+            var block_stride = 6;
+            var block_render = 3;
+            var facet = dataManager.GetMapFacet(map);
+            tileComparer.MinFilterZ = minz;
+            tileComparer.MaxFilterZ = maxz;
+
+            var bxcount = bx2 - bx1;
+            var bycount = by2 - by1;
+
+                res = dataManager.CreateSurface((ushort)(bxcount * 8 * tsize), (ushort)(bycount * 8 * tsize), PixelFormat.Bpp16X1R5G5B5);
+            var buf = dataManager.CreateSurface((ushort)((block_stride + 1) * 8 * 16),    (ushort)((bycount + 1) * 8 * 16),    PixelFormat.Bpp16X1R5G5B5);
+            var sea = 14142 * sealvl / 10000;
+            var icx = (int)(sea +16);
+            var icy = (int)(sea);
+
+            IMapBlock fakeblock = new MapBlock(facet as MapFacet, (sbyte)sealvl);
+            IMapBlock[][] blocks = new IMapBlock[2][];
+            blocks[0] = new IMapBlock[bycount + 1];
+            blocks[1] = new IMapBlock[bycount + 1];
+
+            lock (res) {
+            lock (buf) {
+                var bx = bx1+1;
+                int dest_cx, dest_cy;
+
+                blocks[0][bycount] = fakeblock;
+                blocks[1][bycount] = fakeblock;
+                for (uint i = 0, by = by1; i < bycount; ++by, ++i)
+                    blocks[1][i] = facet[facet.GetBlockId(bx1, by)];
+
+
+                var br = 0;
+                var bc = 0;
+                while (bc <= bxcount) {
+                    //lock (buf) {
+                    // Draw right blocks with width (block_stride - block_render) or (block_stride) if it's first call
+                    for (; br < block_stride; ++br, ++bx) {
+                        Array.Copy(blocks[1], blocks[0], bycount);
+                        for (uint i = 0, by = by1; i < bycount; ++by, ++i)
+                            blocks[1][i] = facet[facet.GetBlockId(bx, by)] ?? fakeblock;
+
+                        dest_cx = (int)(icx + 128 * br);
+                        dest_cy = (int)(icy);
+                        DrawFlatBlock(ref buf, dest_cx, dest_cy, blocks, 0, bycount);
+
+                        for (uint i = 0, by = by1; i < bycount; ++by, ++i) 
+                            blocks[0][i].Dispose();
+                    }
+                    br = block_render;
+                    //}
+//if (bc > 3) break;
+                    // Resize buffer and copy result to destination surface
+                    ISurface img = (new BitmapSurface(buf.GetSurface().Image as BitmapSource, PixelFormat.Bpp16X1R5G5B5) as BitmapSurface).GetResized(
+                        0, 0,  block_render * 8 * 16, (int)bycount * 8 * 16, block_render * 8 * tsize, (int)bycount * 8 * tsize);
+                    lock (img) {
+                        ushort  img_stride = (ushort)(img.Stride >> 1);
+                        ushort  res_stride = (ushort)(res.Stride >> 1);
+                        ushort  iln_length = (ushort)(Math.Min(img.Width, (bxcount - bc) * 8 * tsize) << 1);
+                        ushort  iln_counts = img.Height;
+                        ushort* img_srline = img.ImageWordPtr;
+                        ushort* res_dsline = res.ImageWordPtr + (bc * 8 * tsize);
+                        //iln_length *= 2;
+                        for (int iy = 0; iy < iln_counts ; ++iy) {
+                            Utils.MemCopy(res_dsline, img_srline, iln_length);
+                            res_dsline += res_stride;
+                            img_srline += img_stride;
+                        }
+                        bc += block_render;
+                    }
+                    
+                    //lock (buf) {
+                    // Move right blocks to the left
+                    ushort  ln_counts = buf.Height;
+                    ushort  ln_stride = (ushort)(buf.Stride >> 1);
+                    ushort  ln_length = (ushort)(buf.Width -  (block_render * 8 * 16));
+                    ushort* dest_line = buf.ImageWordPtr;
+                    ushort* sors_line = buf.ImageWordPtr + block_render * 8 * 16;
+                    ln_length *= 2;
+                    for (int iy = 0; iy < ln_counts; ++iy) {
+                        Utils.MemCopy(dest_line, sors_line, ln_length);
+                        dest_line += ln_stride;
+                        sors_line += ln_stride;
+                    }
+                    //}
+
+
+                    //Force garbage collection.
+                    GC.Collect();
+
+                    // Wait for all finalizers to complete before continuing.
+                    GC.WaitForPendingFinalizers();
+
+                    if (callback != null) {
+                        float done = 100f * bc / bxcount;
+                        callback(done);
+                    }
+
+                }
+                }
+            }
+
+            //res = buf;
+
+            //res = (buf as BitmapSurface).GetResized(buf.Width / 4, 0, buf.Width / 2, buf.Height, buf.Width / 8, buf.Height / 4);
+
+
         }
 
         #endregion

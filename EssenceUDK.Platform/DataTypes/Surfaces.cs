@@ -1014,6 +1014,28 @@ namespace EssenceUDK.Platform.DataTypes
             }
         }
 
+        internal IImageSurface GetResized(int x, int y, int width, int height, int newwidth, int newheight)
+        {
+            var scalex = (float)newwidth  / width;
+            var scaley = (float)newheight / height;
+            var rect = new Rect(-x * scalex, -y * scaley, Width * scalex, Height * scaley);
+
+            var group = new DrawingGroup();
+            RenderOptions.SetBitmapScalingMode(group, BitmapScalingMode.HighQuality);
+            group.Children.Add(new ImageDrawing(BitmapSource, rect));
+
+            var drawingVisual = new DrawingVisual();
+            using (var drawingContext = drawingVisual.RenderOpen())
+                drawingContext.DrawDrawing(group);
+
+            var resizedImage = new RenderTargetBitmap(
+                newwidth, newheight,   // Resized dimensions
+                96, 96,                // Default DPI values
+                PixelFormats.Default); // Default pixel format
+            resizedImage.Render(drawingVisual);
+
+            return new BitmapSurface(resizedImage, PixelFormat);
+        }
 
 
         ~BitmapSurface()
@@ -1146,7 +1168,7 @@ namespace EssenceUDK.Platform.DataTypes
             }
         }
 
-        public void SavePNG(string filename)
+        void IImageSurface.SavePNG(string filename)
         {
             lock (LockObject) {
                 using (var fileStream = new FileStream(filename, FileMode.Create)) {

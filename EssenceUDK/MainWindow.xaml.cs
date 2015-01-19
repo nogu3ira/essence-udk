@@ -265,6 +265,37 @@ namespace EssenceUDK
             }
         }
 
+        private void btnSaveFacet_Click(object sender, RoutedEventArgs e)
+        {
+            var map  = (byte)nudM.Value;
+            var alt  = (short)nudS.Value;
+            var minz = (sbyte)nudMinZ.Value;
+            var maxz = (sbyte)nudMaxZ.Value;
+
+            var posx1 = (uint)nudSX1.Value;
+            var posy1 = (uint)nudSY1.Value;
+            var posx2 = (uint)nudSX2.Value;
+            var posy2 = (uint)nudSY2.Value;
+
+            ISurface surf;
+            UOManager.FacetRender.SaveFlatMap(out surf, 2, map, posx1, posy1, posx2, posy2, alt, minz, maxz, SaveFacetCallback);
+
+            var name = tbSFile.Text;
+            if (!name.EndsWith(".png"))
+                name += ".png";
+            if (name[1] != ':')
+                name = System.IO.Path.Combine(Environment.CurrentDirectory, name);
+            surf.GetSurface().SavePNG(name);
+
+            imgFacet.Source = surf.GetSurface().Image;
+        }
+
+        private void SaveFacetCallback(float done)
+        {
+            lblStatus.Content = String.Format("Rendering: {0,9:0.0000}%", done);
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             AddHotKeys(keyRender_MoveU, Key.Up);
@@ -303,6 +334,11 @@ namespace EssenceUDK
             nudS.Minimum = -512;
             nudS.Minimum = +512;
             nudS.Value   = -45;
+
+            nudSX1.Value = 774;//860; //774;//909;
+            nudSY1.Value = 8;//360; //8;//410;
+            nudSX2.Value = 1492;//920; //1492;//920;
+            nudSY2.Value = 604;//424; //604;//424;
 
             nudMinZ.Minimum = nudMaxZ.Minimum = nudMinZ.Value = - 128;
             nudMinZ.Maximum = nudMaxZ.Maximum = nudMaxZ.Value = + 127;

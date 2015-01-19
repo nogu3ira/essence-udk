@@ -65,6 +65,8 @@ namespace EssenceUDK.Platform
         ushort GetHammingDistanceForAvrHash008(IImageSurface surface);
         ushort GetHammingDistanceForAvrHash032(IImageSurface surface);
         ushort GetHammingDistanceForAvrHash128(IImageSurface surface);
+
+        void SavePNG(string filename);
     }
 
     public interface IHuedSurface  : ISurface
