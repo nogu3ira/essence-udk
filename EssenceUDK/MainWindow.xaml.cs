@@ -101,6 +101,11 @@ namespace EssenceUDK
 
         private void Render(int cmd)
         {
+            if (UOManager == null) {
+                MessageBox.Show("Enter client path and load client mul files to be able to draw facet.");
+                return;
+            }
+
             var flt = cmd < 20;
             //if (flt)
             //    cmd -= 10;
@@ -131,6 +136,15 @@ namespace EssenceUDK
                 case 26: nudX.Value += 1; nudY.Value -= 1; break;
                 default: break;
             }
+
+            if (nudX.Value < nudX.Minimum)
+                nudX.Value = nudX.Minimum;
+            if (nudY.Value < nudY.Minimum)
+                nudY.Value = nudY.Minimum;
+            if (nudX.Value > nudX.Maximum)
+                nudX.Value = nudX.Maximum;
+            if (nudY.Value > nudY.Maximum)
+                nudY.Value = nudY.Maximum;
 
             var surw = (ushort)nudW.Value;
             var surh = (ushort)nudH.Value;
@@ -230,20 +244,25 @@ namespace EssenceUDK
 
         private void btnLoadMuls_Click(object sender, RoutedEventArgs e)
         {
-            UOManager = null;
-            var datauri = new Uri(tbPath.Text);
-            var dataopt = new UODataOptions();
-            dataopt.majorFacet[0] = new FacetDesc("FacetMap-0", (ushort)nudM0W.Value, (ushort)nudM0H.Value, (ushort)nudM0W.Value, (ushort)nudM0H.Value);
-            dataopt.majorFacet[1] = new FacetDesc("FacetMap-1", (ushort)nudM1W.Value, (ushort)nudM1H.Value, (ushort)nudM1W.Value, (ushort)nudM1H.Value);
-            dataopt.majorFacet[2] = new FacetDesc("FacetMap-2", (ushort)nudM2W.Value, (ushort)nudM2H.Value, (ushort)nudM2W.Value, (ushort)nudM2H.Value);
-            dataopt.majorFacet[3] = new FacetDesc("FacetMap-3", (ushort)nudM3W.Value, (ushort)nudM3H.Value, (ushort)nudM3W.Value, (ushort)nudM3H.Value);
-            dataopt.majorFacet[4] = new FacetDesc("FacetMap-4", (ushort)nudM4W.Value, (ushort)nudM4H.Value, (ushort)nudM4W.Value, (ushort)nudM4H.Value);
-            dataopt.majorFacet[5] = new FacetDesc("FacetMap-5", (ushort)nudM5W.Value, (ushort)nudM5H.Value, (ushort)nudM5W.Value, (ushort)nudM5H.Value);
-            var _manager = new UODataManager(datauri,
-                cbUT.SelectedIndex == 0 ? UODataType.ClassicMondainsLegacy :
-                cbUT.SelectedIndex == 1 ? UODataType.ClassicStygianAbyss   : 
-                UODataType.ClassicAdventuresOnHighSeas, UOLang.Russian, dataopt, true);
-            UOManager = _manager;
+            try {
+                UOManager = null;
+                var datauri = new Uri(tbPath.Text);
+                var dataopt = new UODataOptions();
+                dataopt.majorFacet[0] = new FacetDesc("FacetMap-0", (ushort)nudM0W.Value, (ushort)nudM0H.Value, (ushort)nudM0W.Value, (ushort)nudM0H.Value);
+                dataopt.majorFacet[1] = new FacetDesc("FacetMap-1", (ushort)nudM1W.Value, (ushort)nudM1H.Value, (ushort)nudM1W.Value, (ushort)nudM1H.Value);
+                dataopt.majorFacet[2] = new FacetDesc("FacetMap-2", (ushort)nudM2W.Value, (ushort)nudM2H.Value, (ushort)nudM2W.Value, (ushort)nudM2H.Value);
+                dataopt.majorFacet[3] = new FacetDesc("FacetMap-3", (ushort)nudM3W.Value, (ushort)nudM3H.Value, (ushort)nudM3W.Value, (ushort)nudM3H.Value);
+                dataopt.majorFacet[4] = new FacetDesc("FacetMap-4", (ushort)nudM4W.Value, (ushort)nudM4H.Value, (ushort)nudM4W.Value, (ushort)nudM4H.Value);
+                dataopt.majorFacet[5] = new FacetDesc("FacetMap-5", (ushort)nudM5W.Value, (ushort)nudM5H.Value, (ushort)nudM5W.Value, (ushort)nudM5H.Value);
+                var _manager = new UODataManager(datauri,
+                    cbUT.SelectedIndex == 0 ? UODataType.ClassicMondainsLegacy :
+                    cbUT.SelectedIndex == 1 ? UODataType.ClassicStygianAbyss   : 
+                    UODataType.ClassicAdventuresOnHighSeas, UOLang.Russian, dataopt, true);
+                UOManager = _manager;
+            } catch (Exception ex) {
+                UOManager = null;
+                MessageBox.Show("While loading data exception was raised.\nCheck path, map sizes and make sure that all data muls are present.");
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -307,14 +326,14 @@ namespace EssenceUDK
             nudR.Maximum = 255;
 
             nudX.Minimum = 0;
-            nudX.Maximum = 12288;
+            nudX.Maximum = 12288- 1;
             nudY.Minimum = 0;
-            nudY.Maximum = 8192;
+            nudY.Maximum = 8192 - 1;
 
             nudM.Value = 1;
-            nudR.Value = 30;
-            nudX.Value = 7320;//913 * 8 + 3;
-            nudY.Value = 3364;//411 * 8 + 3;
+            nudR.Value = 20;
+            nudX.Value = 30;//7320;//913 * 8 + 3;
+            nudY.Value = 30;//3364;//411 * 8 + 3;
             this.Width = 1278;
             this.Height = 938;
 

@@ -565,6 +565,15 @@ namespace EssenceUDK.Platform.DataTypes
                 _Tiles[i] = new MapTile(this, data.Lands[i], data.Items[i]);
         }
 
+        public MapBlock(MapFacet parent, sbyte altitude)
+        {
+            _Parent = parent;
+            _EntryId = 0xFFFFFFFFu;
+            _Tiles = new MapTile[64];
+            for (int i = 0; i < 64; ++i)
+                _Tiles[i] = new MapTile(this, new LandMapTile(0x0002, altitude), null);
+        }
+
         public IMapBlockData GetData()
         {
             return new ClassicFactory.MapBlockData(0, _Tiles);
@@ -589,6 +598,7 @@ namespace EssenceUDK.Platform.DataTypes
         uint Height    { get; }
         uint Count     { get; }
         uint GetBlockId(uint blockX, uint blockY);
+        uint GetBlockId(int blockX, int blockY);
         uint FindBlockId(uint tileX, uint tileY);
         IMapBlock this[uint index] { get; }
         IMapTile this[uint tileX, uint tileY] { get; }
@@ -612,6 +622,13 @@ namespace EssenceUDK.Platform.DataTypes
         public uint GetBlockId(uint blockX, uint blockY)
         {
             return (blockX * _Height) + blockY;
+        }
+
+        public uint GetBlockId(int blockX, int blockY)
+        {
+            if (blockX < 0 || blockY < 0) return 0xFFFFFFFFu;
+            if (blockX >= Width || blockY >= Height) return 0xFFFFFFFFu;
+            return (uint)((blockX * _Height) + blockY);
         }
 
         public uint FindBlockId(uint tileX, uint tileY)

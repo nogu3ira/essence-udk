@@ -103,7 +103,7 @@ namespace EssenceUDK.Platform.TileEngine
         private delegate void DrawTile(ISurface srs, sbyte z, ushort hue, byte alpha, ref ISurface dst, int cx, int cy);
         private void DrawBlock(IMapBlock mapblock, uint x, uint y, IMapBlock[][] block, uint b, ref ISurface dest, int dest_cx, int dest_cy, DrawTile drawtile, DrawTexm drawtexm)
         {
-            var maptile = mapblock[x, y]; 
+            var maptile = mapblock[x, y];
 
             tileCache.Clear();
             if (tileComparer.IsValid(maptile.Land))
@@ -171,29 +171,35 @@ namespace EssenceUDK.Platform.TileEngine
             tileComparer.MinFilterZ = minz;
             tileComparer.MaxFilterZ = maxz;
 
+            IMapBlock fakeblock = new MapBlock(facet as MapFacet, (sbyte)sealvl);
+
             var tx1 = tx - range;
             var ty1 = ty - range;
             var tx2 = tx + range;
             var ty2 = ty + range;
 
-            var bx0 = (uint)(tx  / 8);
-            var by0 = (uint)(ty  / 8);
-            var bx1 = (uint)(tx1 / 8);
-            var by1 = (uint)(ty1 / 8);
-            var bx2 = (uint)(tx2 / 8);
-            var by2 = (uint)(ty2 / 8);
+            var bx0 = (int)(tx  / 8);
+            var by0 = (int)(ty  / 8);
+            var bx1 = (int)(tx1 / 8);
+            var by1 = (int)(ty1 / 8);
+            var bx2 = (int)(tx2 / 8);
+            var by2 = (int)(ty2 / 8);
 
             var x1 = (byte)(tx1 % 8);
             var y1 = (byte)(ty1 % 8);
             var x2 = (byte)(tx2 % 8);
             var y2 = (byte)(ty2 % 8);
             int dest_cx, dest_cy;
+            if (tx1 < 0) x1 = 0;
+            if (ty1 < 0) y1 = 0;
+            if (tx2 < 0) x2 = 7;
+            if (ty2 < 0) y2 = 7;
 
             IMapBlock[][] blocks = new IMapBlock[2][];
             blocks[0] = new IMapBlock[2+by2-by1];
             blocks[1] = new IMapBlock[2+by2-by1];
-            for (uint i = 0, by = by1; by <= by2+1; ++by, ++i)
-                blocks[1][i] = facet[facet.GetBlockId(bx1, by)];
+            for (int i = 0, by = by1; by <= by2+1; ++by, ++i)
+                blocks[1][i] = facet[facet.GetBlockId(bx1, by)] ?? fakeblock;
 
             lock (dest) {
                 //bx1 = bx2 = bx0;
@@ -201,16 +207,16 @@ namespace EssenceUDK.Platform.TileEngine
                 //x1 = y1 = 0;
                 //x2 = y2 = 7;
 
-                for (uint bx = bx1; bx <= bx2; ++bx) {
+                for (int bx = bx1; bx <= bx2; ++bx) {
                     Array.Copy(blocks[1], blocks[0], 2 + by2 - by1);
-                    for (uint i = 0, by = by1; by <= by2+1; ++by, ++i)
-                        blocks[1][i] = facet[facet.GetBlockId(bx+1, by)];
+                    for (int i = 0, by = by1; by <= by2+1; ++by, ++i)
+                        blocks[1][i] = facet[facet.GetBlockId(bx+1, by)] ?? fakeblock;
 
                     var ox1 = bx == bx1 ? x1 : (byte)0;
                     var ox2 = bx == bx2 ? x2 : (byte)7;
                     dest_cx = (int)(icx + bxdw * (bx - bx0) - bxdh * (by1 - by0));
                     dest_cy = (int)(icy + bydw * (bx - bx0) + bydh * (by1 - by0));
-                    drawblocks(ref dest, dest_cx, dest_cy, blocks, 0, by2 - by1, ox1, ox2, y1, y2);
+                    drawblocks(ref dest, dest_cx, dest_cy, blocks, 0, (uint)(by2 - by1), ox1, ox2, y1, y2);
                     //DrawCross(dest, dest_cx, dest_cy, 0xFC1F, 5);
                 }
             }         
@@ -588,8 +594,6 @@ namespace EssenceUDK.Platform.TileEngine
             if (xdiff == 0)
                 return;
 
-            //Color colordiff = span.Color2 - span.Color1;
-
             float factor = 0.0f;
             float factorStep = 1.0f / (float)xdiff;
 
@@ -606,13 +610,19 @@ namespace EssenceUDK.Platform.TileEngine
             var stxcord = 0f;
             var stycord = 0f;
 
-            for(int x = span.cX1; x < span.cX2; ++x) {
+
+            int min_x = Math.Max(span.cX1, 0);
+            int max_x = Math.Min(span.cX2, dst.Width);
+            stycord += (min_x - span.cX1) * stystep;
+            stxcord += (min_x - span.cX1) * stxstep;
+            factor  += (min_x - span.cX1) * factorStep;
+            dest    += (min_x - span.cX1);
+
+            for(int x = min_x; x < max_x; ++x) {
 
                 sors = srs.ImageWordPtr + (span.tY1 + (int)stycord) * (srs.Stride >> 1) + (span.tX1 + (int)stxcord);
                 stycord += stystep;
                 stxcord += stxstep;
-                //SetPixel(x, y, span.Color1 + (colordiff * factor));
-                //sors = srs.ImageWordPtr;
                 
                 // It's dirty hack to solve problem with brihtness of textures
                 // We need here some kind of interpolation or light modifier
@@ -637,8 +647,8 @@ namespace EssenceUDK.Platform.TileEngine
             if (e2ydiff == 0.0f)
                 return;
 
-            // calculate differences between the x coordinates
-            // and colors of the points of the edges
+            // calculate differences between the x coordinates and 
+            // texturex x, y coordinates of the points of the edges
             float e1xdiff = (float)(edge1.cX2 - edge1.cX1);
             float e2xdiff = (float)(edge2.cX2 - edge2.cX1);
 
@@ -646,10 +656,6 @@ namespace EssenceUDK.Platform.TileEngine
             float t2ydiff = (float)(edge2.tY2 - edge2.tY1);
             float t1xdiff = (float)(edge1.tX2 - edge1.tX1);
             float t2xdiff = (float)(edge2.tX2 - edge2.tX1);
-
-            //Color e1colordiff = (edge1.Color2 - edge1.Color1);
-            //Color e2colordiff = (edge2.Color2 - edge2.Color1);
-
 
             // calculate factors to use for interpolation
             // with the edges and the step values to increase
@@ -659,14 +665,13 @@ namespace EssenceUDK.Platform.TileEngine
             float factor2     = 0.0f;
             float factorStep2 = 1.0f / e2ydiff;
 
-
-        float tex_y1factor = t1ydiff / e2ydiff;
-        float tex_y2factor = t2ydiff / e2ydiff;
-        float tex_y1step   = 0.0f;
-        float tex_y2step   = 0.0f;
-
             // loop through the lines between the edges and draw spans
-            for(int y = edge2.cY1; y < edge2.cY2; y++) {
+            int min_y = Math.Max(edge2.cY1, 0);
+            int max_y = Math.Min(edge2.cY2, dst.Height);
+            factor1 += (min_y - edge2.cY1) * factorStep1;
+            factor2 += (min_y - edge2.cY1) * factorStep2;
+
+            for(int y = min_y; y < max_y; y++) {
                 // create and draw span
                 Span span = new Span(edge1.cX1 + (int)(e1xdiff * factor1),
                                      edge2.cX1 + (int)(e2xdiff * factor2),
@@ -676,18 +681,11 @@ namespace EssenceUDK.Platform.TileEngine
                                      edge2.tX1 + (int)(t2xdiff * factor2),
                                      edge2.tY1 + (int)(t2ydiff * factor2)
                                      );
-                      //edge2.Color1 + (e2colordiff * factor2),
-                      //edge1.Color1 + (e1colordiff * factor1),);
                 DrawSpan(dst, srs, span, y);
-
-
-            tex_y1factor += tex_y1step;
-            tex_y2factor += tex_y2step;
 
                 // increase factors
                 factor1 += factorStep1;
                 factor2 += factorStep2;
-
             }
         }
 
@@ -800,13 +798,9 @@ namespace EssenceUDK.Platform.TileEngine
                 dst_line += (oy + srly - 1)*dst_strd + srlx;
 
                 if (alpha == alphavl) {
-                    //--off_y2;
                     for (int dy = off_y1; dy < off_y2; ++dy, ++oy) {
                         ox = p.XOffset[dy];
                         ol = p.XLength[dy];
-
-                        //ox += 1;
-                        //ol -= 2;
 
                         xi = (short)(xz_srlx + ox);
                         if (xi < 0) {
@@ -826,31 +820,11 @@ namespace EssenceUDK.Platform.TileEngine
                         srs_y = srsy[oy]; 
 
                         for (int c = 0; c < ol; ++c, ++ox, ++dst_pixl) {
-                            /*
-                            if (c == 0) {
-                                *dst_pixl  = 0xFC00;
+                            
+                            // Dirty fix for drawing transparent water
+                            if (srlx + ox == 0 || srly + oy == 0) {
                                 continue;
                             }
-                            if (c == 1) {
-                                *dst_pixl  = 0x83E0; 
-                                continue;
-                            }
-                            if ( dy == off_y1) {
-                                *dst_pixl  = 0xFFE0;
-                                continue;
-                            }
-                            if ( c == 14) {
-                                *dst_pixl  = 0x83FF;
-                                continue;
-                            }
-                            if ( c == 15) {
-                                *dst_pixl  = 0xFC1F; 
-                                continue;
-                            }*/
-
-                            //srs_pixl = srs_line + srs_y[ox-1] * srs_strd + srs_x[ox-1];
-                            //if (*srs_pixl == 0x0000)
-                            //    continue;
 
                             srs_pixl = srs_line + srs_y[ox] * srs_strd + srs_x[ox];
                             if (*srs_pixl == 0x0000)
