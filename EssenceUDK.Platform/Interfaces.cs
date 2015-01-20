@@ -12,18 +12,18 @@ namespace EssenceUDK.Platform
 {
     public interface IPoint2D
     {
-        short X { get; set; }
-        short Y { get; set; }
+        int X   { get; set; }
+        int Y   { get; set; }
     }
 
     public interface IClipper
     {
-        short X1 { get; }
-        short X2 { get; }
-        short Y1 { get; }
-        short Y2 { get; }
-        ushort Width { get; }
-        ushort Height { get; }
+        int X1      { get; }
+        int X2      { get; }
+        int Y1      { get; }
+        int Y2      { get; }
+        int Width   { get; }
+        int Height  { get; }
     }
 
     public interface IPalette
@@ -34,8 +34,8 @@ namespace EssenceUDK.Platform
 
     public interface ISurface
     {
-        ushort      Width       { get; }
-        ushort      Height      { get; }
+        int         Width       { get; }
+        int         Height      { get; }
         PixelFormat PixelFormat { get; }
 
         unsafe uint*    ImageUIntPtr    { get; }

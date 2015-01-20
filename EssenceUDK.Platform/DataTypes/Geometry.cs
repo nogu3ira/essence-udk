@@ -11,28 +11,28 @@ namespace EssenceUDK.Platform.DataTypes
     /// </summary>
     public struct Point2D : IPoint2D, IComparable, IComparable<Point2D>
     {
-        public short X
+        public int X
         {
             get { return _X; }
             set { _X = value; }
-        } private short _X;
+        } private int _X;
 
-        public short Y
+        public int Y
         {
             get { return _Y; }
             set { _Y = value; }
-        } private short _Y;
+        } private int _Y;
 
         public static readonly Point2D Zero = new Point2D(0, 0);
 
-        public Point2D(int x, int y) : this((short)x, (short)y)
-        {
-        }
-
-        public Point2D(short x, short y)
+        public Point2D(int x, int y)
         {
             _X = x;
             _Y = y;
+        }
+
+        public Point2D(short x, short y) : this((int)x, (int)y)
+        {
         }
 
         public Point2D(IPoint2D p) : this(p.X, p.Y)
@@ -142,35 +142,36 @@ namespace EssenceUDK.Platform.DataTypes
     /// </summary>
     public struct Point3D : IPoint2D, IComparable, IComparable<Point3D>
     {
-        public short X
+        public int X
         {
             get { return _X; }
             set { _X = value; }
-        } private short _X;
+        } private int _X;
 
-        public short Y
+        public int Y
         {
             get { return _Y; }
             set { _Y = value; }
-        } private short _Y;
+        } private int _Y;
 
-        public short Z
+        public int Z
         {
             get { return _Z; }
             set { _Z = value; }
-        } private short _Z;
+        } private int _Z;
 
         public static readonly Point3D Zero = new Point3D(0, 0, 0);
 
-        public Point3D(int x, int y, int z): this((short)x, (short)y, (short)z)
-        {
-        }
-
-        public Point3D(short x, short y, short z)
+        public Point3D(int x, int y, int z)
         {
             _X = x;
             _Y = y;
             _Z = z;
+        }
+
+        public Point3D(short x, short y, short z) : this((int)x, (int)y, (int)z)
+        {
+            
         }
 
         public Point3D(Point3D p): this(p._X, p._Y, p._Z)
@@ -298,40 +299,40 @@ namespace EssenceUDK.Platform.DataTypes
             set { _End = value; }
         } private Point2D _End;
 
-        public short X1
+        public int X1
         {
             get { return _Start.X; }
             set { _Start.X = value; }
         }
 
-        public short Y1
+        public int Y1
         {
             get { return _Start.Y; }
             set { _Start.Y = value; }
         }
 
-        public short X2
+        public int X2
         {
             get { return _End.X; }
             set { _End.X = value; }
         }
 
-        public short Y2
+        public int Y2
         {
             get { return _End.Y; }
             set { _End.Y = value; }
         }
 
-        public ushort Width
+        public int Width
         {
-            get { return (ushort)(_End.X - _Start.X); }
-            set { _End.X = (short)(_Start.X + value); }
+            get { return (int)(_End.X - _Start.X); }
+            set { _End.X = (int)(_Start.X + value); }
         }
 
-        public ushort Height
+        public int Height
         {
-            get { return (ushort)(_End.Y - _Start.Y); }
-            set { _End.Y = (short)(_Start.Y + value); }
+            get { return (int)(_End.Y - _Start.Y); }
+            set { _End.Y = (int)(_Start.Y + value); }
         }
 
         public static readonly Rectangle2D Zero = new Rectangle2D(0, 0, 0, 0);
@@ -342,11 +343,11 @@ namespace EssenceUDK.Platform.DataTypes
             _End = new Point2D(end);
         }
 
-        public Rectangle2D(short x, short y, ushort width, ushort height) : this(new Point2D(x, y), new Point2D((short)(x + width), (short)(y + height)))
+        public Rectangle2D(int x, int y, int width, int height) : this(new Point2D(x, y), new Point2D((int)(x + width), (int)(y + height)))
         {
         }
 
-        public Rectangle2D(int x, int y, int width, int height) : this((short)x, (short)y, (ushort)width, (ushort)height)
+        public Rectangle2D(short x, short y, ushort width, ushort height) : this((int)x, (int)y, (int)width, (int)height)
         {
         }
 
@@ -425,27 +426,27 @@ namespace EssenceUDK.Platform.DataTypes
 
     public struct Clipper2D : IClipper
     {
-        private short _X1, _Y1, _X2, _Y2;
-        private ushort _Width, _Height;
+        private int   _X1, _Y1, _X2, _Y2;
+        private int   _Width, _Height;
 
-        public short X1 { get { return _X1; } set { _Width = (ushort)(1 + _X2 - (_X1 = value)); } }
-        public short X2 { get { return _X2; } set { _Width = (ushort)(1 + (_X2 = value) - _X1); } }
-        public short Y1 { get { return _Y1; } set { _Height = (ushort)(1 + _Y2 - (_Y1 = value)); } }
-        public short Y2 { get { return _Y2; } set { _Height = (ushort)(1 + (_Y2 = value) - _Y1); } }
-        public ushort Width { get { return _Width; } set { _X2 = (short)(_X1 + (_Width = value) - 1); } }
-        public ushort Height { get { return _Height; } set { _Y2 = (short)(_Y1 + (_Height = value) - 1); } }
+        public int X1 { get { return _X1; } set { _Width  = (int)(1 + _X2 - (_X1 = value)); } }
+        public int X2 { get { return _X2; } set { _Width  = (int)(1 + (_X2 = value) - _X1); } }
+        public int Y1 { get { return _Y1; } set { _Height = (int)(1 + _Y2 - (_Y1 = value)); } }
+        public int Y2 { get { return _Y2; } set { _Height = (int)(1 + (_Y2 = value) - _Y1); } }
+        public int Width  { get { return _Width; }  set { _X2 = (short)(_X1 + (_Width = value) - 1); } }
+        public int Height { get { return _Height; } set { _Y2 = (short)(_Y1 + (_Height = value) - 1); } }
 
-        public Clipper2D(short x1, short y1, ushort width, ushort height)
+        public Clipper2D(int x1, int y1, uint width, uint height)
         {
             _X1 = x1;
             _Y1 = y1;
             _Y2 = _X2 = 0;
             _Width = _Height = 0; 
-            Width = width;
-            Height = height;
+            Width  = (int)width;
+            Height = (int)height;
         }
 
-        public Clipper2D(short x1, short y1, short x2, short y2)
+        public Clipper2D(int x1, int y1, int x2, int y2)
         {
             _X1 = x1;
             _Y1 = y1;

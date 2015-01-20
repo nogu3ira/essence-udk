@@ -285,9 +285,9 @@ namespace EssenceUDK.Platform.DataTypes
     {
         #region ISurface Implementation
         ImageSource IImageSurface.Image     { get { return BitmapSource; } }
-        public ImageSource  Image { get { return BitmapSource; } }
-        ushort      ISurface.Width          { get { return (ushort)Width;  } }
-        ushort      ISurface.Height         { get { return (ushort)Height; } }
+        public ImageSource  Image           { get { return BitmapSource; } }
+        int         ISurface.Width          { get { return (int)Width;  } }
+        int         ISurface.Height         { get { return (int)Height; } }
         PixelFormat ISurface.PixelFormat    { get { return PixelFormat; } }
 
         unsafe uint* ISurface.ImageUIntPtr  { get { return ImageUIntPtr; } }
@@ -326,31 +326,31 @@ namespace EssenceUDK.Platform.DataTypes
 
         IClipper IImageSurface.GetImageRect()
         {
-            short dx = 0x0400, dy = 0x0400;
-            ushort width = 0, height = 0;
+            int  dx = 0x0400, dy = 0x0400;
+            uint width = 0, height = 0;
 
             lock (LockObject) 
             {
                 if (BytesPerPixel == 2) {
                     var line = ImageWordPtr;
                     var delta = Stride >> 1;
-                    for (short Y = 0; Y < Height; ++Y, line += delta) {
+                    for (int Y = 0; Y < Height; ++Y, line += delta) {
                         var cur = line;
                         for (short X = 0; X < Width; ++X) {
                             if ((cur[X] & 0x8000) > 0 && (cur[X] & 0x7FFF) > 0) {
                                 dx = Math.Min(dx, X);
                                 dy = Math.Min(dy, Y);
-                                width  = (ushort)Math.Max(width, X);
-                                height = (ushort)Math.Max(height, Y);
+                                width  = (uint)Math.Max(width, X);
+                                height = (uint)Math.Max(height, Y);
                             }
                         }
                     }
                 } else if (BytesPerPixel == 4) {
                     var line = ImageUIntPtr;
                     var delta = Stride >> 2;
-                    for (short Y = 0; Y < Height; ++Y, line += delta) {
+                    for (int Y = 0; Y < Height; ++Y, line += delta) {
                         var cur = line;
-                        for (short X = 0; X < Width; ++X) {
+                        for (int X = 0; X < Width; ++X) {
                             byte a = (byte)((cur[X] & 0xFF000000) >> 24);
                             byte r = (byte)((cur[X] & 0x00FF0000) >> 16);
                             byte g = (byte)((cur[X] & 0x0000FF00) >> 8);
@@ -359,8 +359,8 @@ namespace EssenceUDK.Platform.DataTypes
                             if (a > 0 && (r > 7 || g > 7 || b > 7)) {
                                 dx = Math.Min(dx, X);
                                 dy = Math.Min(dy, Y);
-                                width  = (ushort)Math.Max(width,  X);
-                                height = (ushort)Math.Max(height, Y);
+                                width  = (uint)Math.Max(width,  X);
+                                height = (uint)Math.Max(height, Y);
                             }
                         }
                     }
@@ -371,8 +371,8 @@ namespace EssenceUDK.Platform.DataTypes
             }
 
             if (dx != 0x0400 && dy != 0x0400) {
-                width  += 1;  width  -= (ushort)dx;
-                height += 1;  height -= (ushort)dy;
+                width  += 1;  width  -= (uint)dx;
+                height += 1;  height -= (uint)dy;
                 
                 
                 //dx += width / 2;
@@ -392,7 +392,7 @@ namespace EssenceUDK.Platform.DataTypes
             var rect = (this as IImageSurface).GetImageRect();
             var dx = (rect.X1 + Width) / 2;
             var dy = (rect.Y1 + Height) / 2;
-            return new Point2D(dx, dy);
+            return new Point2D((int)dx, (int)dy);
         }
 
 
@@ -746,15 +746,13 @@ namespace EssenceUDK.Platform.DataTypes
                 byte* src8 = (byte*)ImageData;
                 byte* dst8 = (byte*)destinationBitmap.ImageData;
 
-                int maxWidth = Math.Min(Math.Min(Width - left, destinationBitmap.Width - left), width + top);
-                int maxHeight = Math.Min(Math.Min(Height - top, destinationBitmap.Height - top), height + top);
+                int maxWidth  = Math.Min(Math.Min((int)Width  - left, (int)destinationBitmap.Width - left), width  + top);
+                int maxHeight = Math.Min(Math.Min((int)Height - top,  (int)destinationBitmap.Height - top), height + top);
 
-                for (int x = top; x < maxHeight; x++)
-                {
-                    for (int y = left; y < maxWidth; y++)
-                    {
-                        int srcp = (x * Width) + y;
-                        int dstp = (x * destinationBitmap.Width) + y;
+                for (int x = top; x < maxHeight; x++) {
+                    for (int y = left; y < maxWidth; y++) {
+                        int srcp = (x * (int)Width) + y;
+                        int dstp = (x * (int)destinationBitmap.Width) + y;
                         dst8[dstp] = src8[srcp];
                     }
                 }
@@ -777,8 +775,8 @@ namespace EssenceUDK.Platform.DataTypes
                 Int64* src64 = (Int64*)ImageData;
                 Int64* dst64 = (Int64*)destinationBitmap.ImageData;
 
-                int srcHeight = Height * Width;
-                int dstHeight = destinationBitmap.Height * destinationBitmap.Width;
+                int srcHeight = (int)Height * (int)Width;
+                int dstHeight = (int)destinationBitmap.Height * (int)destinationBitmap.Width;
                 int maxLen = Math.Min(srcHeight, dstHeight);
 
                 int copyLength = maxLen - 8;
@@ -828,8 +826,8 @@ namespace EssenceUDK.Platform.DataTypes
         public InteropBitmap    BitmapSource { get; private set; }
         public int              BytesPerPixel{ get; private set; }
         public uint             ByteLength   { get; private set; }
-        public ushort           Height       { get; private set; }
-        public ushort           Width        { get; private set; }
+        public uint             Height       { get; private set; }
+        public uint             Width        { get; private set; }
         public PixelFormat      PixelFormat  { get; private set; }
         public readonly object  LockObject = new object();
 
@@ -854,7 +852,7 @@ namespace EssenceUDK.Platform.DataTypes
         {
         }
 
-        internal BitmapSurface(ushort width, ushort height, PixelFormat pixelFormat)
+        internal BitmapSurface(uint width, uint height, PixelFormat pixelFormat)
         {
             PixelFormat = pixelFormat;
             BytesPerPixel = ((byte)pixelFormat & (byte)PixelFormat.BppFormatMask) >> (byte)PixelFormat.BppFormatOffs;
@@ -869,7 +867,7 @@ namespace EssenceUDK.Platform.DataTypes
             ImageData = MapViewOfFile(_section, 0xF001F, 0, 0, ByteLength);
 
             var mediaPixelFormat = BytesPerPixel == 2 ? PixelFormats.Bgr555 : BytesPerPixel == 4 ? PixelFormats.Bgr32 : PixelFormats.Default;
-            BitmapSource = Imaging.CreateBitmapSourceFromMemorySection(_section, Width, Height, mediaPixelFormat, Width * BytesPerPixel, 0) as InteropBitmap;
+            BitmapSource = Imaging.CreateBitmapSourceFromMemorySection(_section, (int)Width, (int)Height, mediaPixelFormat, (int)Width * BytesPerPixel, 0) as InteropBitmap;
             ImageUIntPtr = (uint*)ImageData;
             ImageWordPtr = (ushort*)ImageData;
             ImageBytePtr = (byte*)ImageData;
@@ -890,7 +888,7 @@ namespace EssenceUDK.Platform.DataTypes
                     Int64* dst64 = (Int64*)ImageData;
 
                     int srcHeight = sourceBitmap.Height * sourceBitmap.Width;
-                    int dstHeight = Height * Width;
+                    int dstHeight = (int)Height * (int)Width;
                     int maxLen = Math.Min(srcHeight, dstHeight);
 
                     int copyLength = maxLen - 8;
@@ -958,7 +956,7 @@ namespace EssenceUDK.Platform.DataTypes
             }
         }
 
-        private unsafe void CreateFromPBytes(ushort sourceWidth, ushort sourceHeight, byte* sourceBytes)
+        private unsafe void CreateFromPBytes(uint sourceWidth, uint sourceHeight, byte* sourceBytes)
         {
             lock (LockObject) {
                 var maxLen = Math.Min((uint)sourceHeight * (uint)sourceWidth, ByteLength);
@@ -966,7 +964,7 @@ namespace EssenceUDK.Platform.DataTypes
             }
         }
 
-        internal BitmapSurface(ISurface surface) : this(surface.Width, surface.Height, surface.PixelFormat)
+        internal BitmapSurface(ISurface surface) : this((uint)surface.Width, (uint)surface.Height, surface.PixelFormat)
         {
             if (surface is BitmapSurface)
                 CreateFromPBytes(Width, Height, (surface as BitmapSurface).ImageBytePtr);
@@ -991,7 +989,7 @@ namespace EssenceUDK.Platform.DataTypes
         {
         }
 
-        internal BitmapSurface(BitmapSource bitmap, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5) : this((ushort)bitmap.Width, (ushort)bitmap.Height, pixelFormat)
+        internal BitmapSurface(BitmapSource bitmap, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5) : this((uint)bitmap.Width, (uint)bitmap.Height, pixelFormat)
         {
             using (MemoryStream outStream = new MemoryStream()) {
                 BitmapEncoder enc = new BmpBitmapEncoder();
@@ -1002,12 +1000,12 @@ namespace EssenceUDK.Platform.DataTypes
             }
         }
 
-        internal BitmapSurface(ushort width, ushort height, byte* bytes, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5) : this(width, height, pixelFormat)
+        internal BitmapSurface(uint width, uint height, byte* bytes, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5) : this(width, height, pixelFormat)
         {
             CreateFromPBytes(width, height, bytes);
         }
 
-        internal BitmapSurface(ushort width, ushort height, byte[] bytes, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5) : this(width, height, pixelFormat)
+        internal BitmapSurface(uint width, uint height, byte[] bytes, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5) : this(width, height, pixelFormat)
         {
             fixed(byte* _bytes = bytes) {
                 CreateFromPBytes(width, height, _bytes);
@@ -1212,13 +1210,13 @@ namespace EssenceUDK.Platform.DataTypes
                     for (int xa = xfrom; xa < xto; xa++) {
                         for (int ya = yfrom; ya < yto; ya++) {
                             if (x + xa >= 0 && x + xa < Height && y + ya >= 0 && y + ya < Width) {
-                                int p = ((x + xa) * Width) + (y + ya);
+                                int p = ((x + xa) * (int)Width) + (y + ya);
                                 avg += srcIntPtr[p];
                                 count++;
                             }
                         }
                     }
-                    int pd = (x  * Width) + y ;
+                    int pd = (x  * (int)Width) + y ;
                     dstIntPtr[pd] = (uint)(avg / count);
                 }
             }

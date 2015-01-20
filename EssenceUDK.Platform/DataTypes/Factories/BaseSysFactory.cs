@@ -43,17 +43,17 @@ namespace EssenceUDK.Platform.Factories
             return new BitmapSurface(stream);
         }
 
-        public ISurface CreateSurface(ushort width, ushort height, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5)
+        public ISurface CreateSurface(uint width, uint height, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5)
         {
             return new BitmapSurface(width, height, pixelFormat);
         }
 
-        public ISurface CreateSurface(ushort width, ushort height, byte[] bytes, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5)
+        public ISurface CreateSurface(uint width, uint height, byte[] bytes, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5)
         {
             return new BitmapSurface(width, height, bytes, pixelFormat);
         }
 
-        public ISurface CreateSurface(ushort width, ushort height, byte* bytes, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5)
+        public ISurface CreateSurface(uint width, uint height, byte* bytes, PixelFormat pixelFormat = PixelFormat.Bpp16A1R5G5B5)
         {
             return new BitmapSurface(width, height, bytes, pixelFormat);
         }

@@ -928,8 +928,8 @@ namespace EssenceUDK.Platform.TileEngine
             var bxcount = bx2 - bx1;
             var bycount = by2 - by1;
 
-                res = dataManager.CreateSurface((ushort)(bxcount * 8 * tsize), (ushort)(bycount * 8 * tsize), PixelFormat.Bpp16X1R5G5B5);
-            var buf = dataManager.CreateSurface((ushort)((block_stride + 1) * 8 * 16),    (ushort)((bycount + 1) * 8 * 16),    PixelFormat.Bpp16X1R5G5B5);
+                res = dataManager.CreateSurface((uint)(bxcount * 8 * tsize), (uint)(bycount * 8 * tsize), PixelFormat.Bpp16X1R5G5B5);
+            var buf = dataManager.CreateSurface((uint)((block_stride + 1) * 8 * 16),    (uint)((bycount + 1) * 8 * 16),    PixelFormat.Bpp16X1R5G5B5);
             var sea = 14142 * sealvl / 10000;
             var icx = (int)(sea +16);
             var icy = (int)(sea);
@@ -974,12 +974,12 @@ namespace EssenceUDK.Platform.TileEngine
                     ISurface img = (new BitmapSurface(buf.GetSurface().Image as BitmapSource, PixelFormat.Bpp16X1R5G5B5) as BitmapSurface).GetResized(
                         0, 0,  block_render * 8 * 16, (int)bycount * 8 * 16, block_render * 8 * tsize, (int)bycount * 8 * tsize);
                     lock (img) {
-                        ushort  img_stride = (ushort)(img.Stride >> 1);
-                        ushort  res_stride = (ushort)(res.Stride >> 1);
-                        ushort  iln_length = (ushort)(Math.Min(img.Width, (bxcount - bc) * 8 * tsize) << 1);
-                        ushort  iln_counts = img.Height;
-                        ushort* img_srline = img.ImageWordPtr;
-                        ushort* res_dsline = res.ImageWordPtr + (bc * 8 * tsize);
+                        var img_stride = (img.Stride >> 1);
+                        var res_stride = (res.Stride >> 1);
+                        var iln_length = (int)(Math.Min(img.Width, (bxcount - bc) * 8 * tsize) << 1);
+                        var iln_counts = img.Height;
+                        var img_srline = img.ImageWordPtr;
+                        var res_dsline = res.ImageWordPtr + (bc * 8 * tsize);
                         //iln_length *= 2;
                         for (int iy = 0; iy < iln_counts ; ++iy) {
                             Utils.MemCopy(res_dsline, img_srline, iln_length);
@@ -991,11 +991,11 @@ namespace EssenceUDK.Platform.TileEngine
                     
                     //lock (buf) {
                     // Move right blocks to the left
-                    ushort  ln_counts = buf.Height;
-                    ushort  ln_stride = (ushort)(buf.Stride >> 1);
-                    ushort  ln_length = (ushort)(buf.Width -  (block_render * 8 * 16));
-                    ushort* dest_line = buf.ImageWordPtr;
-                    ushort* sors_line = buf.ImageWordPtr + block_render * 8 * 16;
+                    var ln_counts = buf.Height;
+                    var ln_stride = (buf.Stride >> 1);
+                    var ln_length = (buf.Width - (block_render * 8 * 16));
+                    var dest_line = buf.ImageWordPtr;
+                    var sors_line = buf.ImageWordPtr + block_render * 8 * 16;
                     ln_length *= 2;
                     for (int iy = 0; iy < ln_counts; ++iy) {
                         Utils.MemCopy(dest_line, sors_line, ln_length);
