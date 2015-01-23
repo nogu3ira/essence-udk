@@ -599,6 +599,7 @@ namespace EssenceUDK.Platform.DataTypes
         uint Count     { get; }
         uint GetBlockId(uint blockX, uint blockY);
         uint GetBlockId(int blockX, int blockY);
+        uint GetWorldBlockId(int blockX, int blockY);
         uint FindBlockId(uint tileX, uint tileY);
         IMapBlock this[uint index] { get; }
         IMapTile this[uint tileX, uint tileY] { get; }
@@ -628,6 +629,19 @@ namespace EssenceUDK.Platform.DataTypes
         {
             if (blockX < 0 || blockY < 0) return 0xFFFFFFFFu;
             if (blockX >= Width || blockY >= Height) return 0xFFFFFFFFu;
+            return (uint)((blockX * _Height) + blockY);
+        }
+
+        public uint GetWorldBlockId(int blockX, int blockY)
+        {
+            if (blockX < 0)
+                blockX += (int)Width;
+            else if (blockX >= Width)
+                blockX -= (int)Width;
+            if (blockY < 0)
+                blockY += (int)Height;
+            else if (blockY >= Height)
+                blockY -= (int)Height;
             return (uint)((blockX * _Height) + blockY);
         }
 

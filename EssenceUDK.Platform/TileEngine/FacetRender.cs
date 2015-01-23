@@ -930,6 +930,7 @@ namespace EssenceUDK.Platform.TileEngine
 
             var bxcount = bx2 - bx1;
             var bycount = by2 - by1;
+            var bylengt = bycount + 2;
 
                 res = dataManager.CreateSurface((uint)(bxcount * 8 * tsize), (uint)(bycount * 8 * tsize), PixelFormat.Bpp16X1R5G5B5);
             var buf = dataManager.CreateSurface((uint)((block_stride + 1) * 8 * 16),    (uint)((bycount + 1) * 8 * 16),    PixelFormat.Bpp16X1R5G5B5);
@@ -939,34 +940,38 @@ namespace EssenceUDK.Platform.TileEngine
 
             IMapBlock fakeblock = new MapBlock(facet as MapFacet, (sbyte)sealvl);
             IMapBlock[][] blocks = new IMapBlock[2][];
-            blocks[0] = new IMapBlock[bycount + 1];
-            blocks[1] = new IMapBlock[bycount + 1];
+            blocks[0] = new IMapBlock[bylengt];
+            blocks[1] = new IMapBlock[bylengt];
 
             lock (res) {
             lock (buf) {
-                var bx = bx1+1;
+                var bx = (int)bx1 - 1;
                 int dest_cx, dest_cy;
 
-                blocks[0][bycount] = fakeblock;
-                blocks[1][bycount] = fakeblock;
-                for (uint i = 0, by = by1; i < bycount; ++by, ++i)
-                    blocks[1][i] = facet[facet.GetBlockId(bx1, by)];
+                //blocks[0][0] = fakeblock;
+                //blocks[1][0] = fakeblock;
+                //blocks[0][bycount] = fakeblock;
+                //blocks[1][bycount] = fakeblock;
+                for (int i = 0, by = (int)by1-1; i < bylengt; ++by, ++i)
+                    blocks[1][i] = facet[facet.GetWorldBlockId(bx, by)] ?? fakeblock;
 
-                var br = 0;
+                ++bx;
+                var br = -1;
                 var bc = 0;
                 while (bc <= bxcount) {
                     // Draw right blocks with width (block_stride - block_render) or (block_stride) if it's first call
                     for (; br < block_stride; ++br, ++bx) {
-                        Array.Copy(blocks[1], blocks[0], bycount);
-                        for (uint i = 0, by = by1; i < bycount; ++by, ++i)
-                            blocks[1][i] = facet[facet.GetBlockId(bx, by)] ?? fakeblock;
+                        Array.Copy(blocks[1], blocks[0], bylengt);
+                        for (int i = 0, by = (int)by1-1; i < bylengt; ++by, ++i)
+                            blocks[1][i] = facet[facet.GetWorldBlockId(bx, by)] ?? fakeblock;
 
                         dest_cx = (int)(icx + 128 * br);
-                        dest_cy = (int)(icy);
-                        DrawFlatBlock(ref buf, dest_cx, dest_cy, blocks, 0, bycount);
+                        dest_cy = (int)(icy - 128);
+                        DrawFlatBlock(ref buf, dest_cx, dest_cy, blocks, 0, bylengt-1, 0, 7, 0, 6);
 
-                        for (uint i = 0, by = by1; i < bycount; ++by, ++i) 
-                            blocks[0][i].Dispose();
+                        for (uint i = 0; i < bylengt; ++i)
+                            if (blocks[0][i] != fakeblock)
+                                blocks[0][i].Dispose();
                     }
                     br = block_offset;
 
@@ -1014,9 +1019,10 @@ namespace EssenceUDK.Platform.TileEngine
                 }
 
                 // Disposing last blocks
-                if (bx < facet.Width)
-                    for (uint i = 0, by = by1; i < bycount; ++by, ++i)
+                for (int i = 0; i < bylengt; ++i)
+                    if (blocks[1][i] != fakeblock)
                         blocks[1][i].Dispose();
+                fakeblock.Dispose();
             }    
             }
         }
