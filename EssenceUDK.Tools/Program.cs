@@ -43,7 +43,8 @@ namespace EssenceUDK.Tools
             + "\n       -ren <beg|end> Rename all files from end or start without skipping ID."
             + "\n       -ren <file>    Rename files from files according to there rule"
             + "\n       -mov <number>  Shift each result ID by specified value."
-            + "\n       -len <number>  Count of digits in output names (default 5 and 4 for hex)"
+            + "\n       -len <number>  Count of digits in input names (default 5 and 4 for hex)"
+            + "\n       -dcn <number>  Count of digits in output names (default same as input)"
             + "\n       -hex           Save file names in HEX format."
             + "\n       -del           Delete file from <in_dir> after coping ti <out_dir>."
             + "\n       <in_dir>       Path to input folder."
@@ -121,6 +122,15 @@ namespace EssenceUDK.Tools
             + "\n      Arguments:"
             + "\n        $MPAREA$ $LIST#2$"
             + "\n"
+            + "\n     -render    - Flat render part of image to png image."
+            + "\n      Arguments:"
+            + "\n        $MPAREA$ [-ppt <number>] [-alt <number>]"
+            + "\n        [-min <number>] [-max <number>] <output_file>"
+            + "\n          -ppt <number>    Pixels per tile (from 1 to 16, default: 2)"
+            + "\n          -alt <number>    Altitude of sea-level (default: -45)"
+            + "\n          -min <number>    Z-filter (tiles below min altitude willn't draw)"
+            + "\n          -max <number>    Z-filter (tiles above max altitude willn't draw)"
+            + "\n"
             + "\n"
             + "\nAllias:"
             + "\n"
@@ -194,6 +204,7 @@ namespace EssenceUDK.Tools
                     var lminid = 0x00000000;
                     var lmaxid = 0x0FFFFFFF;
                     var lcount = 0;
+                    var dcount = 0;
                     var trimsp = (int)0;
                     var shmove = (int)0;
                     var outhex = false;
@@ -237,6 +248,10 @@ namespace EssenceUDK.Tools
                             arg = enumerator.Current as String;
                             lcount = arg.StartsWith("0x") ? Int32.Parse(arg.Substring(2), NumberStyles.AllowHexSpecifier) : Int32.Parse(arg, NumberStyles.None);
                         } else
+                        if (arg == "-dcn" && enumerator.MoveNext()) {
+                            arg = enumerator.Current as String;
+                            dcount = arg.StartsWith("0x") ? Int32.Parse(arg.Substring(2), NumberStyles.AllowHexSpecifier) : Int32.Parse(arg, NumberStyles.None);
+                        } else
                         if (arg == "-hex") {
                             outhex = true;
                         } else
@@ -258,6 +273,8 @@ namespace EssenceUDK.Tools
                     }
                     if (lcount == 0)
                         lcount = outhex ? 4 : 5;
+                    if (dcount == 0)
+                        dcount = lcount;
  
                     if (String.IsNullOrWhiteSpace(srsdir) || String.IsNullOrWhiteSpace(trgdir)) 
                         throw new ArgumentException();
@@ -301,7 +318,7 @@ namespace EssenceUDK.Tools
                     while (enumerator.MoveNext()) {
                         var entry = (FileDesc)enumerator.Current;
                         var path1 = Path.Combine(srsdir, String.Format("{0}{1}{2}", imgcls.ToUpper(), String.Format((entry.HexFormat ? "0x{0:X" : "{0:D") + entry.OrigCount + "}", entry.OrigIndex), entry.Extension));
-                        var path2 = Path.Combine(trgdir, String.Format("{0}{1}{2}", imgcls.ToUpper(), String.Format((outhex ? "0x{0:X" : "{0:D") + entry.OrigCount + "}", entry.MoveIndex), entry.Extension));
+                        var path2 = Path.Combine(trgdir, String.Format("{0}{1}{2}", imgcls.ToUpper(), String.Format((outhex ? "0x{0:X" : "{0:D") + dcount + "}", entry.MoveIndex), entry.Extension));
                         list += String.Format("0x{0:X5} -> 0x{1:X5}{2}", entry.OrigIndex, entry.MoveIndex, Environment.NewLine);
                         File.Copy(path1, path2);
                         if (outdel)
@@ -643,6 +660,47 @@ namespace EssenceUDK.Tools
                             }
                         }
                     } else
+                    if (String.Compare(args[frarg], "-render", true) == 0) {
+                        byte m; uint x1, y1, x2, y2;
+                        var f = GetMapFacet(args, ref from, manager, out m, out x1, out y1, out x2, out y2);
+                        var ppt = (byte)  2;
+                        var alt = (short)-45;
+                        var min = (sbyte)-128;
+                        var max = (sbyte)+127;
+                        var outpath = "render_out.png";
+                        args = args.Skip(from).Select(a => a.ToLower()).ToArray();
+                        var enumerator = args.GetEnumerator();
+                        while (enumerator.MoveNext()) {
+                            var arg = enumerator.Current as String;
+                            if (arg == "-ppt" && enumerator.MoveNext()) {
+                                arg = enumerator.Current as String;
+                                ppt = (byte)Int32.Parse(arg);
+                                ++from;
+                            } else
+                            if (arg == "-alt" && enumerator.MoveNext()) {
+                                arg = enumerator.Current as String;
+                                alt = (short)Int32.Parse(arg);
+                                ++from;
+                            } else
+                            if (arg == "-min" && enumerator.MoveNext()) {
+                                arg = enumerator.Current as String;
+                                min = (sbyte)Int32.Parse(arg);
+                                ++from;
+                            } else
+                            if (arg == "-max" && enumerator.MoveNext()) {
+                                arg = enumerator.Current as String;
+                                max = (sbyte)Int32.Parse(arg);
+                                ++from;
+                            } else
+                                outpath = enumerator.Current as String;
+                        }
+
+                        ISurface surf;
+                        ResetProcessStatus((x2 - x1 + 1) * (y2 - y1 + 1), "Render flat scaled facet ");
+                        manager.FacetRender.SaveFlatMap(out surf, ppt, m, x1, y1, ++x2, ++y2, alt, min, max, SaveFacetCallback);
+                        surf.GetSurface().SavePNG(outpath);
+
+                    } else
 
                         throw new Exception();
 
@@ -857,6 +915,12 @@ namespace EssenceUDK.Tools
             curleft = Console.CursorLeft;
             workset = lastupd = 0;
             maxiter = (int)allIteration;
+        }
+
+        private static void SaveFacetCallback(float done)
+        {
+            var curIteration = (uint)(done * maxiter / 100f);
+            UpdateProcessStatus(curIteration);
         }
 
     }

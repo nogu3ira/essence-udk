@@ -271,14 +271,16 @@ namespace EssenceUDK
             var alt  = (short)nudS.Value;
             var minz = (sbyte)nudMinZ.Value;
             var maxz = (sbyte)nudMaxZ.Value;
+            var scal = (byte)nudPpt.Value;
 
             var posx1 = (uint)nudSX1.Value;
             var posy1 = (uint)nudSY1.Value;
             var posx2 = (uint)nudSX2.Value;
             var posy2 = (uint)nudSY2.Value;
 
+            SaveFacetTickStart = Environment.TickCount;
             ISurface surf;
-            UOManager.FacetRender.SaveFlatMap(out surf, 2, map, posx1, posy1, posx2, posy2, alt, minz, maxz, SaveFacetCallback);
+            UOManager.FacetRender.SaveFlatMap(out surf, scal, map, posx1, posy1, posx2, posy2, alt, minz, maxz, SaveFacetCallback);
 
             var name = tbSFile.Text;
             if (!name.EndsWith(".png"))
@@ -292,9 +294,11 @@ namespace EssenceUDK
 
         private void SaveFacetCallback(float done)
         {
-            lblStatus.Content = String.Format("Rendering: {0,9:0.0000}%", done);
+            var ticks = Environment.TickCount - SaveFacetTickStart;
+            lblStatus.Content = String.Format("Rendering: {0,7:0.000}% {1}m {2:00}s {3:000}ms", done, ticks / 60000, ticks % 60000 / 1000, ticks % 1000);
             Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
         }
+        private int SaveFacetTickStart;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -340,13 +344,17 @@ namespace EssenceUDK
             nudSX2.Value = 1492;//920; //1492;//920;
             nudSY2.Value = 604;//424; //604;//424;
 
+            nudPpt.Minimum = 1;
+            nudPpt.Maximum = 16;
+            nudPpt.Value = 2;
+
             nudMinZ.Minimum = nudMaxZ.Minimum = nudMinZ.Value = - 128;
             nudMinZ.Maximum = nudMaxZ.Maximum = nudMaxZ.Value = + 127;
 
             nudW.Minimum = nudH.Minimum = 176;
             nudW.Minimum = nudH.Maximum = 10240;
             #if DEBUG
-                tbPath.Text = @"C:\UltimaOnline\distro\__deploy\__output\uoassets\_override";
+                tbPath.Text = @"C:\UltimaOnline\__client\converting\TOOOOOO\unpack";
                 nudW.Value = 1200;
                 nudH.Value = 1200;
             #else
@@ -368,8 +376,8 @@ namespace EssenceUDK
 
             nudM.Value = 1;
             nudR.Value = 20;
-            nudX.Value = 30;//7320;//913 * 8 + 3;
-            nudY.Value = 30;//3364;//411 * 8 + 3;
+            nudX.Value = 7087;//7320;//913 * 8 + 3;
+            nudY.Value = 3028;//3364;//411 * 8 + 3;
             this.Width = 1278;
             this.Height = 938;
 

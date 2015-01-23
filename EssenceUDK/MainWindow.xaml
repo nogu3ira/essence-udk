@@ -190,9 +190,10 @@
                         </Grid>
                     </GroupBox>
 
-                    <GroupBox Header="Export Flat View" Grid.Column="1" Grid.ColumnSpan="4"  Grid.Row="5" VerticalAlignment="Top"  Height="118" Margin="0,380,0,0" >
-                        <Grid HorizontalAlignment="Left" Height="86" VerticalAlignment="Top" Width="190" Margin="0,3,0,0" >
+                    <GroupBox Header="Export Flat View" Grid.Column="1" Grid.ColumnSpan="4"  Grid.Row="5" VerticalAlignment="Top"  Height="144" Margin="0,380,0,0" >
+                        <Grid HorizontalAlignment="Left" Height="114" VerticalAlignment="Top" Width="190" Margin="0,3,0,0" >
                             <Grid.RowDefinitions>
+                                <RowDefinition />
                                 <RowDefinition />
                                 <RowDefinition />
                                 <RowDefinition />
@@ -214,9 +215,12 @@
                             <Label Content="Y2 Pos:" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" />
                             <common:NumericUpDown Name="nudSY2" Grid.Column="3" Grid.Row="1" Margin="4,0,2,8" />
 
-                            <TextBox Name="tbSFile" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Margin="4,0,2,4" TextWrapping="Wrap" Text="File Name or Path" />
+                            <Label Content="Pixels per tile:" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" HorizontalAlignment="Right" />
+                            <common:NumericUpDown Name="nudPpt" Grid.Column="3" Grid.Row="2" Margin="4,0,2,8" />
                             
-                            <Button Content="Save" Grid.Column="3" Grid.Row="2" Click="btnSaveFacet_Click" />
+                            <TextBox Name="tbSFile" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="3" Margin="4,0,2,4" TextWrapping="Wrap" Text="File Name or Path" />
+                            
+                            <Button Content="Save" Grid.Column="3" Grid.Row="3" Click="btnSaveFacet_Click" />
                         </Grid>
                     </GroupBox>
                     

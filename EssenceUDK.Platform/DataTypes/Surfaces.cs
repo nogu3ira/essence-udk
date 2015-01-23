@@ -252,6 +252,40 @@ namespace EssenceUDK.Platform.DataTypes
             get { return id < 0x20 ? base[id] : ((Color)((ushort)0x0000)); }
             set { if (id < 0x20) base[id] = value; }
         }
+
+        private static byte[] grayscale_table;
+        private static byte[] partialcl_table;
+
+        static PaletteHues()
+        {
+            grayscale_table = new byte[0x10000];
+            partialcl_table = new byte[0x10000];
+            int r, g, b, p;
+            for (int c = 0, s = 0x8000; c < 0x8000; ++c, ++s) {
+                r = 0x1F & (c >> 10);
+                g = 0x1F & (c >>  5);
+                b = 0x1F &  c;
+
+                if ((r == g) && (g == b)) {
+                    partialcl_table[c] = partialcl_table[s] = (byte)r;
+                } else {
+                    partialcl_table[c] = partialcl_table[s] = 0;
+                }
+                p = (r + g + b) / 3;
+                grayscale_table[c] = grayscale_table[s] = (byte)p;
+            }
+        }
+
+        internal ushort GetGrayscaleColor(ushort color)
+        {
+            return colors[grayscale_table[color]];
+        }
+
+        internal ushort GetPartialColor(ushort color)
+        {
+            ushort p = partialcl_table[color];
+            return p != 0 ? colors[p] : color;
+        }
     }
 
     internal class Palette16bit : PaletteBase, IPalette

@@ -755,6 +755,8 @@ namespace EssenceUDK.Platform.TileEngine
             int dst_heigh = dst.Height;
             int srs_width = srs.Width;
             int srs_heigh = srs.Height;
+            if (srs_width < 2 || srs_heigh < 2)
+                return;
 
             var p = srsp[srs_heigh][srs_width] ?? (srsp[srs_heigh][srs_width] = new FlatPoint(srs_heigh, srs_width));
             int del_x1 = z_cx + p.X1;
@@ -919,8 +921,9 @@ namespace EssenceUDK.Platform.TileEngine
 
         public unsafe void SaveFlatMap(out ISurface res, byte tsize, byte map, uint bx1, uint by1, uint bx2, uint by2, short sealvl, sbyte minz = -128, sbyte maxz = +127, SaveFlatMapCallback callback = null)
         {
-            var block_stride = 6;
-            var block_render = 3;
+            var block_render = 3; // nubmer of blocks on X to draw at once
+            var block_offset = 2; // additional number of blocks on X to draw (we need few to be sure that there tiles will be present on drawing rect)
+            var block_stride = block_render + block_offset;
             var facet = dataManager.GetMapFacet(map);
             tileComparer.MinFilterZ = minz;
             tileComparer.MaxFilterZ = maxz;
@@ -949,11 +952,9 @@ namespace EssenceUDK.Platform.TileEngine
                 for (uint i = 0, by = by1; i < bycount; ++by, ++i)
                     blocks[1][i] = facet[facet.GetBlockId(bx1, by)];
 
-
                 var br = 0;
                 var bc = 0;
                 while (bc <= bxcount) {
-                    //lock (buf) {
                     // Draw right blocks with width (block_stride - block_render) or (block_stride) if it's first call
                     for (; br < block_stride; ++br, ++bx) {
                         Array.Copy(blocks[1], blocks[0], bycount);
@@ -967,10 +968,11 @@ namespace EssenceUDK.Platform.TileEngine
                         for (uint i = 0, by = by1; i < bycount; ++by, ++i) 
                             blocks[0][i].Dispose();
                     }
-                    br = block_render;
-                    //}
-//if (bc > 3) break;
+                    br = block_offset;
+
                     // Resize buffer and copy result to destination surface
+                    // PS It's  very stupied to create twice surfaces for destination and result for this, but stupied WPF 
+                    // don't whant overwise and I don't know why and was very lazy to make resizing other way.
                     ISurface img = (new BitmapSurface(buf.GetSurface().Image as BitmapSource, PixelFormat.Bpp16X1R5G5B5) as BitmapSurface).GetResized(
                         0, 0,  block_render * 8 * 16, (int)bycount * 8 * 16, block_render * 8 * tsize, (int)bycount * 8 * tsize);
                     lock (img) {
@@ -980,7 +982,6 @@ namespace EssenceUDK.Platform.TileEngine
                         var iln_counts = img.Height;
                         var img_srline = img.ImageWordPtr;
                         var res_dsline = res.ImageWordPtr + (bc * 8 * tsize);
-                        //iln_length *= 2;
                         for (int iy = 0; iy < iln_counts ; ++iy) {
                             Utils.MemCopy(res_dsline, img_srline, iln_length);
                             res_dsline += res_stride;
@@ -989,7 +990,6 @@ namespace EssenceUDK.Platform.TileEngine
                         bc += block_render;
                     }
                     
-                    //lock (buf) {
                     // Move right blocks to the left
                     var ln_counts = buf.Height;
                     var ln_stride = (buf.Stride >> 1);
@@ -1002,29 +1002,23 @@ namespace EssenceUDK.Platform.TileEngine
                         dest_line += ln_stride;
                         sors_line += ln_stride;
                     }
-                    //}
 
-
-                    //Force garbage collection.
-                    GC.Collect();
-
-                    // Wait for all finalizers to complete before continuing.
-                    GC.WaitForPendingFinalizers();
+                    // As used we create surfaces each itteration lets free trash
+                    GC.Collect();                   //Force garbage collection.
+                    GC.WaitForPendingFinalizers();  // Wait for all finalizers to complete before continuing.
 
                     if (callback != null) {
-                        float done = 100f * bc / bxcount;
+                        float done = Math.Min(100f * bc / bxcount, 100f);
                         callback(done);
                     }
+                }
 
-                }
-                }
+                // Disposing last blocks
+                if (bx < facet.Width)
+                    for (uint i = 0, by = by1; i < bycount; ++by, ++i)
+                        blocks[1][i].Dispose();
+            }    
             }
-
-            //res = buf;
-
-            //res = (buf as BitmapSurface).GetResized(buf.Width / 4, 0, buf.Width / 2, buf.Height, buf.Width / 8, buf.Height / 4);
-
-
         }
 
         #endregion
